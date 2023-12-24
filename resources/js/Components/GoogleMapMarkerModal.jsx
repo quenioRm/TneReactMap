@@ -2,9 +2,11 @@ import React from 'react';
 import { Modal, Button, Table } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Gallery from 'react-image-gallery';
+import 'react-image-gallery/styles/css/image-gallery.css';
 
 const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
-   const images = [
+
+  const images = [
     // Adicione objetos de imagem conforme necessário
     { original: 'URL_DA_IMAGEM_1', thumbnail: 'URL_DA_IMAGEM_1' },
     { original: 'URL_DA_IMAGEM_2', thumbnail: 'URL_DA_IMAGEM_2' },
@@ -12,7 +14,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
   ];
 
   return (
-    <Modal show={markerInfo !== null} onHide={onClose}>
+    <Modal show={markerInfo !== null} onHide={onClose} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>{markerInfo ? markerInfo.label.text : ""}</Modal.Title>
       </Modal.Header>
