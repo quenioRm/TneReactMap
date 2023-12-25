@@ -22,3 +22,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/get-coordinates', [MapsController::class, 'getCoordinates']);
 Route::get('/get-towerimages/{tower}', [MapsController::class, 'getImagesFromTower']);
 Route::get('/get-towerproduction/{tower}/{project}', [MapsController::class, 'getTowerProduction']);
+Route::post('/upload-images', [MapsController::class, 'uploadGaleryImages']);

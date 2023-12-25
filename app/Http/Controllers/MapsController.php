@@ -127,4 +127,24 @@ class MapsController extends Controller
             return response()->json([]);
         }
     }
+
+    public function uploadGaleryImages(Request $request)
+    {
+        // Validação dos dados da requisição
+        $request->validate([
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $imageUrls = [];
+
+        // Salvar cada imagem no diretório de armazenamento (pasta storage/app/public)
+        foreach ($request->file('images') as $file) {
+            $imagePath = $file->store($request->towerId);
+            $imageUrl = url('storage/' . $request->towerId . DIRECTORY_SEPARATOR . basename($imagePath));
+            $imageUrls[] = $imageUrl;
+        }
+
+        // Retorna as URLs das imagens
+        return response()->json(['imageUrls' => $imageUrls]);
+    }
 }

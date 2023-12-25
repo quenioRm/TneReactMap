@@ -1,8 +1,10 @@
+// GoogleMapMarkerModal.js
 import React, { useState, useEffect } from 'react';
-import { Modal, Table, Tabs, Tab, Pagination } from 'react-bootstrap';
+import { Modal, Table, Tabs, Tab, Pagination, Button, Row, Col, Container } from 'react-bootstrap';
 import Gallery from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
 import axios from 'axios';
+import ImageUploadButton from './ImageUploadButton';
 
 const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
   const [towerImages, setTowerImages] = useState([]);
@@ -53,6 +55,24 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const handleImageUpload = async (files) => {
+    try {
+      const formData = new FormData();
+      formData.append('towerId', markerInfo.label.towerId);
+
+      for (const file of files) {
+        formData.append('images[]', file);
+      }
+
+      await axios.post('/api/upload-images', formData);
+
+      // Atualize a lista de imagens após o upload
+      fetchTowerImages();
+    } catch (error) {
+      console.error('Error uploading images:', error);
+    }
+  };
+
   return (
     <Modal show={markerInfo !== null} onHide={onClose} size="lg">
       <Modal.Header closeButton>
@@ -84,8 +104,18 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                     {images.length > 0 && (
                       <div>
                         <Gallery items={images} />
+                        {/* Linha horizontal */}
                       </div>
                     )}
+                    <hr />
+                    {/* Botão de upload */}
+                    <Container>
+                        <Row>
+                            <Col className="text-right">
+                                <ImageUploadButton onUpload={handleImageUpload} />
+                            </Col>
+                        </Row>
+                    </Container>
                   </>
                 )}
               </Tab>
