@@ -39,6 +39,7 @@ const GoogleMap = () => {
         draggable: markerInfo.draggable,
         map: map,
         title: markerInfo.label.text,
+        icon:''
       });
 
       // Add a listener for dragend event
