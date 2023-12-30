@@ -31,7 +31,7 @@ class MapsController extends Controller
                 }
 
                 if($zone > 0){
-                    $latlng = CoordinateHelper::utm2ll(831737.963,9677172.421,20,true);
+                    $latlng = CoordinateHelper::utm2ll($x,$y,$zone * 1,true);
                 }
 
                 $newCoordinates = json_decode($latlng, true);
