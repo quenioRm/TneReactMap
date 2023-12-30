@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import MarkerModal from '../Components/GoogleMapMarkerModal';
+import TowerSelectButton from './TowerSelect/TowerSelectButton'
 
 const GoogleMap = () => {
   const [markerData, setMarkerData] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null);
+  const [map, setMap] = useState(null); // Add state to store the map instance
 
   useEffect(() => {
     loadGoogleMapScript();
@@ -17,6 +19,7 @@ const GoogleMap = () => {
       initMap(); // Call initMap after fetchMarkerData is completed
     }
   }, [markerData]);
+
 
   const initMap = () => {
     if (!markerData || !Array.isArray(markerData)) {
@@ -30,6 +33,8 @@ const GoogleMap = () => {
       zoom: 15,
       gestureHandling: 'greedy'
     });
+
+    setMap(map);
 
     // Add markers based on fetched data
     markerData.forEach((markerInfo, index) => {
@@ -65,6 +70,7 @@ const GoogleMap = () => {
 
     // Set the polyline on the map
     polyline.setMap(map);
+
   };
 
   const onMarkerClick = (markerInfo) => {
@@ -119,8 +125,12 @@ const GoogleMap = () => {
 
       {/* Use MarkerModal component */}
       <MarkerModal markerInfo={selectedMarker} onClose={handleCloseModal} />
+      {/* <TowerSelectionModal map={map} onClose={handleCloseTowerSelectModal} /> */}
+      {/* <button onClick={() => goToCoordinate(37.7749, -122.4194)}>Go to San Francisco</button> */}
+      <TowerSelectButton map={map} />
     </div>
   );
+
 };
 
 export default GoogleMap;

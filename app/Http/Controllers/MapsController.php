@@ -37,6 +37,7 @@ class MapsController extends Controller
                 $newCoordinates = json_decode($latlng, true);
 
                 $initialMarkers[] = [
+                    'name' => $markerData['Number'] . " - " . $markerData['ProjectName'],
                     'position' => [
                         'lat' => $newCoordinates['attr']['lat'],
                         'lng' => $newCoordinates['attr']['lon'],
