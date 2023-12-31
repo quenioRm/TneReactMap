@@ -1,27 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Dropdown } from 'react-bootstrap';
-import ImageUploadButton from './ImageUploadButton'; // Certifique-se de ter o componente ImageUploadButton
+import ImageUploadButton from '../ImageUploadButton';
 
-const MarkerConfigModal = ({ show, onHide, onSave }) => {
+const MarkerConfigModal = ({ show, onHide, onSave, onDelete, editedMarker }) => {
   const [atividade, setAtividade] = useState('');
   const [icone, setIcone] = useState('');
   const [selectedMarker, setSelectedMarker] = useState('');
-  const [googleIcons] = useState([ /* Adicione aqui os ícones do Google */ ]);
+  const [googleIcons] = useState([/* Adicione aqui os ícones do Google */]);
+
+  useEffect(() => {
+    if (editedMarker) {
+      setAtividade(editedMarker.atividade || '');
+      setIcone(editedMarker.icone || '');
+      setSelectedMarker(editedMarker.selectedMarker || '');
+    } else {
+      setAtividade('');
+      setIcone('');
+      setSelectedMarker('');
+    }
+  }, [editedMarker, show]);
 
   const handleSave = () => {
     onSave({ atividade, icone, selectedMarker });
     onHide();
   };
 
+  const handleDelete = () => {
+    onDelete();
+    onHide();
+  };
+
   return (
     <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton>
-        <Modal.Title>Configurar Marcador</Modal.Title>
+        <Modal.Title>{editedMarker ? 'Editar' : 'Adicionar'} Marcador</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
           <Form.Group controlId="formAtividade">
-            <Form.Label>Nome da atividade</Form.Label>
+            <Form.Label>Nome da Atividade</Form.Label>
             <Form.Control
               type="text"
               placeholder="Digite a atividade"
@@ -76,6 +93,11 @@ const MarkerConfigModal = ({ show, onHide, onSave }) => {
         </Form>
       </Modal.Body>
       <Modal.Footer>
+        {editedMarker && (
+          <Button variant="danger" onClick={handleDelete}>
+            Deletar
+          </Button>
+        )}
         <Button variant="secondary" onClick={onHide}>
           Fechar
         </Button>

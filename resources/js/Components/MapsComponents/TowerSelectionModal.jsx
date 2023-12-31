@@ -6,7 +6,6 @@ const TowerSelectionModal = ({ rMap, show, onClose}) => {
   const [towers, setTowers] = useState([]);
   const [selectedTower, setSelectedTower] = useState([]);
 
-
   useEffect(() => {
     const fetchTowers = async () => {
       try {
@@ -21,17 +20,19 @@ const TowerSelectionModal = ({ rMap, show, onClose}) => {
     fetchTowers();
   }, []);
 
+
+
   const handleTowerSelect = () => {
     if (selectedTower.length > 0) {
       goToCoordinate(selectedTower[0].position.lat, selectedTower[0].position.lng);
-    //   onHide();
+      onClose();
     }
   };
 
   const goToCoordinate = (lat, lng) => {
     if (rMap) {
-        rMap.map.panTo({ lat, lng });
-        rMap.map.setZoom(15); // Set the desired zoom level
+        rMap.panTo({ lat, lng });
+        rMap.setZoom(15); // Set the desired zoom level
     }
   };
 

@@ -2,12 +2,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import MarkerModal from '../Components/GoogleMapMarkerModal';
-import TowerSelectButton from './TowerSelect/TowerSelectButton'
+import TowerSelectButton from './MapsComponents/TowerSelectButton';
+import FloatingButton from './FloatingButton';
+import { ProgressBar } from 'react-bootstrap'; // Import ProgressBar from react-bootstrap
 
 const GoogleMap = () => {
   const [markerData, setMarkerData] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null);
-  const [map, setMap] = useState(null); // Add state to store the map instance
+  const [map, setMap] = useState(null);
+  const [loading, setLoading] = useState(true); // Set initial loading state to true
 
   useEffect(() => {
     loadGoogleMapScript();
@@ -16,13 +19,18 @@ const GoogleMap = () => {
 
   useEffect(() => {
     if (markerData) {
-      initMap(); // Call initMap after fetchMarkerData is completed
+      initMap();
     }
   }, [markerData]);
 
+  useEffect(() => {
+    setTimeout(() => {
+        setLoading(false);
+    }, 3000); // 3 seconds delay
+  }, [map])
 
   const initMap = () => {
-    if (!markerData || !Array.isArray(markerData)) {
+    if (!markerData || !Array.isArray(markerData) || markerData.length === 0) {
       // Marker data not available or not in the expected format
       return;
     }
@@ -87,7 +95,7 @@ const GoogleMap = () => {
 
   const fetchMarkerData = async () => {
     try {
-      const response = await axios.get('/api/get-coordinates'); // Replace with your Laravel API endpoint
+      const response = await axios.get('/api/get-coordinates');
       setMarkerData(response.data);
     } catch (error) {
       console.error('Error fetching marker data:', error);
@@ -96,7 +104,6 @@ const GoogleMap = () => {
 
   const loadGoogleMapScript = async () => {
     if (window.google && window.google.maps) {
-      // Google Maps API is already available, call initMap directly
       initMap();
       return;
     }
@@ -107,12 +114,10 @@ const GoogleMap = () => {
     script.async = true;
     script.defer = true;
 
-    // Define initMap in the global scope after the script is loaded
     window.initMap = initMap;
 
     document.head.appendChild(script);
 
-    // Cleanup script tag on component unmount
     return () => {
       document.head.removeChild(script);
     };
@@ -120,17 +125,13 @@ const GoogleMap = () => {
 
   return (
     <div>
-      {/* Map container */}
+      {loading && <ProgressBar now={100} animated label="Loading Map..." />} {/* Display progress bar while loading */}
       <div id="map" style={{ height: '100vh', width: '100%' }} />
 
-      {/* Use MarkerModal component */}
       <MarkerModal markerInfo={selectedMarker} onClose={handleCloseModal} />
-      {/* <TowerSelectionModal map={map} onClose={handleCloseTowerSelectModal} /> */}
-      {/* <button onClick={() => goToCoordinate(37.7749, -122.4194)}>Go to San Francisco</button> */}
-      <TowerSelectButton map={map} />
+      <FloatingButton map={map} />
     </div>
   );
-
 };
 
 export default GoogleMap;

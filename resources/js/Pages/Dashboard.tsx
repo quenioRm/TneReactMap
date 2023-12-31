@@ -4,8 +4,8 @@ import { PageProps } from '@/types';
 import GoogleMap from '../Components/GoogleMap';
 import { Button } from 'react-bootstrap';
 import { useState } from 'react';
-import MarkerConfigModal from '../Components/MarkerConfigModal';
-import TowerSelectionModal from '../Components/TowerSelect/TowerSelectionModal';
+import MarkerConfigModal from '../Components/MapsComponents/MarkerConfigModal';
+import TowerSelectionModal from '../Components/MapsComponents/TowerSelectionModal';
 
 export default function Dashboard({ auth }: PageProps) {
 
@@ -29,12 +29,6 @@ export default function Dashboard({ auth }: PageProps) {
         setShowTowerSelectModal(false);
     };
 
-    // const handleGoToCoordinate = (lat, lng) => {
-    //     setCurrentCoordinates({ lat, lng });
-    //     console.log(`Movendo para as coordenadas: ${lat}, ${lng}`);
-    // };
-
-
 
     return (
         <AuthenticatedLayout
@@ -44,12 +38,12 @@ export default function Dashboard({ auth }: PageProps) {
                   <h2 className="font-weight-bold text-xl text-gray-800">Dashboard</h2>
                   {/* Adicione seus botões à direita aqui */}
                   <div className="d-flex">
-                    <Button variant="primary" className="mr-2" onClick={handleOpenMarkerConfigModal}>
+                    {/* <Button variant="primary" className="mr-2" onClick={handleOpenMarkerConfigModal}>
                       Configurar Marcador
-                    </Button>
-                    <Button variant="primary" className="mr-2" onClick={handleOpenTowerSelect}>
+                    </Button> */}
+                    {/* <Button variant="primary" className="mr-2" onClick={handleOpenTowerSelect}>
                       Buscar Estrutura
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>
               }
@@ -64,7 +58,7 @@ export default function Dashboard({ auth }: PageProps) {
                 </div>
             </div> */}
         <GoogleMap />
-        <MarkerConfigModal show={showMarkerConfigModal} onHide={handleCloseMarkerConfigModal} onSave={undefined}  />
+        {/* <MarkerConfigModal show={showMarkerConfigModal} onHide={handleCloseMarkerConfigModal} onSave={undefined}  /> */}
         {/* <TowerSelectionModal show={showTowerSelectModal} onHide={handleCloseTowerSelect}  /> */}
         </AuthenticatedLayout>
     );
