@@ -125,6 +125,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                     <thead>
                       <tr>
                         <th>Atividade</th>
+                        <th>Icone</th>
                         <th>Data de execução</th>
                       </tr>
                     </thead>
@@ -132,6 +133,9 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                       {currentItems.map((tower, index) => (
                         <tr key={index}>
                           <td>{tower.activitie}</td>
+                          <td>
+                            <img src={tower.icon} alt={tower.activitie} width={30} height={30} />
+                        </td>
                           <td>{tower.date}</td>
                         </tr>
                       ))}

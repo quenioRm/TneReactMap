@@ -1,6 +1,7 @@
 // Import React, useState, and the required Bootstrap components
 import React, { useState } from 'react';
 import { Table, Button, Pagination } from 'react-bootstrap';
+import axios from 'axios';
 
 // Define the MarkerList component
 const MarkerListImpediment = ({ markers, onEdit, onDelete }) => {
@@ -24,25 +25,27 @@ const MarkerListImpediment = ({ markers, onEdit, onDelete }) => {
       <Table striped bordered hover>
         <thead>
           <tr>
-            <th>Atividade</th>
-            <th>Ícone</th>
-            <th>Ações</th>
+            <th>ImpedimentType</th>
+            <th>Status</th>
+            <th>Icon</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {currentMarkers.map((marker, index) => (
-            <tr key={index}>
-              <td>{marker.atividade}</td>
+          {currentMarkers.map((marker) => (
+            <tr key={marker.id}>
+              <td>{marker.ImpedimentType}</td>
+              <td>{marker.Status}</td>
               {/* Use an <img> tag to display the icon with a resolution of 30x30 */}
               <td>
-                <img src={'storage/' + marker.icone} alt={marker.atividade} width={30} height={30} />
+                <img src={'storage/' + marker.Icon} alt={marker.ImpedimentType} width={30} height={30} />
               </td>
               <td>
                 <Button variant="info" className="mr-2" onClick={() => onEdit(marker)}>
-                  Editar
+                  Edit
                 </Button>
                 <Button variant="danger" onClick={() => onDelete(marker.id)}>
-                  Deletar
+                  Delete
                 </Button>
               </td>
             </tr>

@@ -11,6 +11,7 @@ use App\Helpers\Production;
 use App\Models\Tower;
 use App\Models\TowerActivity;
 use Carbon\Carbon;
+use App\Models\Marker;
 
 class MapsController extends Controller
 {
@@ -122,9 +123,14 @@ class MapsController extends Controller
                 $carbonDate = $carbonDate->format('d/m/y');
             }
 
+            $icon = Marker::where('atividade', $item->Activitie)->value('icone');
+
+            $iconUrl = ($icon !== null) ? asset(Storage::url($icon)) : asset('assets/images/marcador-de-localizacao.png');
+
             $returnItem[$key] = [
                 'activitie' => $item->Activitie,
-                'date' => $carbonDate
+                'date' => $carbonDate,
+                'icon' => $iconUrl
             ];
         }
 

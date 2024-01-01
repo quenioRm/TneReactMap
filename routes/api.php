@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MapsController;
 use App\Http\Controllers\MarkerConfigController;
+use App\Http\Controllers\MarkerConfigImpedimentController;
 use App\Http\Controllers\TowerController;
 
 /*
@@ -28,6 +29,8 @@ Route::post('/upload-images', [MapsController::class, 'uploadGaleryImages']);
 
 
 Route::resource('markers', MarkerConfigController::class);
+
+Route::resource('markersimpediments', MarkerConfigImpedimentController::class);
 
 Route::post('towers/import', [TowerController::class, 'ImportTowersFromExcelFile']);
 

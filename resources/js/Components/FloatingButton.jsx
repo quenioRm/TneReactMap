@@ -2,30 +2,28 @@ import React, { useState } from 'react';
 import { Button, Dropdown, DropdownButton, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaHandPaper } from 'react-icons/fa';
 import TowerSelectionModal from './MapsComponents/TowerSelectionModal';
-import MarkerConfigModal from './MapsComponents/Activitie/MarkerConfigModal';
 import MarkerManager from './MapsComponents/Activitie/MarkerManager';
 import ImportTowersModal from '../Components/TowersComponents/TowerImportModal';
+import MarkerManagerImpediment from '../Components/MapsComponents/Impediments/MarkerManagerImpediment';
 
 const FloatingButton = ({map}) => {
   const [showTowerModal, setShowTowerModal] = useState(false);
   const [showMarkerConfigModal, setShowMarkerConfigModal] = useState(false);
   const [showManager, setShowManager] = useState(false);
   const [towerImportModalShow, setTowerImportModalShow] = useState(false)
+  const [showManagerImpediment, setShowManagerImpediment] = useState(false)
 
   const handleShowTowerModal = () => {
     setShowTowerModal(true);
     setShowMarkerConfigModal(false);
   };
 
-  const handleShowMarkerConfigModal = () => {
-    setShowMarkerConfigModal(true);
-    setShowTowerModal(false);
-  };
 
   const handleCloseModals = () => {
     setShowTowerModal(false);
     setShowMarkerConfigModal(false);
   };
+
 
   const handleShowManager = () => {
     setShowManager(true);
@@ -33,6 +31,14 @@ const FloatingButton = ({map}) => {
 
   const handleCloseManager = () => {
     setShowManager(false);
+  };
+
+  const handleShowManageImpediment = () => {
+    setShowManagerImpediment(true);
+  };
+
+  const handleCloseManagerImpediment = () => {
+    setShowManagerImpediment(false);
   };
 
   const handleShowImportTowerModal = () => {
@@ -58,6 +64,7 @@ const FloatingButton = ({map}) => {
         >
           <Dropdown.Item onClick={handleShowTowerModal}>Selecionar Torre</Dropdown.Item>
           <Dropdown.Item onClick={handleShowManager}>Configurar Marcador - Atividade</Dropdown.Item>
+          <Dropdown.Item onClick={handleShowManageImpediment}>Configurar Marcador - Impedimento</Dropdown.Item>
           <Dropdown.Item onClick={handleShowImportTowerModal}>Importar Estruturas/Produção</Dropdown.Item>
         </DropdownButton>
       </OverlayTrigger>
@@ -68,6 +75,8 @@ const FloatingButton = ({map}) => {
       <MarkerManager show={showManager} onHide={handleCloseManager}/>
       {/* Renderize os modais condicionalmente com base nos estados showTowerModal e showMarkerConfigModal */}
       <ImportTowersModal show={towerImportModalShow} onHide={handleCloseImportTowerModal} />
+      {/*  */}
+      <MarkerManagerImpediment show={showManagerImpediment} onHide={handleCloseManagerImpediment}/>
     </div>
   );
 };

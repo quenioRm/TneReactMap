@@ -137,7 +137,7 @@ const MarkerManager = ({ show, onHide }) => {
     <>
     <Modal show={show} onHide={onHide} size="lg">
       <Modal.Header closeButton>
-        <Modal.Title>Gerenciar Marcadores</Modal.Title>
+        <Modal.Title>Gerenciar Marcadores - Atividades</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Container>
