@@ -2,33 +2,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import GoogleMap from '../Components/GoogleMap';
-import { Button } from 'react-bootstrap';
-import { useState } from 'react';
-import MarkerConfigModal from '../Components/MapsComponents/MarkerConfigModal';
-import TowerSelectionModal from '../Components/MapsComponents/TowerSelectionModal';
 
 export default function Dashboard({ auth }: PageProps) {
-
-    const [showMarkerConfigModal, setShowMarkerConfigModal] = useState(false);
-    const [showTowerSelectModal, setShowTowerSelectModal] = useState(false);
-    const [currentCoordinates, setCurrentCoordinates] = useState({ lat: 0, lng: 0 });
-
-    const handleOpenMarkerConfigModal = () => {
-      setShowMarkerConfigModal(true);
-    };
-
-    const handleCloseMarkerConfigModal = () => {
-      setShowMarkerConfigModal(false);
-    };
-
-    const handleOpenTowerSelect = () => {
-        setShowTowerSelectModal(true);
-    };
-
-    const handleCloseTowerSelect = () => {
-        setShowTowerSelectModal(false);
-    };
-
 
     return (
         <AuthenticatedLayout

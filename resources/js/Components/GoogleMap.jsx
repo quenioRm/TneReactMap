@@ -26,8 +26,8 @@ const GoogleMap = () => {
   useEffect(() => {
     setTimeout(() => {
         setLoading(false);
-    }, 3000); // 3 seconds delay
-  }, [map])
+    }, 10000);
+  }, [map, markerData])
 
   const initMap = () => {
     if (!markerData || !Array.isArray(markerData) || markerData.length === 0) {

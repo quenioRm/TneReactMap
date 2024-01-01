@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Dropdown } from 'react-bootstrap';
 import ImageUploadButton from '../ImageUploadButton';
 
-const MarkerConfigModal = ({ show, onHide, onSave, onDelete, editedMarker }) => {
+const MarkerConfigModal = ({ show, onHide,onSave, onUpdate, editedMarker}) => {
+  const [id, setAtividadeId] = useState('');
   const [atividade, setAtividade] = useState('');
   const [icone, setIcone] = useState('');
   const [selectedMarker, setSelectedMarker] = useState('');
@@ -10,6 +11,7 @@ const MarkerConfigModal = ({ show, onHide, onSave, onDelete, editedMarker }) => 
 
   useEffect(() => {
     if (editedMarker) {
+      setAtividadeId(editedMarker.id || '');
       setAtividade(editedMarker.atividade || '');
       setIcone(editedMarker.icone || '');
       setSelectedMarker(editedMarker.selectedMarker || '');
@@ -21,12 +23,11 @@ const MarkerConfigModal = ({ show, onHide, onSave, onDelete, editedMarker }) => 
   }, [editedMarker, show]);
 
   const handleSave = () => {
-    onSave({ atividade, icone, selectedMarker });
-    onHide();
-  };
-
-  const handleDelete = () => {
-    onDelete();
+    if(editedMarker){
+        onUpdate({ id, atividade, icone });
+    }else{
+        onSave({ atividade, icone });
+    }
     onHide();
   };
 
@@ -41,6 +42,7 @@ const MarkerConfigModal = ({ show, onHide, onSave, onDelete, editedMarker }) => 
             <Form.Label>Nome da Atividade</Form.Label>
             <Form.Control
               type="text"
+              name='atividade'
               placeholder="Digite a atividade"
               value={atividade}
               onChange={(e) => setAtividade(e.target.value)}
@@ -67,10 +69,15 @@ const MarkerConfigModal = ({ show, onHide, onSave, onDelete, editedMarker }) => 
 
           {selectedMarker === 'custom-marker' && (
             <Form.Group controlId="formCustomIcon">
-              <Form.Label>Ícone Personalizado</Form.Label>
-              <ImageUploadButton onUpload={(files) => setIcone(files[0])} />
+                <Form.Label>Ícone Personalizado</Form.Label>
+                <Form.Control
+                type="file"
+                name="icone"
+                accept=".png, .jpg, .jpeg, .gif"
+                onChange={(e) => setIcone(e.target.files[0])}
+                />
             </Form.Group>
-          )}
+            )}
 
           {selectedMarker === 'google-marker' && (
             <Form.Group controlId="formGoogleIcons">
@@ -93,11 +100,6 @@ const MarkerConfigModal = ({ show, onHide, onSave, onDelete, editedMarker }) => 
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        {editedMarker && (
-          <Button variant="danger" onClick={handleDelete}>
-            Deletar
-          </Button>
-        )}
         <Button variant="secondary" onClick={onHide}>
           Fechar
         </Button>

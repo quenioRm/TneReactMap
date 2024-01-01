@@ -12,6 +12,9 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
+        "maatwebsite/excel": "^1.1",
+        "pusher/pusher-php-server": "^7.2",
+        "rap2hpoutre/fast-excel": "^5.3",
         "tightenco/ziggy": "^1.0"
     },
     "require-dev": {
@@ -31,7 +34,9 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/CoordinateHelper.php"
+            "app/Helpers/CoordinateHelper.php",
+            "app/Helpers/Production.php",
+            "app/Helpers/Functions.php"
         ]
     },
     "autoload-dev": {

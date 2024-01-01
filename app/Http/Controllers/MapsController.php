@@ -6,56 +6,61 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use App\Helpers\CoordinateHelper;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+use App\Helpers\Production;
+use App\Models\Tower;
 
 class MapsController extends Controller
 {
     public function getCoordinates()
     {
-        $jsonFilePointList = storage_path('app/towerlist.json');
-        if (File::exists($jsonFilePointList)) {
+        $initialMarkers;
 
-            $initialMarkers;
+        $listOfMarkers = Tower::get();
 
-            $listOfMarkers = json_decode(File::get($jsonFilePointList), true);
+        foreach ($listOfMarkers as $markerData) {
 
-            foreach ($listOfMarkers as $markerData) {
+            $x = (float)$markerData['CoordinateX'];
+            $y = (float)$markerData['CoordinateY'];
+            $zone = (float)$markerData['Zone'];
 
-                $x = (float)$markerData['CoordinateX'];
-                $y = (float)$markerData['CoordinateY'];
-                $zone = (float)$markerData['Zone'];
+            $latlng = null;
 
-                $latlng = null;
-
-                if($zone < 0){
-                    $latlng = CoordinateHelper::utm2ll($x,$y,$zone * -1,false);
-                }
-
-                if($zone > 0){
-                    $latlng = CoordinateHelper::utm2ll($x,$y,$zone * 1,true);
-                }
-
-                $newCoordinates = json_decode($latlng, true);
-
-                $initialMarkers[] = [
-                    'name' => $markerData['Number'] . " - " . $markerData['ProjectName'],
-                    'position' => [
-                        'lat' => $newCoordinates['attr']['lat'],
-                        'lng' => $newCoordinates['attr']['lon'],
-                        'utmx' => $markerData['CoordinateX'],
-                        'utmy' => $markerData['CoordinateY']
-                    ],
-                    'label' => [
-                        'color' =>'blue',
-                        'text' => $markerData['Number'] . " - " . $markerData['Name'],
-                        'towerId' => str_replace('/', '_', $markerData['Number']),
-                        'project' => $markerData['ProjectName'],
-                    ],
-                    'draggable' => true,
-                ];
+            if($zone < 0){
+                $latlng = CoordinateHelper::utm2ll($x,$y,$zone * -1,false);
             }
 
-            return response()->json($initialMarkers);
+            if($zone > 0){
+                $latlng = CoordinateHelper::utm2ll($x,$y,$zone * 1,true);
+            }
+
+            $newCoordinates = json_decode($latlng, true);
+
+            $changedTowerId = str_replace('/', '_', $markerData['Number']);
+
+            // $result = Production::getLatestTowerProductionDate($changedTowerId, $markerData['ProjectName']);
+            // dd($result);
+
+            $initialMarkers[] = [
+                'name' => $markerData['Number'] . " - " . $markerData['ProjectName'],
+                'position' => [
+                    'lat' => $newCoordinates['attr']['lat'],
+                    'lng' => $newCoordinates['attr']['lon'],
+                    'utmx' => $markerData['CoordinateX'],
+                    'utmy' => $markerData['CoordinateY']
+                ],
+                'label' => [
+                    'color' =>'blue',
+                    'text' => $markerData['Number'] . " - " . $markerData['Name'],
+                    'towerId' => $changedTowerId,
+                    'project' => $markerData['ProjectName'],
+                ],
+                'draggable' => true,
+                'icon' => 'latest',
+            ];
         }
+
+        return response()->json($initialMarkers);
     }
 
     public function getImagesFromTower($tower)

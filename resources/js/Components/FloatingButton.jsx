@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Button, Dropdown, DropdownButton, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaHandPaper } from 'react-icons/fa';
-import TowerSelectionModal from './MapsComponents/TowerSelectionModal'
+import TowerSelectionModal from './MapsComponents/TowerSelectionModal';
 import MarkerConfigModal from './MapsComponents/MarkerConfigModal';
-import MarkerManager from './MapsComponents/MarkerManager'
+import MarkerManager from './MapsComponents/MarkerManager';
+import ImportTowersModal from '../Components/TowersComponents/TowerImportModal';
 
 const FloatingButton = ({map}) => {
   const [showTowerModal, setShowTowerModal] = useState(false);
   const [showMarkerConfigModal, setShowMarkerConfigModal] = useState(false);
   const [showManager, setShowManager] = useState(false);
+  const [towerImportModalShow, setTowerImportModalShow] = useState(false)
 
   const handleShowTowerModal = () => {
     setShowTowerModal(true);
@@ -33,6 +35,14 @@ const FloatingButton = ({map}) => {
     setShowManager(false);
   };
 
+  const handleShowImportTowerModal = () => {
+    setTowerImportModalShow(true);
+  };
+
+  const handleCloseImportTowerModal = () => {
+    setTowerImportModalShow(false);
+  };
+
   return (
     <div>
       <OverlayTrigger placement="right" overlay={<Tooltip id="tooltip">Menu de Opções</Tooltip>}>
@@ -48,6 +58,7 @@ const FloatingButton = ({map}) => {
         >
           <Dropdown.Item onClick={handleShowTowerModal}>Selecionar Torre</Dropdown.Item>
           <Dropdown.Item onClick={handleShowManager}>Configurar Marcador</Dropdown.Item>
+          <Dropdown.Item onClick={handleShowImportTowerModal}>Importar Estruturas</Dropdown.Item>
         </DropdownButton>
       </OverlayTrigger>
 
@@ -55,6 +66,8 @@ const FloatingButton = ({map}) => {
       <TowerSelectionModal rMap={map} show={showTowerModal} onClose={handleCloseModals} />
       {/* <MarkerConfigModal show={showMarkerConfigModal} onHide={handleCloseModals} onSave={() => {}} /> */}
       <MarkerManager show={showManager} onHide={handleCloseManager}/>
+      {/* Renderize os modais condicionalmente com base nos estados showTowerModal e showMarkerConfigModal */}
+      <ImportTowersModal show={towerImportModalShow} onHide={handleCloseImportTowerModal} />
     </div>
   );
 };

@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MapsController;
+use App\Http\Controllers\MarkerConfigController;
+use App\Http\Controllers\TowerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,3 +25,12 @@ Route::get('/get-coordinates', [MapsController::class, 'getCoordinates']);
 Route::get('/get-towerimages/{tower}', [MapsController::class, 'getImagesFromTower']);
 Route::get('/get-towerproduction/{tower}/{project}', [MapsController::class, 'getTowerProduction']);
 Route::post('/upload-images', [MapsController::class, 'uploadGaleryImages']);
+
+
+Route::resource('markers', MarkerConfigController::class);
+
+Route::post('towers/import', [TowerController::class, 'ImportTowersFromExcelFile']);
+
+Route::get('/get-import-progress', function () {
+    return response()->json(['percentCompleted' => Cache::get('import-progress', 0)]);
+});
