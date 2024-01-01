@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use App\Helpers\Production;
 use App\Models\Tower;
+use App\Models\TowerActivity;
+use Carbon\Carbon;
 
 class MapsController extends Controller
 {
@@ -56,7 +58,7 @@ class MapsController extends Controller
                     'project' => $markerData['ProjectName'],
                 ],
                 'draggable' => true,
-                'icon' => 'latest',
+                'config_icon' => Production::getLatestTowerActivityWithIcon($changedTowerId, $markerData['ProjectName'])
             ];
         }
 
@@ -100,38 +102,30 @@ class MapsController extends Controller
 
     public function getTowerProduction($tower, $project)
     {
-        $jsonFilePointList = storage_path('app/production.json');
-        if (File::exists($jsonFilePointList)) {
+        $tower = str_replace('_', '/', $tower);
 
-            $listOfTowerProds = json_decode(File::get($jsonFilePointList), true);
+        $towerActivities = TowerActivity::where('Number', $tower)
+            ->where('ProjectName', $project)
+            ->get();
 
-            $tower = str_replace('_', '/', $tower);
+        $returnItem = [];
 
-            foreach ($listOfTowerProds as $prod) {
+        foreach ($towerActivities as $key => $item) {
 
-                if($prod['Number'] == $tower && $prod['ProjectName'] == $project){
+            $carbonDate = $item->ConclusionDate;
 
-                    $returnItem = [];
-                    $itemId = 0;
-
-                    foreach ($prod as $key => $value) {
-                        if($itemId > 1){
-                            $returnItem[$itemId-2] = [
-                                'activitie' => $key,
-                                'date' => $value
-                            ];
-                        }
-
-                        $itemId++;
-                    }
-
-                    // $item = array_splice($prod, 2, count($prod));
-                    return response()->json($returnItem);
-                }
-
+            if($carbonDate != null){
+                $carbonDate = Carbon::parse($item->ConclusionDate);
+                $carbonDate = $carbonDate->format('d/m/y');
             }
-            return response()->json([]);
+
+            $returnItem[$key] = [
+                'activitie' => $item->Activitie,
+                'date' => $carbonDate
+            ];
         }
+
+        return response()->json($returnItem);
     }
 
     public function uploadGaleryImages(Request $request)

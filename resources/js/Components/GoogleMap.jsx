@@ -5,12 +5,17 @@ import MarkerModal from '../Components/GoogleMapMarkerModal';
 import TowerSelectButton from './MapsComponents/TowerSelectButton';
 import FloatingButton from './FloatingButton';
 import { ProgressBar } from 'react-bootstrap'; // Import ProgressBar from react-bootstrap
+import 'bootstrap/dist/css/bootstrap.min.css';
+import UtmConverter from './Converters/UtmConverter';
 
 const GoogleMap = () => {
   const [markerData, setMarkerData] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [map, setMap] = useState(null);
   const [loading, setLoading] = useState(true); // Set initial loading state to true
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [actualCoordinate, setActualCoordinate] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     loadGoogleMapScript();
@@ -46,14 +51,58 @@ const GoogleMap = () => {
 
     // Add markers based on fetched data
     markerData.forEach((markerInfo, index) => {
-      const marker = new window.google.maps.Marker({
+
+    const defaultIcon = '';
+
+    const icon = {
+        // Verifica se markerInfo.config_icon e markerInfo.config_icon.icon existem
+        // Se não existirem, utiliza o ícone padrão do Google Maps
+        url: markerInfo.config_icon && markerInfo.config_icon.icon ? markerInfo.config_icon.icon : defaultIcon,
+        scaledSize: new google.maps.Size(40, 40), // Define as dimensões do ícone
+        labelOrigin: new google.maps.Point(82,20),
+        labelAnchor: new google.maps.Point(82, 20),
+    };
+
+    const label = {
+        text: markerInfo.label.text,
+        color: 'black',
+        fontSize: '12px',
+        fontWeight: 'bold',
+        labelOrigin: new google.maps.Point(82, 20),
+        labelAnchor: new google.maps.Point(82, 20),
+    };
+
+
+    const marker = new window.google.maps.Marker({
         position: markerInfo.position,
-        label: markerInfo.label,
+        label: label,
         draggable: markerInfo.draggable,
         map: map,
         title: markerInfo.label.text,
-        icon:''
-      });
+        icon: icon.url == '' ? '' : icon
+    });
+
+    // Adiciona um InfoWindow vazio ao marcador
+        const infowindow = new google.maps.InfoWindow();
+
+        // Adiciona ouvinte de evento para exibir o InfoWindow no mouseover
+        marker.addListener('mouseover', function () {
+            // Obtém a última atividade realizada
+
+            // Verifica se markerInfo.config_icon.activitie existe antes de atribuir
+            const atividadeInfo = markerInfo.config_icon.activitie ? `<br><b>Última Atividade:</b> ${markerInfo.config_icon.activitie}` : '';
+
+            // Atualiza o conteúdo do InfoWindow com as informações formatadas
+            infowindow.setContent(`<b>Torre:</b> ${markerInfo.label.text}${atividadeInfo}`);
+
+            // Abre o InfoWindow
+            infowindow.open(map, marker);
+        });
+
+        // Adiciona ouvinte de evento para fechar o InfoWindow no mouseout
+        marker.addListener('mouseout', function () {
+            infowindow.close();
+        });
 
       // Add a listener for dragend event
       marker.addListener('dragend', () => {
@@ -64,7 +113,38 @@ const GoogleMap = () => {
       marker.addListener('click', () => {
         onMarkerClick(markerInfo);
       });
+
+
+      let tooltip = null;
+
+      map.addListener('mousemove', (event) => {
+        const mouseX = event.pixel.x;
+        const mouseY = event.pixel.y;
+
+        // Update Coordinate
+        // const coordinates = convertLatLongToUTM(event.latLng.lat(), event.latLng.lng());
+        // console.log(coordinates);
+        const result = UtmConverter.convertLatLngToUtm(parseFloat(event.latLng.lat()), parseFloat(event.latLng.lng()));
+        // console.log(result)
+        setActualCoordinate({ x: result.easting.toFixed(2), y: result.northing.toFixed(2) });
+
+        // Update tooltip position
+        setTooltipPosition({ x: mouseX + 10, y: mouseY - 20 });
+
+        // Show tooltip
+        setTooltipVisible(true);
+
+        // Clear previous timer
+        clearTimeout(map.tooltipTimer);
+
+        // Set timer to hide tooltip after 5 seconds
+        map.tooltipTimer = setTimeout(() => {
+          setTooltipVisible(false);
+        }, 5000);
+      });
+
     });
+
 
     // Create a polyline based on marker positions
     const polylinePath = markerData.map((markerInfo) => markerInfo.position);
@@ -127,6 +207,25 @@ const GoogleMap = () => {
     <div>
       {loading && <ProgressBar now={100} animated label="Loading Map..." />} {/* Display progress bar while loading */}
       <div id="map" style={{ height: '100vh', width: '100%' }} />
+
+      {tooltipVisible && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${tooltipPosition.x}px`,
+            top: `${tooltipPosition.y}px`,
+            background: 'white',
+            padding: '5px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            boxShadow: '0 0 5px rgba(0, 0, 0, 0.2)',
+            zIndex: '1000',
+          }}
+        >
+          Coordinates: {actualCoordinate.x}, {actualCoordinate.y}
+        </div>
+      )}
+
 
       <MarkerModal markerInfo={selectedMarker} onClose={handleCloseModal} />
       <FloatingButton map={map} />

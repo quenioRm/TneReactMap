@@ -57,8 +57,8 @@ const FloatingButton = ({map}) => {
           id="dropdown-menu"
         >
           <Dropdown.Item onClick={handleShowTowerModal}>Selecionar Torre</Dropdown.Item>
-          <Dropdown.Item onClick={handleShowManager}>Configurar Marcador</Dropdown.Item>
-          <Dropdown.Item onClick={handleShowImportTowerModal}>Importar Estruturas</Dropdown.Item>
+          <Dropdown.Item onClick={handleShowManager}>Configurar Marcador - Atividade</Dropdown.Item>
+          <Dropdown.Item onClick={handleShowImportTowerModal}>Importar Estruturas/Produção</Dropdown.Item>
         </DropdownButton>
       </OverlayTrigger>
 

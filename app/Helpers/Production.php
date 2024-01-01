@@ -2,6 +2,10 @@
 
 namespace App\Helpers;
 use Illuminate\Support\Facades\File;
+use Carbon\Carbon;
+use App\Models\Marker;
+use App\Models\TowerActivity;
+use Illuminate\Support\Facades\Storage;
 
 class Production{
 
@@ -37,4 +41,45 @@ class Production{
 
         return ['latest_date' => null];
     }
+
+    public static function getLatestTowerActivityWithIcon($tower, $project)
+{
+    $tower = str_replace('_', '/', $tower);
+
+    // Obtenha a última atividade com data não nula
+    $latestActivity = TowerActivity::where('Number', $tower)
+        ->where('ProjectName', $project)
+        ->whereNotNull('ConclusionDate')
+        ->orderBy('ConclusionDate', 'asc')
+        ->get();
+
+    $returnItem = [];
+
+    foreach ($latestActivity as $key => $item) {
+
+        $icon = Marker::where('atividade', $item->Activitie)->value('icone');
+
+        $carbonDate = Carbon::parse($item->ConclusionDate)->format('d/m/y');
+
+        $iconUrl = ($icon !== null) ? asset(Storage::url($icon)) : asset('assets/images/marcador-de-localizacao.png');
+
+        if($item->ConclusionDate !== null){
+            $returnItem = [
+                'activitie' => $item->Activitie,
+                'date' => $carbonDate,
+                'icon' =>  $iconUrl
+            ];
+        }
+    }
+
+    if(empty($returnItem)){
+        $returnItem = [
+            'activitie' => null,
+            'date' => null,
+            'icon' =>  asset('assets/images/marcador-de-localizacao.png')
+        ];
+    }
+
+    return $returnItem;
+}
 }
