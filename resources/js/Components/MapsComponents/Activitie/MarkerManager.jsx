@@ -3,7 +3,7 @@ import { Modal, Button, Container, Row, Col } from 'react-bootstrap';
 import MarkerConfigModal from './MarkerConfigModal';
 import MarkerList from './MarkerList';
 import { ToastContainer, toast } from 'react-toastify';
-import TowerImportModal from '../TowersComponents/TowerImportModal'
+import TowerImportModal from '../../TowersComponents/TowerImportModal'
 import 'react-toastify/dist/ReactToastify.css';
 
 const MarkerManager = ({ show, onHide }) => {
@@ -37,10 +37,11 @@ const MarkerManager = ({ show, onHide }) => {
     setConfigModalShow(false);
   };
 
-  const handleSaveMarker = async ({ atividade, icone }) => {
+  const handleSaveMarker = async ({ atividade, icone, unidade }) => {
       try {
         const formData = new FormData();
         formData.append('atividade', atividade);
+        formData.append('unidade', unidade);
         formData.append('icone', icone);
 
         const response = await fetch('/api/markers', {
@@ -65,11 +66,12 @@ const MarkerManager = ({ show, onHide }) => {
       }
   };
 
-  const handleUpdateMarker = async ({ id, atividade, icone }) => {
+  const handleUpdateMarker = async ({ id, atividade, icone, unidade }) => {
     try {
       const formData = new FormData();
       formData.append('_method', 'PUT'); // Indica que estamos utilizando o método PUT
       formData.append('atividade', atividade);
+      formData.append('unidade', unidade);
 
       // Se um novo ícone for fornecido, adicione-o ao FormData
       if (icone instanceof File) {

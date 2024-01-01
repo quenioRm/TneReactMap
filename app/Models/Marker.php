@@ -14,6 +14,7 @@ class Marker extends Model
     protected $dates = ['created_at','updated_at'];
     protected $fillable = [
         'atividade',
+        'unidade',
         'icone',
     ];
 

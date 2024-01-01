@@ -59,7 +59,9 @@ const ImportTowersModal = ({ show, onHide }) => {
                 await handleImportTowers(formData);
             } finally {
                 setImporting(false); // Set the importing state to false after the import is completed
-                window.location.reload();
+                setTimeout(() => {
+                    window.location.reload();
+                },8000)
             }
         }
     };

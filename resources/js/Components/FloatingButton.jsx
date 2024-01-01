@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Button, Dropdown, DropdownButton, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaHandPaper } from 'react-icons/fa';
 import TowerSelectionModal from './MapsComponents/TowerSelectionModal';
-import MarkerConfigModal from './MapsComponents/MarkerConfigModal';
-import MarkerManager from './MapsComponents/MarkerManager';
+import MarkerConfigModal from './MapsComponents/Activitie/MarkerConfigModal';
+import MarkerManager from './MapsComponents/Activitie/MarkerManager';
 import ImportTowersModal from '../Components/TowersComponents/TowerImportModal';
 
 const FloatingButton = ({map}) => {

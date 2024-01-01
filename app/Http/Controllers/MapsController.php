@@ -58,7 +58,10 @@ class MapsController extends Controller
                     'project' => $markerData['ProjectName'],
                 ],
                 'draggable' => true,
-                'config_icon' => Production::getLatestTowerActivityWithIcon($changedTowerId, $markerData['ProjectName'])
+                'config_icon' => Production::getLatestTowerActivityWithIcon($changedTowerId, $markerData['ProjectName']),
+                'Impediments' => [],
+                'SolicitationDate' => $markerData['SolicitationDate'],
+                'ReceiveDate' => $markerData['ReceiveDate']
             ];
         }
 

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Dropdown } from 'react-bootstrap';
-import ImageUploadButton from '../ImageUploadButton';
+import ImageUploadButton from '../../ImageUploadButton';
 
-const MarkerConfigModal = ({ show, onHide,onSave, onUpdate, editedMarker}) => {
+const MarkerConfigImpedimentModal = ({ show, onHide,onSave, onUpdate, editedMarker}) => {
   const [id, setAtividadeId] = useState('');
   const [atividade, setAtividade] = useState('');
   const [icone, setIcone] = useState('');
@@ -111,4 +111,4 @@ const MarkerConfigModal = ({ show, onHide,onSave, onUpdate, editedMarker}) => {
   );
 };
 
-export default MarkerConfigModal;
+export default MarkerConfigImpedimentModal;

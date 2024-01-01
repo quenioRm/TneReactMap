@@ -25,6 +25,7 @@ const MarkerList = ({ markers, onEdit, onDelete }) => {
         <thead>
           <tr>
             <th>Atividade</th>
+            <th>Unidade</th>
             <th>Ícone</th>
             <th>Ações</th>
           </tr>
@@ -34,6 +35,7 @@ const MarkerList = ({ markers, onEdit, onDelete }) => {
             <tr key={index}>
               <td>{marker.atividade}</td>
               {/* Use an <img> tag to display the icon with a resolution of 30x30 */}
+              <td>{marker.unidade}</td>
               <td>
                 <img src={'storage/' + marker.icone} alt={marker.atividade} width={30} height={30} />
               </td>

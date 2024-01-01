@@ -21,6 +21,7 @@ class MarkerConfigController extends Controller
             // Validação dos campos
             $request->validate([
                 'atividade' => 'required|string|max:255|unique:markerconfig,atividade',
+                'unidade' => 'required|string|max:255',
                 'icone' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Adapte conforme necessário
             ]);
 
@@ -33,6 +34,7 @@ class MarkerConfigController extends Controller
             // Crie o marcador com os dados do request e o caminho do ícone
             $marker = Marker::create([
                 'atividade' => $request->input('atividade'),
+                'unidade' => $request->input('unidade'),
                 'icone' => $iconePath
             ]);
 
@@ -60,6 +62,7 @@ class MarkerConfigController extends Controller
                     'max:255',
                     Rule::unique('markerconfig')->ignore($id),
                 ],
+                'unidade' => 'required|string|max:255',
                 'icone' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
@@ -68,6 +71,7 @@ class MarkerConfigController extends Controller
 
             // Atualize a atividade, se fornecida
             $marker->atividade = $request->input('atividade');
+            $marker->unidade = $request->input('unidade');
 
             // Se um novo ícone for fornecido, salve-o
             if ($request->hasFile('icone')) {

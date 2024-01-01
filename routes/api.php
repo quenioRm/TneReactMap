@@ -31,6 +31,3 @@ Route::resource('markers', MarkerConfigController::class);
 
 Route::post('towers/import', [TowerController::class, 'ImportTowersFromExcelFile']);
 
-Route::get('/get-import-progress', function () {
-    return response()->json(['percentCompleted' => Cache::get('import-progress', 0)]);
-});
