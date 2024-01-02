@@ -25,4 +25,26 @@ class Tower extends Model
         'Zone',
     ];
 
+    public static function GetDistance($project, $number)
+    {
+        return self::where('ProjectName', $project)->where('Number', $number)->value('Distance');
+    }
+
+    public static function GetUniqueProjects()
+    {
+        $towers = self::get();
+
+        $projects = [];
+
+        foreach ($towers as $tower) {
+            $projectName = $tower->ProjectName;
+
+            // Verifica se o nome do projeto já está na lista
+            if (!in_array($projectName, $projects)) {
+                $projects[] = $projectName;
+            }
+        }
+
+        return $projects;
+    }
 }

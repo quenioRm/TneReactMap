@@ -107,7 +107,7 @@
                 }
 
                 let receiveStatusInfo = '';
-                receiveStatusInfo = '<br><b>Solicitação de Compra:</b>';
+                receiveStatusInfo = '<br><b>Solicitação de Compra Estrutura:</b>';
 
                 if(markerInfo.SolicitationDate !== '')
                     receiveStatusInfo += `<br>- Solicitado em: ${markerInfo.SolicitationDate}`;

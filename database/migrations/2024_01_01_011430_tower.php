@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('ProjectName');
             $table->string('Number');
             $table->string('Name');
-            $table->string('Distance');
+            $table->decimal('Distance', 18, 5)->nullable()->default(0);
             $table->string('SolicitationDate')->nullable();
             $table->string('ReceiveDate')->nullable();
             $table->string('CoordinateX');

@@ -46,24 +46,25 @@ class MapsController extends Controller
                 $impediments = TowerImpediment::GetImpediments($markerData['ProjectName'], $markerData['Number']);
 
                 // Receive Status
-                $receiveStatus = 'Dentro do prazo';
-                $solicitationDate = ($markerData['SolicitationDate'] == '') ? '' : Carbon::parse($markerData['SolicitationDate'])->addDays(120);
+                $receiveStatus = '';
+                $solicitationDate = ($markerData['SolicitationDate'] == '') ? '' : Carbon::parse($markerData['SolicitationDate']);
+                $previousReceiveDate = ($markerData['SolicitationDate'] == '') ? '' : Carbon::parse($markerData['SolicitationDate'])->addDays(120);
                 $receiveDate = ($markerData['ReceiveDate'] == '') ? '' : Carbon::parse($markerData['ReceiveDate']);
 
                 if ($solicitationDate == '')
                     $receiveStatus = 'Á Solicitar';
 
-                if ($solicitationDate < now() && $solicitationDate != '')
-                    $receiveStatus = 'Atrasado';
-
-                if ($receiveDate != '' && $receiveDate < $solicitationDate && $solicitationDate != '')
+                if ($receiveDate != '' && $receiveDate < $previousReceiveDate && $previousReceiveDate != '')
                     $receiveStatus = 'Chegou dentro do prazo';
 
-                if ($receiveDate != '' && $receiveDate > $solicitationDate && $solicitationDate != '')
+                if ($receiveDate != '' && $receiveDate > $previousReceiveDate && $previousReceiveDate != '')
                     $receiveStatus = 'Chegou fora do prazo';
 
-                if ($receiveDate == '' && $solicitationDate < now() && $solicitationDate != '')
-                    $receiveStatus = 'Chegou fora do prazo';
+                if ($receiveDate == '' && $solicitationDate < $previousReceiveDate && $solicitationDate != '')
+                    $receiveStatus = 'Aguardando Recebimento';
+
+                if ($receiveDate == '' && $solicitationDate > $previousReceiveDate && $solicitationDate != '')
+                    $receiveStatus = 'Atrasado';
                 ///////////
 
                 $markers[] = [

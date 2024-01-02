@@ -6,6 +6,7 @@ use App\Http\Controllers\MapsController;
 use App\Http\Controllers\MarkerConfigController;
 use App\Http\Controllers\MarkerConfigImpedimentController;
 use App\Http\Controllers\TowerController;
+use App\Http\Controllers\ProductionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,3 +36,7 @@ Route::resource('markersimpediments', MarkerConfigImpedimentController::class);
 Route::post('towers/import', [TowerController::class, 'ImportTowersFromExcelFile']);
 
 Route::post('towers/importimpediments', [TowerController::class, 'ImportTowersImpedimentsFromExcelFile']);
+
+Route::get('towers/getuniqueprojects', [TowerController::class, 'GetUniqueProjects']);
+
+Route::get('production/getproductionrelOne/{project?}', [ProductionController::class, 'getLatestProduction']);

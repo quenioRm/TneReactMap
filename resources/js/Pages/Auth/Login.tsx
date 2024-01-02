@@ -100,6 +100,11 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                     </PrimaryButton>
                 </div>
             </form>
+
+            <br />
+            <strong>Criado e desenvolvido por Quenio Roger</strong>
+
         </GuestLayout>
+
     );
 }

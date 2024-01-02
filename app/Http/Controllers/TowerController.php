@@ -123,4 +123,9 @@ class TowerController extends Controller
 
         return response()->json(['message' => 'Towers Impediments imported successfully']);
     }
+
+    public function GetUniqueProjects()
+    {
+        return response()->json(Tower::GetUniqueProjects());
+    }
 }

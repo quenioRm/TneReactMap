@@ -35,6 +35,8 @@ const ImportTowersModal = ({ show, onHide }) => {
     };
 
     const handleImport = async () => {
+        clearInterval(progressTimer);
+
         if (file) {
             const formData = new FormData();
             formData.append('file', file);
@@ -66,12 +68,12 @@ const ImportTowersModal = ({ show, onHide }) => {
         }
     };
 
-    useEffect(() => {
-        return () => {
-            // Cleanup function to clear the interval in case the component unmounts
-            clearInterval(progressTimer);
-        };
-    }, []);
+    // useEffect(() => {
+    //     return () => {
+    //         // Cleanup function to clear the interval in case the component unmounts
+    //         clearInterval(progressTimer);
+    //     };
+    // }, []);
 
     return (
         <Modal show={show} onHide={onHide}>
