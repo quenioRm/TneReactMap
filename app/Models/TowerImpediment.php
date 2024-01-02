@@ -9,7 +9,7 @@ class TowerImpediment extends Model
 {
     use HasFactory;
 
-    protected $table = 'towerimpediment';
+    protected $table = 'tower_impediments';
     protected $primaryKey = 'id';
     protected $dates = ['created_at','updated_at', 'StatusDate'];
     protected $fillable = [
@@ -19,4 +19,15 @@ class TowerImpediment extends Model
         'Status',
         'StatusDate'
     ];
+
+    public static function GetImpediments($projectName, $number)
+    {
+        return self::where('ProjectName', $projectName)->where('Number', $number)->get();
+    }
+
+    public function markerConfigImpediment()
+    {
+        return $this->hasOne(MarkerConfigImpediment::class, 'ImpedimentType', 'ImpedimentType');
+    }
+
 }

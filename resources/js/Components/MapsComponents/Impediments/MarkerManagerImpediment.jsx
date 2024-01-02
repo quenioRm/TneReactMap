@@ -36,12 +36,13 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
     setConfigModalShow(false);
   };
 
-  const handleSaveMarker = async ({ impedimentType, status, icon }) => {
+  const handleSaveMarker = async ({ impedimentType, status, icon, isBlocked }) => {
     try {
       const formData = new FormData();
       formData.append('ImpedimentType', impedimentType);
       formData.append('Status', status);
       formData.append('Icon', icon);
+      formData.append('IsBlocked', isBlocked);
 
       const response = await axios.post('/api/markersimpediments', formData);
 
@@ -57,12 +58,13 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
     }
   };
 
-  const handleUpdateMarker = async ({ id, impedimentType, status, icon }) => {
+  const handleUpdateMarker = async ({ id, impedimentType, status, icon, isBlocked }) => {
     try {
       const formData = new FormData();
       formData.append('_method', 'PUT'); // Indica que estamos utilizando o método PUT
       formData.append('ImpedimentType', impedimentType);
       formData.append('Status', status);
+      formData.append('IsBlocked', isBlocked);
 
       // Se um novo ícone for fornecido, adicione-o ao FormData
       if (icon instanceof File) {

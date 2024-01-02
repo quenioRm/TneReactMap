@@ -18,12 +18,21 @@ class MarkerConfigController extends Controller
     public function store(Request $request)
     {
         try {
+
             // Validação dos campos
-            $request->validate([
+            $validator = Validator::make($request->all(), [
                 'atividade' => 'required|string|max:255|unique:markerconfig,atividade',
                 'unidade' => 'required|string|max:255',
-                'icone' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Adapte conforme necessário
+                'icone' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ], [], [
+                'atividade' =>  'atividade',
+                'unidade' => 'unidade',
+                'icone' => 'icone',
             ]);
+
+            if(!$validator->passes()){
+                return response()->json(['error' => $validator->errors()], 404);
+            }
 
             // Obtenha o arquivo de ícone do request
             $icone = $request->file('icone');
@@ -55,7 +64,7 @@ class MarkerConfigController extends Controller
     {
         try {
             // Validação dos campos
-            $request->validate([
+            $validator = Validator::make($request->all(), [
                 'atividade' => [
                     'required',
                     'string',
@@ -64,7 +73,15 @@ class MarkerConfigController extends Controller
                 ],
                 'unidade' => 'required|string|max:255',
                 'icone' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ], [], [
+                'atividade' =>  'atividade',
+                'unidade' => 'unidade',
+                'icone' => 'icone',
             ]);
+
+            if(!$validator->passes()){
+                return response()->json(['error' => $validator->errors()], 404);
+            }
 
             // Obtenha o marcador pelo ID
             $marker = Marker::findOrFail((int)$id);

@@ -24,4 +24,5 @@ class Tower extends Model
         'CoordinateZ',
         'Zone',
     ];
+
 }

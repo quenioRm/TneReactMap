@@ -5,6 +5,7 @@ const MarkerConfigImpedimentModal = ({ show, onHide, onSave, onUpdate, editedMar
   const [id, setImpedimentId] = useState('');
   const [impedimentType, setImpedimentType] = useState('');
   const [status, setStatus] = useState('');
+  const [isBlocked, setIsBlocked] = useState('');
   const [icon, setIcon] = useState('');
 
   useEffect(() => {
@@ -13,19 +14,21 @@ const MarkerConfigImpedimentModal = ({ show, onHide, onSave, onUpdate, editedMar
         setImpedimentType(editedMarker.ImpedimentType || '');
         setStatus(editedMarker.Status || '');
         setIcon(editedMarker.Icon || '');
+        setIsBlocked(editedMarker.IsBlocked || '');
     } else {
         setImpedimentId('');
         setImpedimentType('');
         setStatus('');
         setIcon('');
+        setIsBlocked(0);
     }
   }, [editedMarker, show]);
 
   const handleSave = () => {
     if (editedMarker) {
-      onUpdate({ id, impedimentType, status, icon });
+      onUpdate({ id, impedimentType, status, icon, isBlocked });
     } else {
-      onSave({ impedimentType, status, icon });
+      onSave({ impedimentType, status, icon, isBlocked });
     }
     onHide();
   };
@@ -82,6 +85,9 @@ const MarkerConfigImpedimentModal = ({ show, onHide, onSave, onUpdate, editedMar
                 <Dropdown.Item onClick={() => setStatus('Sitio Arqueologico')}>
                     Sitio Arqueologico
                 </Dropdown.Item>
+                <Dropdown.Item onClick={() => setStatus('Não Liberrado')}>
+                    Não Liberrado
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </Form.Group>
@@ -96,6 +102,24 @@ const MarkerConfigImpedimentModal = ({ show, onHide, onSave, onUpdate, editedMar
                 />
             </Form.Group>
 
+
+            <Form.Group controlId="formIsBlocked">
+            <Form.Label>Impede atividades na estrutura?</Form.Label>
+            <Dropdown>
+              <Dropdown.Toggle variant="success" id="dropdown-unidade">
+                {isBlocked ? isBlocked : 'Selecione'}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => setIsBlocked('Não')}>
+                    Não
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => setIsBlocked('Sim')}>
+                    Sim
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </Form.Group>
 
 
         </Form>

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Rap2hpoutre\FastExcel\FastExcel;
 use App\Helpers\Functions;
 use App\Models\TowerActivity;
+use App\Models\TowerImpediment;
 use Carbon\Carbon;
 use DateTimeImmutable;
 
@@ -66,10 +67,6 @@ class TowerController extends Controller
 
             $itemId = 0;
 
-            // if($row['ProjectName'] == 'LT 500 kV EQUADOR - BOA VISTA-T3A' && $row['Number'] == '119/1'){
-            //     dd($row);
-            // }
-
             foreach ($row as $key => $value) {
                 if($itemId > 1){
 
@@ -103,5 +100,27 @@ class TowerController extends Controller
         }
 
         return response()->json(['message' => 'Towers imported successfully']);
+    }
+
+
+    public function ImportTowersImpedimentsFromExcelFile(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls|max:10240',
+        ]);
+
+        $file = $request->file('file');
+
+        // Use FastExcel to read the Excel file
+        $worksheet3Data = (new FastExcel)->sheet(3)->import($file->getRealPath());
+
+        DB::table('tower_impediments')->truncate();
+
+        // Perform necessary processing with the data from the second worksheet
+        foreach ($worksheet3Data as $row) {
+            TowerImpediment::create($row);
+        }
+
+        return response()->json(['message' => 'Towers Impediments imported successfully']);
     }
 }

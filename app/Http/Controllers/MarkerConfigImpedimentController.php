@@ -6,6 +6,7 @@ use App\Models\MarkerConfigImpediment;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class MarkerConfigImpedimentController extends Controller
 {
@@ -20,9 +21,26 @@ class MarkerConfigImpedimentController extends Controller
         try {
             // Validation of fields
             $request->validate([
-                'ImpedimentType' => 'required|string|max:255|unique:markerconfigimpediment,ImpedimentType',
+                'ImpedimentType' => 'required|string|max:255',
                 'Status' => 'required|string|max:255',
-                'Icon' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Adapt as needed
+                'Icon' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'IsBlocked' => 'required',
+            ]);
+
+            $validator = Validator::make($request->all(), [
+                'ImpedimentType' => [
+                    'required',
+                    'string',
+                    'max:255',
+                ],
+                'Status' => 'required|string|max:255',
+                'Icon' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'IsBlocked' =>'required|string|max:255',
+            ], [], [
+                'ImpedimentType' =>  'ImpedimentType',
+                'Status' => 'Status',
+                'Icon' => 'Icon',
+                'IsBlocked' => 'IsBlocked'
             ]);
 
             // Get the icon file from the request
@@ -36,6 +54,7 @@ class MarkerConfigImpedimentController extends Controller
                 'ImpedimentType' => $request->input('ImpedimentType'),
                 'Status' => $request->input('Status'),
                 'Icon' => $iconPath,
+                'IsBlocked' => $request->input('IsBlocked'),
             ]);
 
             return response()->json($marker, 201);
@@ -55,16 +74,26 @@ class MarkerConfigImpedimentController extends Controller
     {
         try {
             // Validation of fields
-            $request->validate([
+            $validator = Validator::make($request->all(), [
                 'ImpedimentType' => [
                     'required',
                     'string',
                     'max:255',
-                    Rule::unique('markerconfigimpediment')->ignore($id),
                 ],
                 'Status' => 'required|string|max:255',
                 'Icon' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'IsBlocked' =>'required|string|max:255',
+            ], [], [
+                'ImpedimentType' =>  'ImpedimentType',
+                'Status' => 'Status',
+                'Icon' => 'Icon',
+                'IsBlocked' => 'IsBlocked'
             ]);
+
+            if(!$validator->passes()){
+                return response()->json(['error' => $validator->errors()], 404);
+            }
+
 
             // Get the marker by ID
             $marker = MarkerConfigImpediment::findOrFail((int)$id);
@@ -72,6 +101,7 @@ class MarkerConfigImpedimentController extends Controller
             // Update the ImpedimentType and Status, if provided
             $marker->ImpedimentType = $request->input('ImpedimentType');
             $marker->Status = $request->input('Status');
+            $marker->IsBlocked = $request->input('IsBlocked');
 
             // If a new icon is provided, save it
             if ($request->hasFile('Icon')) {

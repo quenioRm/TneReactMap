@@ -28,6 +28,7 @@ const MarkerListImpediment = ({ markers, onEdit, onDelete }) => {
             <th>ImpedimentType</th>
             <th>Status</th>
             <th>Icon</th>
+            <th>Paralisa?</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -40,6 +41,7 @@ const MarkerListImpediment = ({ markers, onEdit, onDelete }) => {
               <td>
                 <img src={'storage/' + marker.Icon} alt={marker.ImpedimentType} width={30} height={30} />
               </td>
+              <td>{marker.IsBlocked}</td>
               <td>
                 <Button variant="info" className="mr-2" onClick={() => onEdit(marker)}>
                   Edit

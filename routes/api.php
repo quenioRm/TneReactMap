@@ -34,3 +34,4 @@ Route::resource('markersimpediments', MarkerConfigImpedimentController::class);
 
 Route::post('towers/import', [TowerController::class, 'ImportTowersFromExcelFile']);
 
+Route::post('towers/importimpediments', [TowerController::class, 'ImportTowersImpedimentsFromExcelFile']);

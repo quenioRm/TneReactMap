@@ -10,7 +10,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
   const [towerImages, setTowerImages] = useState([]);
   const [towerProduction, setTowerProduction] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('coordinates');
+  const [activeTab, setActiveTab] = useState('info');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5); // Adjust the number of items per page as needed
 
@@ -82,19 +82,76 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
         {markerInfo ? (
           <div>
             <Tabs activeKey={activeTab} onSelect={handleTabSelect}>
-              <Tab eventKey="coordinates" title="Coordenadas">
+              <Tab eventKey="info" title="Info">
+                <br />
+                <h5>Dados da Estrutura</h5>
                 <Table striped bordered hover>
-                  <tbody>
-                    <tr>
-                      <td><strong>X</strong></td>
-                      <td>{markerInfo.position.utmx}</td>
-                    </tr>
-                    <tr>
-                      <td><strong>Y</strong></td>
-                      <td>{markerInfo.position.utmy}</td>
-                    </tr>
-                  </tbody>
-                </Table>
+                    <thead>
+                      <tr>
+                        <th>LT - Trecho</th>
+                        <th>Número</th>
+                        <th>Nome</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                          <td>{markerInfo.label.project}</td>
+                          <td>{markerInfo.label.oringalNumber}</td>
+                          <td>{markerInfo.label.originalName}</td>
+                        </tr>
+                    </tbody>
+                  </Table>
+                  <h5>Impedimentos</h5>
+                    <Table striped bordered hover>
+                        <thead>
+                        <tr>
+                            <th>Tipo de Impedimento</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {markerInfo.Impediments.map((impediment, index) => (
+                            <tr key={index}>
+                            <td>{impediment.ImpedimentType}</td>
+                            <td>{impediment.Status}</td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </Table>
+                    <h5>Recebimento</h5>
+                    <Table striped bordered hover>
+                        <thead>
+                        <tr>
+                            <th>Data Solicitação</th>
+                            <th>Data Recebimento</th>
+                            <th>Data Prevista Recebimento Fornecedor</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{markerInfo.SolicitationDate}</td>
+                            <td>{markerInfo.ReceiveDate}</td>
+                            <td>{markerInfo.PreviousReceiveDate}</td>
+                            <td>{markerInfo.ReceiveStatus}</td>
+                            </tr>
+                        </tbody>
+                    </Table>
+                <h5>Posição da Estrutura</h5>
+                <Table striped bordered hover>
+                    <thead>
+                      <tr>
+                        <th>X</th>
+                        <th>Y</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                          <td>{markerInfo.position.utmx}</td>
+                          <td>{markerInfo.position.utmy}</td>
+                        </tr>
+                    </tbody>
+                  </Table>
               </Tab>
               <Tab eventKey="gallery" title="Galeria">
                 {loading ? (

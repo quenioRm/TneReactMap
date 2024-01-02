@@ -4,6 +4,7 @@ import { FaHandPaper } from 'react-icons/fa';
 import TowerSelectionModal from './MapsComponents/TowerSelectionModal';
 import MarkerManager from './MapsComponents/Activitie/MarkerManager';
 import ImportTowersModal from '../Components/TowersComponents/TowerImportModal';
+import ImportImpedimentsModal from '../Components/TowersComponents/ImpedimentImportModal';
 import MarkerManagerImpediment from '../Components/MapsComponents/Impediments/MarkerManagerImpediment';
 
 const FloatingButton = ({map}) => {
@@ -11,6 +12,7 @@ const FloatingButton = ({map}) => {
   const [showMarkerConfigModal, setShowMarkerConfigModal] = useState(false);
   const [showManager, setShowManager] = useState(false);
   const [towerImportModalShow, setTowerImportModalShow] = useState(false)
+  const [towerImpedimentImportModalShow, setImpedimentTowerImportModalShow] = useState(false)
   const [showManagerImpediment, setShowManagerImpediment] = useState(false)
 
   const handleShowTowerModal = () => {
@@ -49,6 +51,14 @@ const FloatingButton = ({map}) => {
     setTowerImportModalShow(false);
   };
 
+  const handleShowImportImpedimentTowerModal = () => {
+    setImpedimentTowerImportModalShow(true);
+  };
+
+  const handleCloseImportImpedimentTowerModal = () => {
+    setImpedimentTowerImportModalShow(false);
+  };
+
   return (
     <div>
       <OverlayTrigger placement="right" overlay={<Tooltip id="tooltip">Menu de Opções</Tooltip>}>
@@ -66,6 +76,7 @@ const FloatingButton = ({map}) => {
           <Dropdown.Item onClick={handleShowManager}>Configurar Marcador - Atividade</Dropdown.Item>
           <Dropdown.Item onClick={handleShowManageImpediment}>Configurar Marcador - Impedimento</Dropdown.Item>
           <Dropdown.Item onClick={handleShowImportTowerModal}>Importar Estruturas/Produção</Dropdown.Item>
+          <Dropdown.Item onClick={handleShowImportImpedimentTowerModal}>Importar Impedimentos Estruturas</Dropdown.Item>
         </DropdownButton>
       </OverlayTrigger>
 
@@ -77,6 +88,8 @@ const FloatingButton = ({map}) => {
       <ImportTowersModal show={towerImportModalShow} onHide={handleCloseImportTowerModal} />
       {/*  */}
       <MarkerManagerImpediment show={showManagerImpediment} onHide={handleCloseManagerImpediment}/>
+      {/*  */}
+      <ImportImpedimentsModal show={towerImpedimentImportModalShow} onHide={handleCloseImportImpedimentTowerModal} />
     </div>
   );
 };

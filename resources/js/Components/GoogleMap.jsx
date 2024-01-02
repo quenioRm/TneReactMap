@@ -31,7 +31,7 @@
     useEffect(() => {
         setTimeout(() => {
             setLoading(false);
-        }, 10000);
+        }, 20000);
     }, [map, markerData])
 
     const initMap = () => {
@@ -54,14 +54,20 @@
 
         const defaultIcon = '';
 
+        const impedimentIcon = {
+            url: markerInfo.impediment_icon && markerInfo.impediment_icon.icon ? markerInfo.impediment_icon.icon : defaultIcon,
+            scaledSize: new google.maps.Size(40, 40),
+            labelOrigin: new google.maps.Point(82,20),
+            labelAnchor: new google.maps.Point(82, 20),
+        }
+
         const icon = {
-            // Verifica se markerInfo.config_icon e markerInfo.config_icon.icon existem
-            // Se não existirem, utiliza o ícone padrão do Google Maps
             url: markerInfo.config_icon && markerInfo.config_icon.icon ? markerInfo.config_icon.icon : defaultIcon,
-            scaledSize: new google.maps.Size(40, 40), // Define as dimensões do ícone
+            scaledSize: new google.maps.Size(40, 40),
             labelOrigin: new google.maps.Point(82,20),
             labelAnchor: new google.maps.Point(82, 20),
         };
+
 
         const label = {
             text: markerInfo.label.text,
@@ -79,7 +85,7 @@
             draggable: markerInfo.draggable,
             map: map,
             title: markerInfo.label.text,
-            icon: icon.url == '' ? '' : icon
+            icon: (impedimentIcon.url !== '') ? impedimentIcon : icon.url == '' ? '' : icon
         });
 
         // Adiciona um InfoWindow vazio ao marcador
@@ -221,7 +227,7 @@
                 zIndex: '1000',
             }}
             >
-            Coordinates: {actualCoordinate.x}, {actualCoordinate.y}
+            Coordenadas: {actualCoordinate.x}, {actualCoordinate.y}
             </div>
         )}
 

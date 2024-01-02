@@ -10,6 +10,8 @@ use Illuminate\Validation\Rule;
 use App\Helpers\Production;
 use App\Models\Tower;
 use App\Models\TowerActivity;
+use App\Models\TowerImpediment;
+use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 use App\Models\Marker;
 
@@ -17,54 +19,85 @@ class MapsController extends Controller
 {
     public function getCoordinates()
     {
-        $initialMarkers;
+        // Use o Cache para armazenar e recuperar os dados
+        $initialMarkers = Cache::remember('coordinates_data', 60, function () {
+            $markers = [];
+            $listOfMarkers = Tower::get();
 
-        $listOfMarkers = Tower::get();
+            foreach ($listOfMarkers as $markerData) {
+                $x = (float)$markerData['CoordinateX'];
+                $y = (float)$markerData['CoordinateY'];
+                $zone = (float)$markerData['Zone'];
 
-        foreach ($listOfMarkers as $markerData) {
+                $latlng = null;
 
-            $x = (float)$markerData['CoordinateX'];
-            $y = (float)$markerData['CoordinateY'];
-            $zone = (float)$markerData['Zone'];
+                if ($zone < 0) {
+                    $latlng = CoordinateHelper::utm2ll($x, $y, $zone * -1, false);
+                }
 
-            $latlng = null;
+                if ($zone > 0) {
+                    $latlng = CoordinateHelper::utm2ll($x, $y, $zone * 1, true);
+                }
 
-            if($zone < 0){
-                $latlng = CoordinateHelper::utm2ll($x,$y,$zone * -1,false);
+                $newCoordinates = json_decode($latlng, true);
+
+                $changedTowerId = str_replace('/', '_', $markerData['Number']);
+
+                $impediments = TowerImpediment::GetImpediments($markerData['ProjectName'], $markerData['Number']);
+
+                // Receive Status
+                $receiveStatus = 'Dentro do prazo';
+                $solicitationDate = ($markerData['SolicitationDate'] == '') ? '' : Carbon::parse($markerData['SolicitationDate'])->addDays(120);
+                $receiveDate = ($markerData['ReceiveDate'] == '') ? '' : Carbon::parse($markerData['ReceiveDate']);
+
+                if ($solicitationDate == '')
+                    $receiveStatus = 'Á Solicitar';
+
+                if ($solicitationDate < now() && $solicitationDate != '')
+                    $receiveStatus = 'Atrasado';
+
+                if ($receiveDate != '' && $receiveDate < $solicitationDate && $solicitationDate != '')
+                    $receiveStatus = 'Chegou dentro do prazo';
+
+                if ($receiveDate != '' && $receiveDate > $solicitationDate && $solicitationDate != '')
+                    $receiveStatus = 'Chegou fora do prazo';
+
+                if ($receiveDate == '' && $solicitationDate < now() && $solicitationDate != '')
+                    $receiveStatus = 'Chegou fora do prazo';
+                ///////////
+
+                $markers[] = [
+                    'name' => $markerData['Number'] . " - " . $markerData['ProjectName'],
+                    'position' => [
+                        'lat' => $newCoordinates['attr']['lat'],
+                        'lng' => $newCoordinates['attr']['lon'],
+                        'utmx' => $markerData['CoordinateX'],
+                        'utmy' => $markerData['CoordinateY']
+                    ],
+                    'label' => [
+                        'color' =>'blue',
+                        'text' => $markerData['Number'] . " - " . $markerData['Name'],
+                        'towerId' => $changedTowerId,
+                        'project' => $markerData['ProjectName'],
+                        'oringalNumber' => $markerData['Number'],
+                        'originalName' => $markerData['Name']
+                    ],
+                    'draggable' => true,
+                    'config_icon' => Production::getLatestTowerActivityWithIcon($changedTowerId, $markerData['ProjectName']),
+                    'impediment_icon' => Production::GetIconFromLatestImpediment($impediments),
+                    'Impediments' => $impediments,
+                    'SolicitationDate' => ($markerData['SolicitationDate'] == '') ? '' :
+                        Carbon::parse($markerData['SolicitationDate'])->format('d-m-y') ,
+                    'ReceiveDate' => ($markerData['ReceiveDate'] == '') ? '' :
+                        Carbon::parse($markerData['ReceiveDate'])->format('d-m-y'),
+                    'PreviousReceiveDate' => ($markerData['SolicitationDate'] == '') ? '' :
+                        Carbon::parse($markerData['SolicitationDate'])->addDays(120)->format('d-m-y'),
+                    'ReceiveStatus' => $receiveStatus
+                ];
             }
 
-            if($zone > 0){
-                $latlng = CoordinateHelper::utm2ll($x,$y,$zone * 1,true);
-            }
-
-            $newCoordinates = json_decode($latlng, true);
-
-            $changedTowerId = str_replace('/', '_', $markerData['Number']);
-
-            // $result = Production::getLatestTowerProductionDate($changedTowerId, $markerData['ProjectName']);
-            // dd($result);
-
-            $initialMarkers[] = [
-                'name' => $markerData['Number'] . " - " . $markerData['ProjectName'],
-                'position' => [
-                    'lat' => $newCoordinates['attr']['lat'],
-                    'lng' => $newCoordinates['attr']['lon'],
-                    'utmx' => $markerData['CoordinateX'],
-                    'utmy' => $markerData['CoordinateY']
-                ],
-                'label' => [
-                    'color' =>'blue',
-                    'text' => $markerData['Number'] . " - " . $markerData['Name'],
-                    'towerId' => $changedTowerId,
-                    'project' => $markerData['ProjectName'],
-                ],
-                'draggable' => true,
-                'config_icon' => Production::getLatestTowerActivityWithIcon($changedTowerId, $markerData['ProjectName']),
-                'Impediments' => [],
-                'SolicitationDate' => $markerData['SolicitationDate'],
-                'ReceiveDate' => $markerData['ReceiveDate']
-            ];
-        }
+            return $markers;
+        });
 
         return response()->json($initialMarkers);
     }

@@ -16,5 +16,11 @@ class MarkerConfigImpediment extends Model
         'ImpedimentType',
         'Status',
         'Icon',
+        'IsBlocked',
     ];
+
+    public function towerImpediment()
+    {
+        return $this->belongsTo(TowerImpediment::class, 'ImpedimentType', 'ImpedimentType');
+    }
 }

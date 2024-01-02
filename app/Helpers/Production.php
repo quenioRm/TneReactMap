@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Marker;
 use App\Models\TowerActivity;
 use Illuminate\Support\Facades\Storage;
+use App\Models\MarkerConfigImpediment;
 
 class Production{
 
@@ -43,43 +44,72 @@ class Production{
     }
 
     public static function getLatestTowerActivityWithIcon($tower, $project)
-{
-    $tower = str_replace('_', '/', $tower);
+    {
+        $tower = str_replace('_', '/', $tower);
 
-    // Obtenha a última atividade com data não nula
-    $latestActivity = TowerActivity::where('Number', $tower)
-        ->where('ProjectName', $project)
-        ->whereNotNull('ConclusionDate')
-        ->orderBy('ConclusionDate', 'asc')
-        ->get();
+        // Obtenha a última atividade com data não nula
+        $latestActivity = TowerActivity::where('Number', $tower)
+            ->where('ProjectName', $project)
+            ->whereNotNull('ConclusionDate')
+            ->orderBy('ConclusionDate', 'asc')
+            ->get();
 
-    $returnItem = [];
+        $returnItem = [];
 
-    foreach ($latestActivity as $key => $item) {
+        foreach ($latestActivity as $key => $item) {
 
-        $icon = Marker::where('atividade', $item->Activitie)->value('icone');
+            $icon = Marker::where('atividade', $item->Activitie)->value('icone');
 
-        $carbonDate = Carbon::parse($item->ConclusionDate)->format('d/m/y');
+            $carbonDate = Carbon::parse($item->ConclusionDate)->format('d/m/y');
 
-        $iconUrl = ($icon !== null) ? asset(Storage::url($icon)) : asset('assets/images/marcador-de-localizacao.png');
+            $iconUrl = ($icon !== null) ? asset(Storage::url($icon)) : asset('assets/images/marcador-de-localizacao.png');
 
-        if($item->ConclusionDate !== null){
+            if($item->ConclusionDate !== null){
+                $returnItem = [
+                    'activitie' => $item->Activitie,
+                    'date' => $carbonDate,
+                    'icon' =>  $iconUrl
+                ];
+            }
+        }
+
+        if(empty($returnItem)){
             $returnItem = [
-                'activitie' => $item->Activitie,
-                'date' => $carbonDate,
-                'icon' =>  $iconUrl
+                'activitie' => null,
+                'date' => null,
+                'icon' =>  asset('assets/images/marcador-de-localizacao.png')
             ];
         }
+
+        return $returnItem;
     }
 
-    if(empty($returnItem)){
-        $returnItem = [
-            'activitie' => null,
-            'date' => null,
-            'icon' =>  asset('assets/images/marcador-de-localizacao.png')
-        ];
-    }
+    public static function GetIconFromLatestImpediment($impediments)
+    {
+        $returnItem = null;
 
-    return $returnItem;
-}
+        foreach ($impediments->toArray() as $impediment) {
+
+            $impedimentType = MarkerConfigImpediment::where('ImpedimentType', $impediment['ImpedimentType'])
+            ->where('Status', $impediment['Status'])->first();
+
+            // dd($impediment, $impedimentType->toArray());
+
+            if($impedimentType == null)
+                return $returnItem;
+
+            $iconUrl = ($impedimentType->Icon !== null) ? asset(Storage::url($impedimentType->Icon)) :
+            asset('assets/images/marcador-de-localizacao.png');
+
+            if($impedimentType->IsBlocked == "Sim"){
+                return $returnItem = [
+                    'impedimentType' => $impedimentType->ImpedimentType,
+                    'status' => $impedimentType->Status,
+                    'icon' =>  trim($iconUrl)
+                ];
+            }
+        }
+
+        return $returnItem;
+    }
 }

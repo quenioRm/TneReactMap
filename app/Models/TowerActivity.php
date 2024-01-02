@@ -13,4 +13,10 @@ class TowerActivity extends Model
     protected $primaryKey = 'id';
     protected $dates = ['created_at','updated_at'];
     protected $fillable = ['ProjectName', 'Number', 'Activitie', 'ConclusionDate'];
+
+    public function tower()
+    {
+        return $this->belongsTo(Tower::class, 'ProjectName', 'ProjectName')
+                    ->where('Number', $this->Number);
+    }
 }
