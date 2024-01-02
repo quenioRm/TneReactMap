@@ -95,12 +95,33 @@
             // Adiciona ouvinte de evento para exibir o InfoWindow no mouseover
             marker.addListener('mouseover', function () {
                 // Obtém a última atividade realizada
+                const lastActivity = markerInfo.config_icon.activitie ? `<br><b>Última Atividade:</b> ${markerInfo.config_icon.activitie}` : '';
 
-                // Verifica se markerInfo.config_icon.activitie existe antes de atribuir
-                const atividadeInfo = markerInfo.config_icon.activitie ? `<br><b>Última Atividade:</b> ${markerInfo.config_icon.activitie}` : '';
+                // Verifica se há impedimentos e constrói o conteúdo
+                let impedimentosInfo = '';
+                if (markerInfo.Impediments && markerInfo.Impediments.length > 0) {
+                    impedimentosInfo = '<br><b>Impedimentos:</b>';
+                    markerInfo.Impediments.forEach(impedimento => {
+                        impedimentosInfo += `<br>- ${impedimento.ImpedimentType + ': ' + impedimento.Status}`; // Altere para o campo correto do seu objeto impedimento
+                    });
+                }
+
+                let receiveStatusInfo = '';
+                receiveStatusInfo = '<br><b>Solicitação de Compra:</b>';
+
+                if(markerInfo.SolicitationDate !== '')
+                    receiveStatusInfo += `<br>- Solicitado em: ${markerInfo.SolicitationDate}`;
+
+                if(markerInfo.ReceiveDate !== '')
+                    receiveStatusInfo += `<br>- Recebida em: ${markerInfo.ReceiveDate}`;
+
+                if(markerInfo.PreviousReceiveDate !== '')
+                    receiveStatusInfo += `<br>- Previsão de entrega: ${markerInfo.PreviousReceiveDate}`;
+
+                receiveStatusInfo += `<br>- Status: ${markerInfo.ReceiveStatus}`;
 
                 // Atualiza o conteúdo do InfoWindow com as informações formatadas
-                infowindow.setContent(`<b>Torre:</b> ${markerInfo.label.text}${atividadeInfo}`);
+                infowindow.setContent(`<b>Torre:</b> ${markerInfo.label.text}${lastActivity}${impedimentosInfo}${receiveStatusInfo}`);
 
                 // Abre o InfoWindow
                 infowindow.open(map, marker);
