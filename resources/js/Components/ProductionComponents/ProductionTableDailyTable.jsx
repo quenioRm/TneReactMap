@@ -1,62 +1,85 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Container, Row, Col, Table, Spinner, Form } from "react-bootstrap";
+import { Container, Row, Col, Table, Spinner, Form, Button } from "react-bootstrap";
+import moment from 'moment';
 
 const ProductionTableDailyTable = () => {
+    const today = new Date().toISOString().split('T')[0];
+    const sevenDaysAgo = new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().split('T')[0];
+
     const [productionData, setProductionData] = useState([]);
     const [selectedProject, setSelectedProject] = useState("");
-    const [startDate, setStartDate] = useState("");
-    const [finishDate, setFinishDate] = useState("");
+    const [startDate, setStartDate] = useState(sevenDaysAgo);
+    const [finishDate, setFinishDate] = useState(today);
     const [isLoading, setIsLoading] = useState(false);
     const [uniqueProjects, setUniqueProjects] = useState([]);
+    const [visibleTables, setVisibleTables] = useState({});
 
     const handleProjectChange = (e) => {
         setSelectedProject(e.target.value);
     };
 
+    const fetchProductionData = async () => {
+        if (startDate && finishDate) {
+            setIsLoading(true);
+            try {
+                const endpoint = selectedProject
+                    ? `/api/production/getperiodProduction/${startDate}/${finishDate}/${selectedProject}`
+                    : `/api/production/getperiodProduction/${startDate}/${finishDate}/`;
+                const response = await axios.get(endpoint);
+                setProductionData(response.data);
+            } catch (error) {
+                console.error("Error fetching production data:", error);
+            }
+            setIsLoading(false);
+        }
+    };
+
+    const toggleVisibility = (index) => {
+        setVisibleTables({
+            ...visibleTables,
+            [index]: !visibleTables[index]
+        });
+    };
+
+    const calculateSum = (dailyProduction) => {
+        return Object.values(dailyProduction).reduce((sum, num) => sum + parseFloat(num), 0);
+    };
+
+    const calculateAverage = (dailyProduction) => {
+        let sum = 0;
+        let count = 0;
+        Object.entries(dailyProduction).forEach(([date, executed]) => {
+            if (new Date(date).getDay() !== 0) {
+                sum += parseFloat(executed);
+                count++;
+            }
+        });
+        return count > 0 ? (sum / count).toFixed(2) : 0;
+    };
+
+    const getDayOfWeek = (date) => {
+        const dayOfWeek = new Date(date).getDay();
+        return isNaN(dayOfWeek) ? '' : ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][dayOfWeek];
+    };
+
     useEffect(() => {
-        setIsLoading(true); // Activate loading state
+        setIsLoading(true);
         const fetchProjects = async () => {
             try {
-                const response = await axios.get(
-                    "/api/towers/getuniqueprojects",
-                ); // Your provided API endpoint
-                setUniqueProjects(response.data); // Update uniqueProjects state
+                const response = await axios.get('/api/towers/getuniqueprojects');
+                setUniqueProjects(response.data);
             } catch (error) {
                 console.error("Error fetching unique projects:", error);
             }
-            setIsLoading(false); // Deactivate loading state
+            setIsLoading(false);
         };
-
         fetchProjects();
     }, []);
 
-    useEffect(() => {
-        if (startDate && finishDate) {
-            setIsLoading(true);
-            const fetchData = async () => {
-                try {
-                    const endpoint = selectedProject
-                        ? `/api/production/getperiodProduction/${startDate}/${finishDate}/${selectedProject}`
-                        : `/api/production/getperiodProduction/${startDate}/${finishDate}/`;
-                    const response = await axios.get(endpoint);
-                    setProductionData(response.data);
-                } catch (error) {
-                    console.error("Error fetching production data:", error);
-                }
-                setIsLoading(false);
-            };
-
-            fetchData();
-        }
-    }, [selectedProject, startDate, finishDate]);
-
     if (isLoading) {
         return (
-            <div
-                className="d-flex justify-content-center align-items-center"
-                style={{ minHeight: "100vh" }}
-            >
+            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
                 <Spinner animation="border" />
             </div>
         );
@@ -64,93 +87,85 @@ const ProductionTableDailyTable = () => {
 
     return (
         <Container fluid>
-            <Row className="mb-3">
+            <br />
+            <Row className="mb-3 align-items-end">
                 {/* Project Dropdown */}
-                <Col md={4}>
+                <Col md={3}>
                     <Form.Group controlId="projectDropdown">
                         <Form.Label>Selecione o Projeto:</Form.Label>
-                        <Form.Control
-                            as="select"
-                            onChange={handleProjectChange}
-                            value={selectedProject}
-                        >
+                        <Form.Control as="select" onChange={handleProjectChange} value={selectedProject}>
                             <option value="">Todos os Projetos</option>
                             {uniqueProjects.map((project) => (
-                                <option key={project} value={project}>
-                                    {project}
-                                </option>
+                                <option key={project} value={project}>{project}</option>
                             ))}
                         </Form.Control>
                     </Form.Group>
                 </Col>
-
                 {/* Start Date Input */}
-                <Col md={4}>
+                <Col md={3}>
                     <Form.Group controlId="startDate">
                         <Form.Label>Data Inicial</Form.Label>
-                        <Form.Control
-                            type="date"
-                            required
-                            onChange={(e) => setStartDate(e.target.value)}
-                        />
+                        <Form.Control type="date" required value={startDate} onChange={(e) => setStartDate(e.target.value)} />
                     </Form.Group>
                 </Col>
-
                 {/* Finish Date Input */}
-                <Col md={4}>
+                <Col md={3}>
                     <Form.Group controlId="finishDate">
                         <Form.Label>Data Final</Form.Label>
-                        <Form.Control
-                            type="date"
-                            required
-                            onChange={(e) => setFinishDate(e.target.value)}
-                        />
+                        <Form.Control type="date" required value={finishDate} onChange={(e) => setFinishDate(e.target.value)} />
                     </Form.Group>
+                </Col>
+                {/* Generate Report Button */}
+                <Col md={3}>
+                    <Button onClick={fetchProductionData} variant="primary">Gerar Relatório</Button>
                 </Col>
             </Row>
 
             {productionData.map((activity, index) => (
-                <Row
-                    key={index}
-                    className="mb-3 p-3"
-                    style={{ borderBottom: "2px solid #eee" }}
-                >
+                <Row key={index} className="mb-3 p-3" style={{ borderBottom: "2px solid #eee" }}>
                     <Col md={12}>
-                        <h2>
-                            {activity.activitie} ({activity.unity})
-                        </h2>
+                        <h2>{activity.activitie} ({activity.unity})</h2>
                     </Col>
                     <Col md={2}>
-                        <img
-                            src={activity.icon}
-                            alt={activity.activitie}
-                            style={{ width: "50px", height: "50px" }}
-                        />
+                        <img src={`storage/${activity.icon}`} alt={activity.activitie} style={{ width: "50px", height: "50px" }} />
                     </Col>
                     <Col md={10}>
-                        <p>Previous: {activity.previous}</p>
-                        <p>Executed: {activity.executed}</p>
-                        <p>No Executed: {activity.noExecuted}</p>
-                        <p>AVC Percent: {activity.avcPercent}</p>
+                        <p>Previsto: {activity.previous}</p>
+                        <p>Realizado: {activity.executed}</p>
+                        <p>À Executar: {activity.noExecuted}</p>
+                        <p>% Avanço: {activity.avcPercent}</p>
                     </Col>
                     <Col md={12}>
-                        <h3>Daily Production:</h3>
+                        <h3>Produção Diária:</h3>
+                        <Button onClick={() => toggleVisibility(index)} variant="secondary" style={{ marginBottom: "10px" }}>
+                            {visibleTables[index] ? 'Ocultar' : 'Mostrar'}
+                        </Button>
                         <Table striped bordered hover>
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Executed</th>
+                                    <th>Dia da Semana</th>
+                                    <th>Data</th>
+                                    <th>Qtd Realizada Dia</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {Object.entries(activity.dailyProduction).map(
-                                    ([date, executed], subindex) => (
+                                {Object.entries(activity.dailyProduction).map(([date, executed], subindex) => (
+                                    visibleTables[index] && (
                                         <tr key={subindex}>
-                                            <td>{date}</td>
-                                            <td>{executed}</td>
+                                            <td>{getDayOfWeek(date)}</td>
+                                            <td>{moment(date).format('DD-MM-YYYY')}</td>
+                                            <td>{executed !== 0 ? executed : ''}</td>
                                         </tr>
-                                    ),
-                                )}
+                                    )
+                                ))}
+                                <tr>
+                                    <td colSpan="2"><strong>Total</strong></td>
+                                    <td><strong>{calculateSum(activity.dailyProduction).toFixed(2)}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td colSpan="2"><strong>Produtividade Média</strong></td>
+                                    <td><strong>{calculateAverage(activity.dailyProduction)}</strong></td>
+                                </tr>
                             </tbody>
                         </Table>
                     </Col>
