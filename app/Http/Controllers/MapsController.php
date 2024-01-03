@@ -60,10 +60,14 @@ class MapsController extends Controller
                 if ($receiveDate != '' && $receiveDate > $previousReceiveDate && $previousReceiveDate != '')
                     $receiveStatus = 'Chegou fora do prazo';
 
-                if ($receiveDate == '' && $solicitationDate < $previousReceiveDate && $solicitationDate != '')
+                if ($receiveDate == '' && $solicitationDate < $previousReceiveDate && $previousReceiveDate > Carbon::now()
+                && $solicitationDate != '')
                     $receiveStatus = 'Aguardando Recebimento';
 
                 if ($receiveDate == '' && $solicitationDate > $previousReceiveDate && $solicitationDate != '')
+                    $receiveStatus = 'Atrasado';
+
+                if ($previousReceiveDate != '' && $receiveStatus == '' && $previousReceiveDate < Carbon::now())
                     $receiveStatus = 'Atrasado';
                 ///////////
 
