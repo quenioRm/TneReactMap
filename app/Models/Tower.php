@@ -36,12 +36,28 @@ class Tower extends Model
 
         $projects = [];
 
-        foreach ($towers as $tower) {
+        $item = 1;
+
+        foreach ($towers as $key => $tower) {
             $projectName = $tower->ProjectName;
 
             // Verifica se o nome do projeto já está na lista
-            if (!in_array($projectName, $projects)) {
-                $projects[] = $projectName;
+            $projectExists = false;
+            foreach ($projects as $project) {
+                if ($project['name'] === $projectName) {
+                    $projectExists = true;
+                    break;
+                }
+            }
+
+            // Se o nome do projeto não existe na lista, adiciona-o
+            if (!$projectExists) {
+                $projects[] = [
+                    'name' => $projectName,
+                    'id' => $item
+                ];
+
+                $item++;
             }
         }
 

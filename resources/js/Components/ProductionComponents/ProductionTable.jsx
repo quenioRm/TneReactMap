@@ -39,6 +39,7 @@ const ProductionTable = () => {
                     "/api/towers/getuniqueprojects",
                 );
                 setUniqueProjects(response.data);
+                console.log(response.data);
             } catch (error) {
                 console.error("Error fetching unique projects:", error);
             }
@@ -161,8 +162,11 @@ const ProductionTable = () => {
                             >
                                 <option value="">Todos os Projetos</option>
                                 {uniqueProjects.map((project) => (
-                                    <option key={project} value={project}>
-                                        {project}
+                                    <option
+                                        key={project.id}
+                                        value={project.name}
+                                    >
+                                        {project.name}
                                     </option>
                                 ))}
                             </Form.Control>

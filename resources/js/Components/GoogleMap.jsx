@@ -188,7 +188,7 @@ const GoogleMap = () => {
                 });
 
                 // Update tooltip position
-                setTooltipPosition({ x: mouseX + 10, y: mouseY - 20 });
+                setTooltipPosition({ x: mouseX + 180, y: mouseY - 30 });
 
                 // Show tooltip
                 setTooltipVisible(true);

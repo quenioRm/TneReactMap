@@ -1,7 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { PageProps } from "@/types";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import {
     Modal,
     Table,
@@ -19,7 +19,7 @@ import ProductionTableDailyTable from "../Components/ProductionComponents/Produc
 export default function Production({ auth }: PageProps) {
     const [activeTab, setActiveTab] = useState("info");
 
-    const handleTabSelect = (tab) => {
+    const handleTabSelect = (tab: SetStateAction<string>) => {
         setActiveTab(tab);
     };
 

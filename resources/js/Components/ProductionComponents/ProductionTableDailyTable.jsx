@@ -20,13 +20,32 @@ const ProductionTableDailyTable = () => {
         .split("T")[0];
 
     const [productionData, setProductionData] = useState([]);
-    const [selectedProject, setSelectedProject] = useState("");
-    const [startDate, setStartDate] = useState(sevenDaysAgo);
-    const [finishDate, setFinishDate] = useState(today);
+    const [selectedProject, setSelectedProject] = useState(
+        localStorage.getItem("selectedProject") || "",
+    );
+    const [startDate, setStartDate] = useState(
+        localStorage.getItem("startDate") || sevenDaysAgo,
+    );
+    const [finishDate, setFinishDate] = useState(
+        localStorage.getItem("finishDate") || today,
+    );
+
     const [isLoading, setIsLoading] = useState(false);
     const [uniqueProjects, setUniqueProjects] = useState([]);
     const [visibleTables, setVisibleTables] = useState({});
     const [showModal, setShowModal] = useState(false);
+
+    useEffect(() => {
+        localStorage.setItem("selectedProject", selectedProject);
+    }, [selectedProject]);
+
+    useEffect(() => {
+        localStorage.setItem("startDate", startDate);
+    }, [startDate]);
+
+    useEffect(() => {
+        localStorage.setItem("finishDate", finishDate);
+    }, [finishDate]);
 
     const toggleModal = () => {
         setShowModal(!showModal);
@@ -144,8 +163,8 @@ const ProductionTableDailyTable = () => {
                         >
                             <option value="">Todos os Projetos</option>
                             {uniqueProjects.map((project) => (
-                                <option key={project} value={project}>
-                                    {project}
+                                <option key={project.id} value={project.name}>
+                                    {project.name}
                                 </option>
                             ))}
                         </Form.Control>

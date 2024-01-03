@@ -14,20 +14,49 @@ import {
 import moment from "moment";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Select from "react-select";
+import ProductionTableLineChart from "./ProductionTableLineChart";
 
 const ProductionTableDailyChart = ({ uniqueProjects }) => {
     const [chartData, setChartData] = useState([]);
     const [activities, setActivities] = useState([]);
-    const [selectedProject, setSelectedProject] = useState("");
-    const [selectedActivity, setSelectedActivity] = useState("");
-    const [startDate, setStartDate] = useState(
-        moment().subtract(7, "days").format("YYYY-MM-DD"),
+    const [selectedProjects, setSelectedProjects] = useState(
+        JSON.parse(localStorage.getItem("selectedProjects")) || [],
     );
-    const [finishDate, setFinishDate] = useState(moment().format("YYYY-MM-DD"));
+    const [selectedActivity, setSelectedActivity] = useState(
+        localStorage.getItem("selectedActivity") || "",
+    );
+    const [startDate, setStartDate] = useState(
+        localStorage.getItem("startDate") ||
+            moment().subtract(7, "days").format("YYYY-MM-DD"),
+    );
+    const [finishDate, setFinishDate] = useState(
+        localStorage.getItem("finishDate") || moment().format("YYYY-MM-DD"),
+    );
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleProjectChange = (e) => {
-        setSelectedProject(e.target.value);
+    useEffect(() => {
+        localStorage.setItem(
+            "selectedProjects",
+            JSON.stringify(selectedProjects),
+        );
+    }, [selectedProjects]);
+
+    useEffect(() => {
+        localStorage.setItem("selectedActivity", selectedActivity);
+    }, [selectedActivity]);
+
+    useEffect(() => {
+        localStorage.setItem("startDate", startDate);
+    }, [startDate]);
+
+    useEffect(() => {
+        localStorage.setItem("finishDate", finishDate);
+    }, [finishDate]);
+
+    const handleProjectChange = (selectedOptions) => {
+        console.log(selectedOptions);
+        setSelectedProjects(selectedOptions.map((option) => option.value)); // Extrair os valores dos objetos selecionados
     };
 
     const handleActivityChange = (e) => {
@@ -45,34 +74,65 @@ const ProductionTableDailyChart = ({ uniqueProjects }) => {
     const fetchChartData = async () => {
         setIsLoading(true);
 
-        if (selectedProject === '') {
-            // Exibe uma notificação de erro se o projeto ou a atividade estiverem em branco.
-            toast.error("O campo Projeto é obrigatório.");
+        if (selectedProjects.length === 0) {
+            toast.error("Os campo projeto é obrigatório.");
             setIsLoading(false);
             return;
         }
 
-        if (selectedActivity === '') {
-            // Exibe uma notificação de erro se o projeto ou a atividade estiverem em branco.
-            toast.error("O campo Atividade é obrigatório.");
+        if (selectedActivity === "") {
+            toast.error("Os campo atividade é obrigatório.");
             setIsLoading(false);
             return;
         }
 
         try {
-            const endpoint = selectedProject
-                ? `/api/production/getperiodProduction/${startDate}/${finishDate}/${selectedProject}`
-                : `/api/production/getperiodProduction/${startDate}/${finishDate}/`;
-            const response = await axios.get(endpoint);
-            const processedData = processActivityData(response.data);
-            setChartData(processedData);
+            const promises = selectedProjects.map(async (project) => {
+                const endpoint = project
+                    ? `/api/production/getperiodProduction/${startDate}/${finishDate}/${project.name}`
+                    : `/api/production/getperiodProduction/${startDate}/${finishDate}/`;
+                const response = await axios.get(endpoint);
+                const processedData = processActivityData(
+                    response.data,
+                    project,
+                );
+                return processedData;
+            });
+
+            const chartData = await Promise.all(promises);
+
+            const combinedChartData = chartData.reduce((result, data) => {
+                data.forEach((entry) => {
+                    if (entry.project) {
+                        // Check if entry.project exists
+                        const existingEntry = result.find(
+                            (item) => item.date === entry.date,
+                        );
+                        if (existingEntry) {
+                            existingEntry["P" + entry.project.id] =
+                                entry.accumulatedValue;
+                        } else {
+                            const newEntry = {
+                                date: entry.date,
+                                ["P" + entry.project.id]:
+                                    entry.accumulatedValue,
+                                name: entry.name,
+                            };
+                            result.push(newEntry);
+                        }
+                    }
+                });
+                return result;
+            }, []);
+
+            setChartData(combinedChartData);
         } catch (error) {
             console.error("Error fetching chart data:", error);
         }
         setIsLoading(false);
     };
 
-    const processActivityData = (activities) => {
+    const processActivityData = (activities, project) => {
         let selectedActivityData = activities.find(
             (item) => item.activitie === selectedActivity,
         );
@@ -85,16 +145,17 @@ const ProductionTableDailyChart = ({ uniqueProjects }) => {
         }
 
         let accumulated = 0;
+
         const dailyProduction = selectedActivityData.dailyProduction;
         const processedData = Object.entries(dailyProduction)
-            .sort(([date1], [date2]) => new Date(date1) - new Date(date2)) // Sort by date
+            .sort(([date1], [date2]) => new Date(date1) - new Date(date2))
             .map(([date, quantity]) => {
-                quantity = Number(quantity); // Convert the quantity to a number
-                accumulated += isNaN(quantity) ? 0 : quantity; // Accumulate the quantity
+                quantity = Number(quantity);
+                accumulated += isNaN(quantity) ? 0 : quantity;
                 return {
                     date: moment(date).format("DD-MM-YYYY"),
-                    dailyQuantity: isNaN(quantity) ? 0 : quantity, // Use 0 if it's not a number
-                    accumulatedValue: accumulated,
+                    ["P" + project.id]: accumulated,
+                    name: project.name,
                 };
             });
 
@@ -110,6 +171,15 @@ const ProductionTableDailyChart = ({ uniqueProjects }) => {
         }
     };
 
+    const getRandomColor = () => {
+        const letters = "0123456789ABCDEF";
+        let color = "#";
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    };
+
     useEffect(() => {
         fetchActivities();
     }, []);
@@ -118,7 +188,7 @@ const ProductionTableDailyChart = ({ uniqueProjects }) => {
         if (selectedActivity) {
             fetchChartData();
         }
-    }, [selectedActivity]);
+    }, [selectedActivity, selectedProjects]);
 
     if (isLoading) {
         return (
@@ -138,21 +208,21 @@ const ProductionTableDailyChart = ({ uniqueProjects }) => {
     return (
         <>
             <Row className="mb-3 align-items-end">
-                <Col md={2}>
+                <Col md={5}>
                     <Form.Group controlId="projectDropdown">
                         <Form.Label>Selecione o Projeto:</Form.Label>
-                        <Form.Control
-                            as="select"
+                        <Select
+                            options={uniqueProjects.map((project) => ({
+                                value: project,
+                                label: project.name,
+                            }))}
+                            isMulti
                             onChange={handleProjectChange}
-                            value={selectedProject}
-                        >
-                            <option value="">Todos os Projetos</option>
-                            {uniqueProjects.map((project) => (
-                                <option key={project} value={project}>
-                                    {project}
-                                </option>
-                            ))}
-                        </Form.Control>
+                            value={selectedProjects.map((project) => ({
+                                value: project,
+                                label: project.name,
+                            }))}
+                        />
                     </Form.Group>
                 </Col>
                 <Col md={2}>
@@ -208,25 +278,38 @@ const ProductionTableDailyChart = ({ uniqueProjects }) => {
                 </Col>
             </Row>
 
-            {chartData ? (
-                <ResponsiveContainer width="100%" height={600}>
-                    <LineChart data={chartData}>
-                        <XAxis dataKey="date" style={{ fontSize: "8px" }} />
-                        <YAxis />
-                        <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-                        <Tooltip />
-                        <Legend />
-                        <Line
-                            type="monotone"
-                            dataKey="accumulatedValue"
-                            stroke="#82ca9d"
-                            name="Acumulado"
-                        />
-                    </LineChart>
-                </ResponsiveContainer>
-            ) : (
-                <></>
-            )}
+            <ProductionTableLineChart
+                chartData={chartData}
+                selectedProjects={selectedProjects}
+            />
+
+            {/* <div style={{ width: "100%", height: 600 }}>
+                {chartData && selectedProjects.length > 0 ? (
+                    <ResponsiveContainer>
+                        <LineChart data={chartData}>
+                            <XAxis dataKey="date" style={{ fontSize: "8px" }} />
+                            <YAxis />
+                            <CartesianGrid
+                                stroke="#eee"
+                                strokeDasharray="5 5"
+                            />
+                            <Tooltip />
+                            <Legend />
+                            {selectedProjects.map((project) => (
+                                <Line
+                                    key={project.id}
+                                    type="monotone"
+                                    dataKey={`P${project.id}`}
+                                    stroke={getRandomColor()}
+                                    name={project.name}
+                                />
+                            ))}
+                        </LineChart>
+                    </ResponsiveContainer>
+                ) : (
+                    <p>Carregando dados ou nenhum projeto selecionado...</p>
+                )}
+            </div> */}
             <ToastContainer />
         </>
     );
