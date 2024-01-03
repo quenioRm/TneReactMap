@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Container, Row, Col, Table, Spinner, Form, Button } from "react-bootstrap";
-import moment from 'moment';
+import {
+    Container,
+    Row,
+    Col,
+    Table,
+    Spinner,
+    Form,
+    Button,
+    Modal,
+} from "react-bootstrap";
+import moment from "moment";
+import ProductionTableDailyChart from "./ProductionTableDailyChart";
 
 const ProductionTableDailyTable = () => {
-    const today = new Date().toISOString().split('T')[0];
-    const sevenDaysAgo = new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().split('T')[0];
+    const today = new Date().toISOString().split("T")[0];
+    const sevenDaysAgo = new Date(new Date().setDate(new Date().getDate() - 7))
+        .toISOString()
+        .split("T")[0];
 
     const [productionData, setProductionData] = useState([]);
     const [selectedProject, setSelectedProject] = useState("");
@@ -14,6 +26,11 @@ const ProductionTableDailyTable = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [uniqueProjects, setUniqueProjects] = useState([]);
     const [visibleTables, setVisibleTables] = useState({});
+    const [showModal, setShowModal] = useState(false);
+
+    const toggleModal = () => {
+        setShowModal(!showModal);
+    };
 
     const handleProjectChange = (e) => {
         setSelectedProject(e.target.value);
@@ -38,12 +55,15 @@ const ProductionTableDailyTable = () => {
     const toggleVisibility = (index) => {
         setVisibleTables({
             ...visibleTables,
-            [index]: !visibleTables[index]
+            [index]: !visibleTables[index],
         });
     };
 
     const calculateSum = (dailyProduction) => {
-        return Object.values(dailyProduction).reduce((sum, num) => sum + parseFloat(num), 0);
+        return Object.values(dailyProduction).reduce(
+            (sum, num) => sum + parseFloat(num),
+            0,
+        );
     };
 
     const calculateAverage = (dailyProduction) => {
@@ -60,14 +80,26 @@ const ProductionTableDailyTable = () => {
 
     const getDayOfWeek = (date) => {
         const dayOfWeek = new Date(date).getDay();
-        return isNaN(dayOfWeek) ? '' : ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][dayOfWeek];
+        return isNaN(dayOfWeek)
+            ? ""
+            : [
+                  "Domingo",
+                  "Segunda",
+                  "Terça",
+                  "Quarta",
+                  "Quinta",
+                  "Sexta",
+                  "Sábado",
+              ][dayOfWeek];
     };
 
     useEffect(() => {
         setIsLoading(true);
         const fetchProjects = async () => {
             try {
-                const response = await axios.get('/api/towers/getuniqueprojects');
+                const response = await axios.get(
+                    "/api/towers/getuniqueprojects",
+                );
                 setUniqueProjects(response.data);
             } catch (error) {
                 console.error("Error fetching unique projects:", error);
@@ -79,7 +111,10 @@ const ProductionTableDailyTable = () => {
 
     if (isLoading) {
         return (
-            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
+            <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ minHeight: "100vh" }}
+            >
                 <Spinner animation="border" />
             </div>
         );
@@ -88,15 +123,30 @@ const ProductionTableDailyTable = () => {
     return (
         <Container fluid>
             <br />
+
+            <Row>
+                <Col>
+                    <Button variant="primary" onClick={toggleModal}>
+                        Mostrar Gráfico
+                    </Button>
+                </Col>
+            </Row>
+
             <Row className="mb-3 align-items-end">
                 {/* Project Dropdown */}
                 <Col md={3}>
                     <Form.Group controlId="projectDropdown">
                         <Form.Label>Selecione o Projeto:</Form.Label>
-                        <Form.Control as="select" onChange={handleProjectChange} value={selectedProject}>
+                        <Form.Control
+                            as="select"
+                            onChange={handleProjectChange}
+                            value={selectedProject}
+                        >
                             <option value="">Todos os Projetos</option>
                             {uniqueProjects.map((project) => (
-                                <option key={project} value={project}>{project}</option>
+                                <option key={project} value={project}>
+                                    {project}
+                                </option>
                             ))}
                         </Form.Control>
                     </Form.Group>
@@ -105,29 +155,51 @@ const ProductionTableDailyTable = () => {
                 <Col md={3}>
                     <Form.Group controlId="startDate">
                         <Form.Label>Data Inicial</Form.Label>
-                        <Form.Control type="date" required value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                        <Form.Control
+                            type="date"
+                            required
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                        />
                     </Form.Group>
                 </Col>
                 {/* Finish Date Input */}
                 <Col md={3}>
                     <Form.Group controlId="finishDate">
                         <Form.Label>Data Final</Form.Label>
-                        <Form.Control type="date" required value={finishDate} onChange={(e) => setFinishDate(e.target.value)} />
+                        <Form.Control
+                            type="date"
+                            required
+                            value={finishDate}
+                            onChange={(e) => setFinishDate(e.target.value)}
+                        />
                     </Form.Group>
                 </Col>
                 {/* Generate Report Button */}
                 <Col md={3}>
-                    <Button onClick={fetchProductionData} variant="primary">Gerar Relatório</Button>
+                    <Button onClick={fetchProductionData} variant="primary">
+                        Gerar Relatório
+                    </Button>
                 </Col>
             </Row>
 
             {productionData.map((activity, index) => (
-                <Row key={index} className="mb-3 p-3" style={{ borderBottom: "2px solid #eee" }}>
+                <Row
+                    key={index}
+                    className="mb-3 p-3"
+                    style={{ borderBottom: "2px solid #eee" }}
+                >
                     <Col md={12}>
-                        <h2>{activity.activitie} ({activity.unity})</h2>
+                        <h2>
+                            {activity.activitie} ({activity.unity})
+                        </h2>
                     </Col>
                     <Col md={2}>
-                        <img src={`storage/${activity.icon}`} alt={activity.activitie} style={{ width: "50px", height: "50px" }} />
+                        <img
+                            src={`storage/${activity.icon}`}
+                            alt={activity.activitie}
+                            style={{ width: "50px", height: "50px" }}
+                        />
                     </Col>
                     <Col md={10}>
                         <p>Previsto: {activity.previous}</p>
@@ -137,8 +209,12 @@ const ProductionTableDailyTable = () => {
                     </Col>
                     <Col md={12}>
                         <h3>Produção Diária:</h3>
-                        <Button onClick={() => toggleVisibility(index)} variant="secondary" style={{ marginBottom: "10px" }}>
-                            {visibleTables[index] ? 'Ocultar' : 'Mostrar'}
+                        <Button
+                            onClick={() => toggleVisibility(index)}
+                            variant="secondary"
+                            style={{ marginBottom: "10px" }}
+                        >
+                            {visibleTables[index] ? "Ocultar" : "Mostrar"}
                         </Button>
                         <Table striped bordered hover>
                             <thead>
@@ -149,28 +225,65 @@ const ProductionTableDailyTable = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {Object.entries(activity.dailyProduction).map(([date, executed], subindex) => (
-                                    visibleTables[index] && (
-                                        <tr key={subindex}>
-                                            <td>{getDayOfWeek(date)}</td>
-                                            <td>{moment(date).format('DD-MM-YYYY')}</td>
-                                            <td>{executed !== 0 ? executed : ''}</td>
-                                        </tr>
-                                    )
-                                ))}
+                                {Object.entries(activity.dailyProduction).map(
+                                    ([date, executed], subindex) =>
+                                        visibleTables[index] && (
+                                            <tr key={subindex}>
+                                                <td>{getDayOfWeek(date)}</td>
+                                                <td>
+                                                    {moment(date).format(
+                                                        "DD-MM-YYYY",
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    {executed !== 0
+                                                        ? executed
+                                                        : ""}
+                                                </td>
+                                            </tr>
+                                        ),
+                                )}
                                 <tr>
-                                    <td colSpan="2"><strong>Total</strong></td>
-                                    <td><strong>{calculateSum(activity.dailyProduction).toFixed(2)}</strong></td>
+                                    <td colSpan="2">
+                                        <strong>Total</strong>
+                                    </td>
+                                    <td>
+                                        <strong>
+                                            {calculateSum(
+                                                activity.dailyProduction,
+                                            ).toFixed(2)}
+                                        </strong>
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td colSpan="2"><strong>Produtividade Média</strong></td>
-                                    <td><strong>{calculateAverage(activity.dailyProduction)}</strong></td>
+                                    <td colSpan="2">
+                                        <strong>Produtividade Média</strong>
+                                    </td>
+                                    <td>
+                                        <strong>
+                                            {calculateAverage(
+                                                activity.dailyProduction,
+                                            )}
+                                        </strong>
+                                    </td>
                                 </tr>
                             </tbody>
                         </Table>
                     </Col>
                 </Row>
             ))}
+            <Modal show={showModal} onHide={toggleModal} size="lg" fullscreen>
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        Gráfico de comparativo de produção
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ProductionTableDailyChart
+                        uniqueProjects={uniqueProjects}
+                    />
+                </Modal.Body>
+            </Modal>
         </Container>
     );
 };

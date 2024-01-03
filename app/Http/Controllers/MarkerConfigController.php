@@ -131,4 +131,5 @@ class MarkerConfigController extends Controller
         // Respond with a success message
         return response()->json(['message' => 'Marker deleted successfully.'], 204);
     }
+
 }
