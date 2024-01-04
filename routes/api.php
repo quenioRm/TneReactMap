@@ -39,6 +39,8 @@ Route::post('towers/importimpediments', [TowerController::class, 'ImportTowersIm
 
 Route::get('towers/getuniqueprojects', [TowerController::class, 'GetUniqueProjects']);
 
+Route::get('towers/gettowerssolicitations/{project?}', [TowerController::class, 'GetTowersSolicitations']);
+
 Route::get('production/getLatestProduction/{project?}', [ProductionController::class, 'getLatestProduction']);
 
 Route::get('production/getperiodProduction/{startDate}/{finishDate}/{project?}/', [ProductionController::class, 'getperiodProduction']);

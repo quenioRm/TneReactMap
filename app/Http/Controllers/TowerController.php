@@ -128,4 +128,9 @@ class TowerController extends Controller
     {
         return response()->json(Tower::GetUniqueProjects());
     }
+
+    public function GetTowersSolicitations($project = '')
+    {
+        return response()->json(Tower::countTowersByMonth($project));
+    }
 }

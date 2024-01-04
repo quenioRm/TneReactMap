@@ -142,7 +142,7 @@ const ProductionTableDailyTable = () => {
     return (
         <Container fluid>
             <br />
-
+            <h4>Relatório de produção por perido</h4>
             <Row>
                 <Col>
                     <Button variant="primary" onClick={toggleModal}>
@@ -294,7 +294,7 @@ const ProductionTableDailyTable = () => {
             <Modal show={showModal} onHide={toggleModal} size="lg" fullscreen>
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        Gráfico de comparativo de produção
+                        Gráfico comparativo de produção
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>

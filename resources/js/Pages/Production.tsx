@@ -15,11 +15,12 @@ import {
 } from "react-bootstrap";
 import ProductionTable from "../Components/ProductionComponents/ProductionTable";
 import ProductionTableDailyTable from "../Components/ProductionComponents/ProductionTableDailyTable";
+import TowerStatusChart from "../Components/ProductionComponents/TowerStatusChart";
 
 export default function Production({ auth }: PageProps) {
     const [activeTab, setActiveTab] = useState("info");
 
-    const handleTabSelect = (tab: SetStateAction<string>) => {
+    const handleTabSelect = (tab) => {
         setActiveTab(tab);
     };
 
@@ -44,6 +45,9 @@ export default function Production({ auth }: PageProps) {
                 </Tab>
                 <Tab eventKey="prodmonth" title="Produção por período">
                     <ProductionTableDailyTable />
+                </Tab>
+                <Tab eventKey="towerreceive" title="Recebimentos de Estruturas">
+                    <TowerStatusChart />
                 </Tab>
             </Tabs>
         </AuthenticatedLayout>
