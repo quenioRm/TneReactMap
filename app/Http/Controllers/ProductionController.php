@@ -39,69 +39,62 @@ class ProductionController extends Controller
 
     public function getperiodProductionChartCompare(Request $request)
     {
-        $cacheKey = 'getperiodProductionChartCompare_' . md5(serialize($request->all()));
-        $cacheTime = 60; // tempo de cache em minutos
+        // $request['project'] = json_decode($request->project, true);
 
-        // Verifique e retorne os resultados do cache se existirem
-        return Cache::remember($cacheKey, $cacheTime, function () use ($request) {
+        $validator = Validator::make($request->all(), [
+            'activitie' => 'required|string',
+            'startDate' => 'required|date',
+            'finishDate' => 'required|date',
+            'project' => 'required|array',
+        ]);
 
-            // $request['project'] = json_decode($request->project, true);
-
-            $validator = Validator::make($request->all(), [
-                'activitie' => 'required|string',
-                'startDate' => 'required|date',
-                'finishDate' => 'required|date',
-                'project' => 'required|array',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json(['error' => $validator->errors()], 400);
-            }
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
 
 
-            $activitie = $request->activitie;
-            $collection = collect($request->project);
-            $uniqueCollection = $collection->unique('id');
-            $uniqueArray = $uniqueCollection->values()->toArray();
-            $projects = $uniqueArray;
-            $startDate = Carbon::parse($request->startDate);
-            $finishDate = Carbon::parse($request->finishDate);
+        $activitie = $request->activitie;
+        $collection = collect($request->project);
+        $uniqueCollection = $collection->unique('id');
+        $uniqueArray = $uniqueCollection->values()->toArray();
+        $projects = $uniqueArray;
+        $startDate = Carbon::parse($request->startDate);
+        $finishDate = Carbon::parse($request->finishDate);
 
-            $results = [];
+        $results = [];
 
-            foreach ($projects as $key => $project) {
-                $activitieobj = Marker::where('atividade', $activitie)->first();
+        foreach ($projects as $key => $project) {
+            $activitieobj = Marker::where('atividade', $activitie)->first();
 
-                if ($activitieobj) {
-                    $acumulated = 0;
-                    $productions = $this->getProductionByDate($activitieobj, $project['name'], $startDate, $finishDate);
+            if ($activitieobj) {
+                $acumulated = 0;
+                $productions = $this->getProductionByDate($activitieobj, $project['name'], $startDate, $finishDate);
 
-                    foreach ($productions as $key => $production) {
-                        // Verifique se já existe uma entrada para esta data no array $results
-                        $dateKey = Carbon::parse($key)->format('d/m');
-                        if (!isset($results[$dateKey])) {
-                            // Inicialize com os valores comuns e um array vazio 'projects'
-                            $results[$dateKey] = [
-                                'date' => $dateKey,
-                                'activitie' => $activitie,
-                                'projects' => []
-                            ];
-                        }
-
-                        // Mesclar o novo projeto no array 'projects'
-                        $results[$dateKey]['projects']['project' . $project['id']] = [
-                            'name' => $project['name'],
-                            'productionInDay' . $project['id'] => $production,
-                            'productionInDayAcumulated' . $project['id'] => $acumulated
+                foreach ($productions as $key => $production) {
+                    // Verifique se já existe uma entrada para esta data no array $results
+                    $dateKey = Carbon::parse($key)->format('d/m');
+                    if (!isset($results[$dateKey])) {
+                        // Inicialize com os valores comuns e um array vazio 'projects'
+                        $results[$dateKey] = [
+                            'date' => $dateKey,
+                            'activitie' => $activitie,
+                            'projects' => []
                         ];
-
-                        $acumulated += $production;
                     }
+
+                    // Mesclar o novo projeto no array 'projects'
+                    $results[$dateKey]['projects']['project' . $project['id']] = [
+                        'name' => explode('-', $project['name'])[2],
+                        'productionInDay' . $project['id'] => $production,
+                        'productionInDayAcumulated' . $project['id'] => $acumulated
+                    ];
+
+                    $acumulated += $production;
                 }
             }
+        }
 
-            return $results;
-        });
+        return $results;
     }
 
 

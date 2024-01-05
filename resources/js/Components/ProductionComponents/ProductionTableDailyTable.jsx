@@ -55,7 +55,21 @@ const ProductionTableDailyTable = () => {
         setSelectedProject(e.target.value);
     };
 
-    const fetchProductionData = async () => {};
+    const fetchProductionData = async () => {
+        if (startDate && finishDate) {
+            setIsLoading(true);
+            try {
+                const endpoint = selectedProject
+                    ? `/api/production/getperiodProduction/${startDate}/${finishDate}/${selectedProject}`
+                    : `/api/production/getperiodProduction/${startDate}/${finishDate}/`;
+                const response = await axios.get(endpoint);
+                setProductionData(response.data);
+            } catch (error) {
+                console.error("Error fetching production data:", error);
+            }
+            setIsLoading(false);
+        }
+    };
 
     const toggleVisibility = (index) => {
         setVisibleTables({
@@ -128,7 +142,8 @@ const ProductionTableDailyTable = () => {
     return (
         <Container fluid>
             <br />
-            <h4>Relatório de produção por perido</h4>
+            {selectedProject ? <h4>Relatório de produção por perido - {selectedProject}</h4> : <h4>Relatório de produção por perido</h4>}
+            <br />
             <Row>
                 <Col>
                     <Button variant="primary" onClick={toggleModal}>

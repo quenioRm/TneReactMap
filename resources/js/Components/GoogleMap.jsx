@@ -17,6 +17,9 @@ const GoogleMap = () => {
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
     const [actualCoordinate, setActualCoordinate] = useState({ x: 0, y: 0 });
 
+    let mouseLatLng = null;
+    const radius = 5000;
+
     useEffect(() => {
         loadGoogleMapScript();
         fetchMarkerData();
@@ -67,8 +70,8 @@ const GoogleMap = () => {
                         ? markerInfo.impediment_icon.icon
                         : defaultIcon,
                 scaledSize: new google.maps.Size(40, 40),
-                labelOrigin: new google.maps.Point(82, 20),
-                labelAnchor: new google.maps.Point(82, 20),
+                labelOrigin: new google.maps.Point(100, 20),
+                labelAnchor: new google.maps.Point(100, 20),
             };
 
             const icon = {
@@ -77,17 +80,17 @@ const GoogleMap = () => {
                         ? markerInfo.config_icon.icon
                         : defaultIcon,
                 scaledSize: new google.maps.Size(40, 40),
-                labelOrigin: new google.maps.Point(82, 20),
-                labelAnchor: new google.maps.Point(82, 20),
+                labelOrigin: new google.maps.Point(100, 20),
+                labelAnchor: new google.maps.Point(100, 20),
             };
 
             const label = {
-                text: markerInfo.label.text,
+                text: markerInfo.label.text + " - " + '70%',
                 color: "black",
                 fontSize: "12px",
                 fontWeight: "bold",
-                labelOrigin: new google.maps.Point(82, 20),
-                labelAnchor: new google.maps.Point(82, 20),
+                labelOrigin: new google.maps.Point(100, 20),
+                labelAnchor: new google.maps.Point(100, 20),
             };
 
             const marker = new window.google.maps.Marker({
@@ -170,9 +173,16 @@ const GoogleMap = () => {
                 onMarkerClick(markerInfo);
             });
 
+
+
             map.addListener("mousemove", (event) => {
                 const mouseX = event.pixel.x;
                 const mouseY = event.pixel.y;
+
+                mouseLatLng = event.latLng;
+
+                const markersAround = countMarkersWithinRadius();
+                console.log(`Marcadores dentro de ${radius}m do mouse:`, markersAround);
 
                 // Update Coordinate
                 // const coordinates = convertLatLongToUTM(event.latLng.lat(), event.latLng.lng());
@@ -263,6 +273,21 @@ const GoogleMap = () => {
         return () => {
             document.head.removeChild(script);
         };
+    };
+
+    const countMarkersWithinRadius = () => {
+        if (!mouseLatLng) return 0;
+
+        let count = 0;
+        markerData.forEach((markerInfo) => {
+            const markerLatLng = new window.google.maps.LatLng(markerInfo.position.lat, markerInfo.position.lng);
+            const distance = window.google.maps.geometry.spherical.computeDistanceBetween(mouseLatLng, markerLatLng);
+
+            if (distance <= radius) {
+                count++;
+            }
+        });
+        return count;
     };
 
     return (

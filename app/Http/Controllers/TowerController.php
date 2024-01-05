@@ -44,7 +44,7 @@ class TowerController extends Controller
     public function ImportTowersFromExcelFile(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:json|max:2048',
+            'file' => 'required|mimes:xlsx,xls|max:10240',
         ]);
 
         if ($validator->fails()) {

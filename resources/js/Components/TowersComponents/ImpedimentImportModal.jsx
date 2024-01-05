@@ -42,7 +42,7 @@ const ImportImpedimentsModal = ({ show, onHide }) => {
     };
 
     const handleImport = async () => {
-        clearInterval(progressTimer);
+        // clearInterval(progressTimer);
 
         if (file) {
             const formData = new FormData();
@@ -75,12 +75,12 @@ const ImportImpedimentsModal = ({ show, onHide }) => {
         }
     };
 
-    // useEffect(() => {
-    //     return () => {
-    //         // Cleanup function to clear the interval in case the component unmounts
-    //         clearInterval(progressTimer);
-    //     };
-    // }, []);
+    useEffect(() => {
+        return () => {
+            // Cleanup function to clear the interval in case the component unmounts
+            clearInterval(progressTimer);
+        };
+    }, []);
 
     return (
         <Modal show={show} onHide={onHide}>

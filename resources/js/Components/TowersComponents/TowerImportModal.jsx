@@ -37,7 +37,7 @@ const ImportTowersModal = ({ show, onHide }) => {
     };
 
     const handleImport = async () => {
-        clearInterval(progressTimer);
+        // clearInterval(progressTimer);
 
         if (file) {
             const formData = new FormData();

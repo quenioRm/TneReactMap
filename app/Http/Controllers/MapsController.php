@@ -17,6 +17,44 @@ use App\Models\Marker;
 
 class MapsController extends Controller
 {
+    public function getCoordinatesByRange($inputX, $inputY, $radius)
+    {
+        $markers = [];
+        $listOfMarkers = Tower::get(); // Substitua por sua lógica para obter a lista de marcadores
+
+        foreach ($listOfMarkers as $markerData) {
+            // Carrega as coordenadas X e Y do marcador
+            $x = (float)$markerData['CoordinateX'];
+            $y = (float)$markerData['CoordinateY'];
+
+            // Calcula a distância do marcador para o ponto fornecido
+            $distance = sqrt(pow($x - $inputX, 2) + pow($y - $inputY, 2));
+
+            // Se o marcador está dentro do raio especificado, adiciona ao array de marcadores
+            if ($distance <= $radius) {
+                $markers[] = [
+                    'name' => $markerData['Number'] . " - " . $markerData['ProjectName'],
+                    'position' => [
+                        'lat' => $x,
+                        'lng' => $y
+                    ],
+                    'label' => [
+                        'color' =>'blue',
+                        'text' => $markerData['Number'] . " - " . $markerData['Name'],
+                        'towerId' => str_replace('/', '_', $markerData['Number']),
+                        'project' => $markerData['ProjectName'],
+                        'originalNumber' => $markerData['Number'],
+                        'originalName' => $markerData['Name']
+                    ],
+                    // Adicione outras propriedades e informações do marcador conforme necessário
+                ];
+            }
+        }
+
+        // Retorna os marcadores que estão dentro do raio especificado como uma resposta JSON
+        return response()->json($markers);
+    }
+
     public function getCoordinates()
     {
         // Use o Cache para armazenar e recuperar os dados
@@ -87,6 +125,7 @@ class MapsController extends Controller
                         'oringalNumber' => $markerData['Number'],
                         'originalName' => $markerData['Name']
                     ],
+                    'avc' => TowerActivity::CaclPercentageIsExecuted($markerData['Number'], $markerData['ProjectName']),
                     'draggable' => true,
                     'config_icon' => Production::getLatestTowerActivityWithIcon($changedTowerId, $markerData['ProjectName']),
                     'impediment_icon' => Production::GetIconFromLatestImpediment($impediments),
@@ -99,6 +138,7 @@ class MapsController extends Controller
                         Carbon::parse($markerData['SolicitationDate'])->addDays(120)->format('d-m-y'),
                     'ReceiveStatus' => $receiveStatus
                 ];
+
             }
 
             return $markers;
