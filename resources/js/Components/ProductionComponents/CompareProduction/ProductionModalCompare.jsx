@@ -189,9 +189,9 @@ const ProductionModalCompare = ({ uniqueProjects, show, handleClose }) => {
                                     onChange={handleActivityChange}
                                     value={selectedActivity}
                                 >
-                                    <option value="">
+                                    {/* <option value="">
                                         Todas as Atividades
-                                    </option>
+                                    </option> */}
                                     {activities.map((activity) => (
                                         <option
                                             key={activity.id}
