@@ -75,12 +75,12 @@ const ImportImpedimentsModal = ({ show, onHide }) => {
         }
     };
 
-    useEffect(() => {
-        return () => {
-            // Cleanup function to clear the interval in case the component unmounts
-            clearInterval(progressTimer);
-        };
-    }, []);
+    // useEffect(() => {
+    //     return () => {
+    //         // Cleanup function to clear the interval in case the component unmounts
+    //         clearInterval(progressTimer);
+    //     };
+    // }, []);
 
     return (
         <Modal show={show} onHide={onHide}>
