@@ -145,9 +145,10 @@ const ProductionTable = () => {
 
     return (
         <Container fluid>
+            <br />
             <Row className="mb-3">
                 <Col>
-                    <h2>Relatório Geral de Produção</h2>
+                    <h4>Relatório Geral de Produção</h4>
                 </Col>
             </Row>
             <Row className="mb-3">

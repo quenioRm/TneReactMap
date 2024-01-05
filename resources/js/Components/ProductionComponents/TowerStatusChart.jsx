@@ -55,6 +55,7 @@ const TowerStatusChart = () => {
                 .then((data) => {
                     // Armazene os dados do gráfico no estado
                     setChartData(data);
+                    // console.log(data)
                 })
                 .catch((error) => {
                     console.error(
@@ -175,7 +176,7 @@ const TowerStatusChart = () => {
                     }}
                 >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" style={{fontSize:'10px'}} />
+                    <XAxis dataKey="month" style={{ fontSize: "10px" }} />
                     <YAxis />
                     <Tooltip />
                     <Legend />

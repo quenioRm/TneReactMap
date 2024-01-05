@@ -16,6 +16,7 @@ class Marker extends Model
         'atividade',
         'unidade',
         'icone',
+        'lenPercent'
     ];
 
 }

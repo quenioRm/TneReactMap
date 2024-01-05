@@ -44,3 +44,6 @@ Route::get('towers/gettowerssolicitations/{project?}', [TowerController::class, 
 Route::get('production/getLatestProduction/{project?}', [ProductionController::class, 'getLatestProduction']);
 
 Route::get('production/getperiodProduction/{startDate}/{finishDate}/{project?}/', [ProductionController::class, 'getperiodProduction']);
+
+Route::post('production/getperiodproductionchartcompare',
+    [ProductionController::class, 'getperiodProductionChartCompare']);

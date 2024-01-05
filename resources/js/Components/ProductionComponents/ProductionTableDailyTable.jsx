@@ -11,7 +11,7 @@ import {
     Modal,
 } from "react-bootstrap";
 import moment from "moment";
-import ProductionTableDailyChart from "./ProductionTableDailyChart";
+import ProductionModalCompare from "../ProductionComponents/CompareProduction/ProductionModalCompare";
 
 const ProductionTableDailyTable = () => {
     const today = new Date().toISOString().split("T")[0];
@@ -55,21 +55,7 @@ const ProductionTableDailyTable = () => {
         setSelectedProject(e.target.value);
     };
 
-    const fetchProductionData = async () => {
-        if (startDate && finishDate) {
-            setIsLoading(true);
-            try {
-                const endpoint = selectedProject
-                    ? `/api/production/getperiodProduction/${startDate}/${finishDate}/${selectedProject}`
-                    : `/api/production/getperiodProduction/${startDate}/${finishDate}/`;
-                const response = await axios.get(endpoint);
-                setProductionData(response.data);
-            } catch (error) {
-                console.error("Error fetching production data:", error);
-            }
-            setIsLoading(false);
-        }
-    };
+    const fetchProductionData = async () => {};
 
     const toggleVisibility = (index) => {
         setVisibleTables({
@@ -291,18 +277,13 @@ const ProductionTableDailyTable = () => {
                     </Col>
                 </Row>
             ))}
-            <Modal show={showModal} onHide={toggleModal} size="lg" fullscreen>
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        Gráfico comparativo de produção
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ProductionTableDailyChart
-                        uniqueProjects={uniqueProjects}
-                    />
-                </Modal.Body>
-            </Modal>
+            <>
+                <ProductionModalCompare
+                    uniqueProjects={uniqueProjects}
+                    show={showModal}
+                    handleClose={toggleModal}
+                />
+            </>
         </Container>
     );
 };
