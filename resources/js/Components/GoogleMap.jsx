@@ -1,12 +1,12 @@
-// resources/js/components/GoogleMap.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import MarkerModal from "../Components/GoogleMapMarkerModal";
 import TowerSelectButton from "./MapsComponents/TowerSelectButton";
 import FloatingButton from "./FloatingButton";
-import { ProgressBar } from "react-bootstrap"; // Import ProgressBar from react-bootstrap
+import { ProgressBar, Spinner } from "react-bootstrap"; // Import ProgressBar from react-bootstrap
 import "bootstrap/dist/css/bootstrap.min.css";
 import UtmConverter from "./Converters/UtmConverter";
+import './css/Spinner.css';
 
 const GoogleMap = () => {
     const [markerData, setMarkerData] = useState(null);
@@ -15,14 +15,28 @@ const GoogleMap = () => {
     const [loading, setLoading] = useState(true); // Set initial loading state to true
     const [tooltipVisible, setTooltipVisible] = useState(false);
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
-    const [actualCoordinate, setActualCoordinate] = useState({ x: 0, y: 0 });
+    const [actualCoordinate, setActualCoordinate] = useState({ x: 0, y: 0, zone: 0 });
+
+    const [lastestCalledCoordinate, setLastestCalledCoordinate] = useState({ x: 0, y: 0, zone:0 });
+
+    const [currentCalledLatLng, setCurrentCalledLatLng] = useState({ lat: 0, lng: 0});
+    const [firstCalledLatLng, setFirstCalledLatLng] = useState({ lat: 0, lng: 0});
+    const [lastestCalledLatLng, setLastestCalledLatLng] = useState({ lat: 0, lng: 0});
+
+    const [updatingCoordinate, setUpdatingCoordinate] = useState(false);
+    const [isFetchingData, setIsFetchingData] = useState(false);
+
+    const [updDistance, setUpdDistance] = useState(0);
+
+    const [isDebugMode, setIsDebugMode] = useState(false);
+
 
     let mouseLatLng = null;
-    const radius = 5000;
+    const radius = 30000;
 
     useEffect(() => {
         loadGoogleMapScript();
-        fetchMarkerData();
+        fetchMarkerData(0, 0, radius, false);
     }, []);
 
     useEffect(() => {
@@ -34,8 +48,53 @@ const GoogleMap = () => {
     useEffect(() => {
         setTimeout(() => {
             setLoading(false);
-        }, 20000);
+        }, 5000);
     }, [map, markerData]);
+
+    // update Map Coordinates
+
+    useEffect(() => {
+        // console.log((radius - updDistance ))
+        // return;
+
+        if ( (radius - updDistance ) >= 25000 && updDistance > 0) {
+          if (!isFetchingData) {
+            // Defina isFetchingData como true para indicar que a solicitação está em andamento
+            setIsFetchingData(true);
+
+            // Execute a solicitação e, em seguida, defina isFetchingData como false quando estiver concluída
+            fetchNewMarkerData(
+              actualCoordinate.x,
+              actualCoordinate.y,
+              radius    ,
+              false
+            ).then(() => {
+                setUpdDistance(0);
+                setIsFetchingData(false);
+            });
+          }
+        }
+
+        if (updDistance > (radius + 10000)){
+            if (!isFetchingData) {
+                // Defina isFetchingData como true para indicar que a solicitação está em andamento
+                setIsFetchingData(true);
+
+                // Execute a solicitação e, em seguida, defina isFetchingData como false quando estiver concluída
+                fetchNewMarkerData(
+                  actualCoordinate.x,
+                  actualCoordinate.y,
+                  radius,
+                  false
+                ).then(() => {
+                    setUpdDistance(0);
+                    setIsFetchingData(false);
+                });
+            }
+        }
+
+      }, [updDistance, actualCoordinate, lastestCalledCoordinate, isFetchingData, firstCalledLatLng, lastestCalledLatLng]);
+    //////////////////////////////////////
 
     const initMap = () => {
         if (
@@ -50,14 +109,30 @@ const GoogleMap = () => {
         // Map initialization logic
         const map = new window.google.maps.Map(document.getElementById("map"), {
             center: {
-                lat: markerData[0].position.lat,
-                lng: markerData[0].position.lng,
+                lat: currentCalledLatLng.lat,
+                lng: currentCalledLatLng.lng,
             },
             zoom: 15,
             gestureHandling: "greedy",
         });
 
         setMap(map);
+
+        // Create a polyline based on marker positions
+        const polylinePath = markerData.map(
+            (markerInfo) => markerInfo.position,
+        );
+
+        const polyline = new window.google.maps.Polyline({
+            path: polylinePath,
+            geodesic: true,
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 2,
+        });
+
+        // Set the polyline on the map
+        polyline.setMap(map);
 
         // Add markers based on fetched data
         markerData.forEach((markerInfo, index) => {
@@ -84,8 +159,13 @@ const GoogleMap = () => {
                 labelAnchor: new google.maps.Point(100, 20),
             };
 
+            const formattedPercentage = (markerInfo.avc).toLocaleString(undefined, {
+                style: 'percent',
+                minimumFractionDigits: 2,
+            });
+
             const label = {
-                text: markerInfo.label.text + " - " + '70%',
+                text: markerInfo.label.text + " - " + formattedPercentage,
                 color: "black",
                 fontSize: "12px",
                 fontWeight: "bold",
@@ -181,9 +261,6 @@ const GoogleMap = () => {
 
                 mouseLatLng = event.latLng;
 
-                const markersAround = countMarkersWithinRadius();
-                console.log(`Marcadores dentro de ${radius}m do mouse:`, markersAround);
-
                 // Update Coordinate
                 // const coordinates = convertLatLongToUTM(event.latLng.lat(), event.latLng.lng());
                 // console.log(coordinates);
@@ -191,10 +268,19 @@ const GoogleMap = () => {
                     parseFloat(event.latLng.lat()),
                     parseFloat(event.latLng.lng()),
                 );
+
+                setCurrentCalledLatLng({
+                    lat: parseFloat(event.latLng.lat()),
+                    lng: parseFloat(event.latLng.lng())
+                })
+
+                console.log()
+
                 // console.log(result)
                 setActualCoordinate({
-                    x: result.easting.toFixed(2),
-                    y: result.northing.toFixed(2),
+                    x: parseFloat(result.easting.toFixed(2)),
+                    y: parseFloat(result.northing.toFixed(2)),
+                    zone: getUtmZone(parseFloat(event.latLng.lat()), parseFloat(event.latLng.lng()))
                 });
 
                 // Update tooltip position
@@ -210,23 +296,34 @@ const GoogleMap = () => {
                 map.tooltipTimer = setTimeout(() => {
                     setTooltipVisible(false);
                 }, 5000);
+
+                let latestCoordinateSaved = {
+                    easting: lastestCalledCoordinate.x ,
+                    northing: lastestCalledCoordinate.y,
+                    zone: lastestCalledCoordinate.zone
+                }
+
+                let currentCoordinateSaved = {
+                    easting: parseFloat(result.easting),
+                    northing: parseFloat(result.northing),
+                    zone: getUtmZone(parseFloat(event.latLng.lat()), parseFloat(event.latLng.lng()))
+                }
+
+                const distance = calculateUtmDistance(latestCoordinateSaved, currentCoordinateSaved);
+
+                setUpdDistance(distance);
+
+                if(isDebugMode)
+                    console.log(distance, updDistance)
+
+                // if (distance >= (radius / 2) && distance > 0) {
+                //     setUpdatingCoordinate(true);
+                // }else{
+                //     setUpdatingCoordinate(false);
+                // }
+
             });
         });
-
-        // Create a polyline based on marker positions
-        const polylinePath = markerData.map(
-            (markerInfo) => markerInfo.position,
-        );
-        const polyline = new window.google.maps.Polyline({
-            path: polylinePath,
-            geodesic: true,
-            strokeColor: "#FF0000",
-            strokeOpacity: 1.0,
-            strokeWeight: 2,
-        });
-
-        // Set the polyline on the map
-        polyline.setMap(map);
     };
 
     const onMarkerClick = (markerInfo) => {
@@ -245,14 +342,140 @@ const GoogleMap = () => {
         setSelectedMarker(null);
     };
 
-    const fetchMarkerData = async () => {
-        try {
-            const response = await axios.get("/api/get-coordinates");
-            setMarkerData(response.data);
-        } catch (error) {
-            console.error("Error fetching marker data:", error);
+    const fetchMarkerData = async (coordinateX, coordinateY) => {
+
+        const payload = {
+            inputX : coordinateX,
+            inputY : coordinateY,
+            radius : radius,
+            getAllPoints : false,
         }
+
+        await axios.post("/api/get-coordinatesbyrange", payload)
+        .then((response) => {
+
+            const latestItem = response.data[response.data.length - 1];
+
+            setLastestCalledCoordinate({
+                x: parseFloat(latestItem.position.utmx),
+                y: parseFloat(latestItem.position.utmy),
+                zone: latestItem.position.zone
+            });
+
+            setCurrentCalledLatLng({
+                lat:response.data[0].position.lat,
+                lng:response.data[0].position.lng
+            })
+
+            setFirstCalledLatLng({
+                lat:response.data[0].position.lat,
+                lng:response.data[0].position.lng
+            });
+
+            setLastestCalledLatLng({
+                lat:latestItem.position.lat,
+                lng:latestItem.position.lng
+            });
+
+            setMarkerData(response.data);
+
+        }).catch((error) => {
+            console.error("Error fetching marker data:", error);
+        });
     };
+
+    const fetchNewMarkerData = async (coordinateX, coordinateY, radius, getAllPoints) => {
+
+        if(updatingCoordinate)
+            return;
+
+        const payload = {
+            inputX : coordinateX,
+            inputY : coordinateY,
+            radius : radius,
+            getAllPoints : getAllPoints,
+        }
+
+        await axios.post("/api/get-coordinatesbyrange", payload)
+        .then((response) => {
+
+            const latestItem = response.data[response.data.length - 1]
+
+            setLastestCalledCoordinate({
+                x: parseFloat(latestItem.position.utmx),
+                y: parseFloat(latestItem.position.utmy),
+                zone: latestItem.position.zone
+            });
+
+            setFirstCalledLatLng({
+                lat:lastestCalledLatLng.lat,
+                lng:lastestCalledLatLng.lng
+            });
+
+            setLastestCalledLatLng({
+                lat:latestItem.position.lat,
+                lng:latestItem.position.lng
+            });
+
+            const newData = response.data;
+
+            setMarkerData(newData);
+
+            let lat = lastestCalledLatLng.lat;
+            let lng = lastestCalledLatLng.lng;
+            map.panTo({ lat, lng });
+            map.setZoom(10);
+
+        }).catch((error) => {
+            // Handle any errors here
+            console.error("Error fetching marker data:", error);
+        });
+    };
+
+    function getUtmZone(latitude, longitude) {
+        // Calculate the standard UTM zone
+        let zone = Math.floor((longitude + 180) / 6) + 1;
+
+        // Special zones for Svalbard and Norway
+        if (latitude >= 56 && latitude < 64 && longitude >= 3 && longitude < 12) {
+            zone = 32; // Special zone for Norway
+        } else if (latitude >= 72 && latitude < 84) {
+            if (longitude >= 0 && longitude < 9) {
+                zone = 31;
+            } else if (longitude >= 9 && longitude < 21) {
+                zone = 33;
+            } else if (longitude >= 21 && longitude < 33) {
+                zone = 35;
+            } else if (longitude >= 33 && longitude < 42) {
+                zone = 37; // Special zones for Svalbard
+            }
+        }
+
+        if (latitude < 0) {
+            zone = zone * -1;
+        }
+
+        return zone;
+    }
+
+    const calculateUtmDistance = (utmCoord1, utmCoord2) => {
+        // Desestruturação dos pontos UTM
+        const { easting: x1, northing: y1, zone: zone1 } = utmCoord1;
+        const { easting: x2, northing: y2, zone: zone2 } = utmCoord2;
+
+        // Verifica se ambos os pontos estão na mesma zona UTM
+        if (zone1 !== zone2) {
+            return 0;
+        }
+
+        // Calcula a diferença nas coordenadas leste (x) e norte (y)
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+
+        // Calcula a distância Euclidiana
+        return Math.sqrt(dx * dx + dy * dy);
+    };
+
 
     const loadGoogleMapScript = async () => {
         if (window.google && window.google.maps) {
@@ -275,20 +498,6 @@ const GoogleMap = () => {
         };
     };
 
-    const countMarkersWithinRadius = () => {
-        if (!mouseLatLng) return 0;
-
-        let count = 0;
-        markerData.forEach((markerInfo) => {
-            const markerLatLng = new window.google.maps.LatLng(markerInfo.position.lat, markerInfo.position.lng);
-            const distance = window.google.maps.geometry.spherical.computeDistanceBetween(mouseLatLng, markerLatLng);
-
-            if (distance <= radius) {
-                count++;
-            }
-        });
-        return count;
-    };
 
     return (
         <div>
@@ -296,6 +505,11 @@ const GoogleMap = () => {
                 <ProgressBar now={100} animated label="Loading Map..." />
             )}{" "}
             {/* Display progress bar while loading */}
+            {isFetchingData && (
+                <div className="centered-spinner">
+                    <Spinner animation="border" variant="primary" />
+                </div>
+            )}
             <div id="map" style={{ height: "100vh", width: "100%" }} />
             {tooltipVisible && (
                 <div

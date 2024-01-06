@@ -13,6 +13,7 @@ use App\Models\TowerActivity;
 use App\Models\TowerImpediment;
 use Carbon\Carbon;
 use DateTimeImmutable;
+use App\Helpers\CoordinateHelper;
 
 class TowerController extends Controller
 {
@@ -136,5 +137,42 @@ class TowerController extends Controller
     public function GetTowersSolicitations($project = '')
     {
         return response()->json(Tower::countTowersByMonth($project));
+    }
+
+    public function GetTowers()
+    {
+        $towers = Tower::get();
+
+        $returnTowers = [];
+
+        foreach ($towers as $tower) {
+
+            $x = (float)$tower->CoordinateX;
+            $y = (float)$tower->CoordinateY;
+            $zone = (float)$tower->Zone;
+
+            $latlng = null;
+
+            if ($zone < 0) {
+                $latlng = CoordinateHelper::utm2ll($x, $y, $zone * -1, false);
+            }
+
+            if ($zone > 0) {
+                $latlng = CoordinateHelper::utm2ll($x, $y, $zone * 1, true);
+            }
+
+            $newCoordinates = json_decode($latlng, true);
+
+            $returnTowers[] = [
+                'tower' => $tower,
+                'name' => $tower->Number . " - " . $tower->ProjectName,
+                'position' => [
+                    'lat' => $newCoordinates['attr']['lat'],
+                    'lng' => $newCoordinates['attr']['lon'],
+                ]
+            ];
+        }
+
+        return response()->json($returnTowers);
     }
 }

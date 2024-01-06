@@ -24,7 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/get-coordinates', [MapsController::class, 'getCoordinates']);
-Route::get('/get-coordinatesbyrange/{inputX}/{inputY}/{radius}', [MapsController::class, 'getCoordinatesByRange']);
+Route::post('/get-coordinatesbyrange', [MapsController::class, 'getCoordinatesByRange']);
 Route::get('/get-towerimages/{tower}', [MapsController::class, 'getImagesFromTower']);
 Route::get('/get-towerproduction/{tower}/{project}', [MapsController::class, 'getTowerProduction']);
 Route::post('/upload-images', [MapsController::class, 'uploadGaleryImages']);
@@ -39,6 +39,8 @@ Route::post('towers/import', [TowerController::class, 'ImportTowersFromExcelFile
 Route::post('towers/importimpediments', [TowerController::class, 'ImportTowersImpedimentsFromExcelFile']);
 
 Route::get('towers/getuniqueprojects', [TowerController::class, 'GetUniqueProjects']);
+
+Route::get('towers/gettowers', [TowerController::class, 'GetTowers']);
 
 Route::get('towers/gettowerssolicitations/{project?}', [TowerController::class, 'GetTowersSolicitations']);
 
