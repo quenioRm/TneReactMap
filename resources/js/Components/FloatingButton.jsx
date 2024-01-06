@@ -6,12 +6,14 @@ import {
     OverlayTrigger,
     Tooltip,
 } from "react-bootstrap";
-import { FaHandPaper } from "react-icons/fa";
 import TowerSelectionModal from "./MapsComponents/TowerSelectionModal";
 import MarkerManager from "./MapsComponents/Activitie/MarkerManager";
 import ImportTowersModal from "../Components/TowersComponents/TowerImportModal";
 import ImportImpedimentsModal from "../Components/TowersComponents/ImpedimentImportModal";
 import MarkerManagerImpediment from "../Components/MapsComponents/Impediments/MarkerManagerImpediment";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHandRock, faBars } from '@fortawesome/free-solid-svg-icons';
+
 
 const FloatingButton = ({ map }) => {
     const [showTowerModal, setShowTowerModal] = useState(false);
@@ -77,7 +79,7 @@ const FloatingButton = ({ map }) => {
                         left: "50px",
                         zIndex: 1000,
                     }}
-                    title={<FaHandPaper size={20} />}
+                    title={<FontAwesomeIcon icon={faBars} />}
                     id="dropdown-menu"
                 >
                     <Dropdown.Item onClick={handleShowTowerModal}>

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { FaHandPaper } from "react-icons/fa";
 import TowerSelectionModal from "./TowerSelectionModal";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHandRock } from '@fortawesome/free-solid-svg-icons';
+
 
 const TowerSelectButton = (rMap) => {
     const [showTowerModal, setShowTowerModal] = useState(null);
@@ -29,7 +31,7 @@ const TowerSelectButton = (rMap) => {
                     }}
                     onClick={() => handleShowModal(true)} // Corrija este trecho para chamar handleShowModal no evento onClick
                 >
-                    <FaHandPaper size={20} className="mr-2" />
+                    <FontAwesomeIcon icon={faHandRock} />
                     Torre
                 </Button>
             </OverlayTrigger>
