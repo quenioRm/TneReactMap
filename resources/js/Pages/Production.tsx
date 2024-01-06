@@ -20,8 +20,10 @@ import TowerStatusChart from "../Components/ProductionComponents/TowerStatusChar
 export default function Production({ auth }: PageProps) {
     const [activeTab, setActiveTab] = useState("info");
 
-    const handleTabSelect = (tab) => {
-        setActiveTab(tab);
+    const handleTabSelect = (tab: string | null) => {
+        if (tab !== null) {
+            setActiveTab(tab);
+        }
     };
 
     return (
