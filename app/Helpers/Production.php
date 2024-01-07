@@ -47,29 +47,31 @@ class Production{
     {
         $tower = str_replace('_', '/', $tower);
 
-        // Obtenha a última atividade com data não nula
-        $latestActivity = TowerActivity::where('Number', $tower)
-            ->where('ProjectName', $project)
-            ->whereNotNull('ConclusionDate')
-            ->orderBy('ConclusionDate', 'asc')
-            ->get();
-
         $returnItem = [];
 
-        foreach ($latestActivity as $key => $item) {
+        $activitys = Marker::get();
 
-            $icon = Marker::where('atividade', $item->Activitie)->value('icone');
+        foreach ($activitys as $key => $activity) {
 
-            $carbonDate = Carbon::parse($item->ConclusionDate)->format('d/m/y');
+            $latestActivity = TowerActivity::where('Number', $tower)
+                ->where('ProjectName', $project)
+                ->where('Activitie', $activity->atividade)
+                ->first();
 
-            $iconUrl = ($icon !== null) ? asset(Storage::url($icon)) : asset('assets/images/marcador-de-localizacao.png');
+            if($latestActivity->ConclusionDate != null){
 
-            if($item->ConclusionDate !== null){
+                $icon = $activity->icone;
+
+                $carbonDate = Carbon::parse($latestActivity->ConclusionDate)->format('d/m/y');
+
+                $iconUrl = ($icon !== null) ? asset(Storage::url($icon)) : asset('assets/images/marcador-de-localizacao.png');
+
                 $returnItem = [
-                    'activitie' => $item->Activitie,
+                    'activitie' => $activity->atividade,
                     'date' => $carbonDate,
                     'icon' =>  $iconUrl
                 ];
+
             }
         }
 
