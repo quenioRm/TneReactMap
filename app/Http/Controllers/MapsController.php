@@ -139,7 +139,9 @@ class MapsController extends Controller
                         Carbon::parse($markerData['ReceiveDate'])->format('d-m-y'),
                     'PreviousReceiveDate' => ($markerData['SolicitationDate'] == '') ? '' :
                         Carbon::parse($markerData['SolicitationDate'])->addDays(120)->format('d-m-y'),
-                    'ReceiveStatus' => $receiveStatus
+                    'ReceiveStatus' => $receiveStatus,
+                    'iconsbarActivity' => Production::getLatestTowerActivityWithIcons($changedTowerId, $markerData['ProjectName']),
+                    'iconsbarImpediment' => Production::GetIconFromLatestImpedimentIcons($impediments)
                 ];
             }
         }
@@ -203,6 +205,7 @@ class MapsController extends Controller
                 ///////////
 
                 $markers[] = [
+                    'type' => 'tower',
                     'name' => $markerData['Number'] . " - " . $markerData['ProjectName'],
                     'position' => [
                         'lat' => $newCoordinates['attr']['lat'],
@@ -326,5 +329,11 @@ class MapsController extends Controller
 
         // Retorna as URLs das imagens
         return response()->json(['imageUrls' => $imageUrls]);
+    }
+
+    public function GetLatestIcons($tower, $project)
+    {
+
+        return response()->json(Production::getLatestTowerActivityWithIcons($tower, $project));
     }
 }

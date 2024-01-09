@@ -13,9 +13,10 @@ import ImportImpedimentsModal from "../Components/TowersComponents/ImpedimentImp
 import MarkerManagerImpediment from "../Components/MapsComponents/Impediments/MarkerManagerImpediment";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHandRock, faBars } from '@fortawesome/free-solid-svg-icons';
+import AddMarkerModal from './MapsComponents/AddMarker/AddMarkerModal';
 
 
-const FloatingButton = ({ map }) => {
+const FloatingButton = ({ map, setMarkerData, currentCalledLatLng }) => {
     const [showTowerModal, setShowTowerModal] = useState(false);
     const [showMarkerConfigModal, setShowMarkerConfigModal] = useState(false);
     const [showManager, setShowManager] = useState(false);
@@ -23,6 +24,7 @@ const FloatingButton = ({ map }) => {
     const [towerImpedimentImportModalShow, setImpedimentTowerImportModalShow] =
         useState(false);
     const [showManagerImpediment, setShowManagerImpediment] = useState(false);
+    const [showAddMarkerModal, setShowAddMarkerModal] = useState(false);
 
     const handleShowTowerModal = () => {
         setShowTowerModal(true);
@@ -66,6 +68,14 @@ const FloatingButton = ({ map }) => {
         setImpedimentTowerImportModalShow(false);
     };
 
+    const handleShowAddMarkerModal = () => {
+        setShowAddMarkerModal(true);
+    };
+
+    const handleCloseAddMarkerModal = () => {
+        setShowAddMarkerModal(false);
+    };
+
     return (
         <div>
             <OverlayTrigger
@@ -99,6 +109,11 @@ const FloatingButton = ({ map }) => {
                     >
                         Importar Impedimentos Estruturas
                     </Dropdown.Item>
+                    {/* <Dropdown.Item
+                        onClick={handleShowAddMarkerModal}
+                    >
+                        Adicionar Marcador
+                    </Dropdown.Item> */}
                 </DropdownButton>
             </OverlayTrigger>
 
@@ -125,6 +140,12 @@ const FloatingButton = ({ map }) => {
                 show={towerImpedimentImportModalShow}
                 onHide={handleCloseImportImpedimentTowerModal}
             />
+
+            <AddMarkerModal
+                show={showAddMarkerModal}
+                handleClose={handleCloseAddMarkerModal}
+            />
+
         </div>
     );
 };

@@ -29,6 +29,8 @@ Route::get('/get-towerimages/{tower}', [MapsController::class, 'getImagesFromTow
 Route::get('/get-towerproduction/{tower}/{project}', [MapsController::class, 'getTowerProduction']);
 Route::post('/upload-images', [MapsController::class, 'uploadGaleryImages']);
 
+Route::get('/getlatesticons/{tower}/{project}', [MapsController::class, 'GetLatestIcons']);
+
 
 Route::resource('markers', MarkerConfigController::class);
 

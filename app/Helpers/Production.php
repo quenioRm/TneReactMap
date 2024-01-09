@@ -114,4 +114,73 @@ class Production{
 
         return $returnItem;
     }
+
+    public static function getLatestTowerActivityWithIcons($tower, $project)
+    {
+        $tower = str_replace('_', '/', $tower);
+
+        $returnItem = [];
+
+        $activitys = Marker::get();
+
+        foreach ($activitys as $key => $activity) {
+
+            $latestActivity = TowerActivity::where('Number', $tower)
+                ->where('ProjectName', $project)
+                ->where('Activitie', $activity->atividade)
+                ->first();
+
+            if($latestActivity->ConclusionDate != null){
+
+                $icon = $activity->icone;
+
+                $carbonDate = Carbon::parse($latestActivity->ConclusionDate)->format('d/m/y');
+
+                $iconUrl = ($icon !== null) ? asset(Storage::url($icon)) : asset('assets/images/marcador-de-localizacao.png');
+
+                $returnItem[] = [
+                    'activitie' => $activity->atividade,
+                    'date' => $carbonDate,
+                    'icon' =>  $iconUrl
+                ];
+
+            }
+        }
+
+        if(empty($returnItem)){
+            $returnItem = null;
+        }
+
+        return $returnItem;
+    }
+
+    public static function GetIconFromLatestImpedimentIcons($impediments)
+    {
+        $returnItem = null;
+
+        foreach ($impediments->toArray() as $impediment) {
+
+            $impedimentType = MarkerConfigImpediment::where('ImpedimentType', $impediment['ImpedimentType'])
+            ->where('Status', $impediment['Status'])->first();
+
+            if($impedimentType == null)
+                return $returnItem;
+
+            $iconUrl = ($impedimentType->Icon !== null) ? asset(Storage::url($impedimentType->Icon)) :
+            asset('assets/images/marcador-de-localizacao.png');
+
+            if($impedimentType->IsBlocked == "Sim"){
+                $returnItem[] = [
+                    'impedimentType' => $impedimentType->ImpedimentType,
+                    'icon' =>  trim($iconUrl)
+                ];
+            }
+        }
+
+        if(empty($returnItem)){
+            $returnItem = null;
+        }
+
+        return $returnItem;
+    }
 }

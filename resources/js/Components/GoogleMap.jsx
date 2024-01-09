@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import MarkerModal from "../Components/GoogleMapMarkerModal";
-import TowerSelectButton from "./MapsComponents/TowerSelectButton";
 import FloatingButton from "./FloatingButton";
 import { ProgressBar, Spinner } from "react-bootstrap"; // Import ProgressBar from react-bootstrap
 import "bootstrap/dist/css/bootstrap.min.css";
 import UtmConverter from "./Converters/UtmConverter";
 import './css/Spinner.css';
+import './MapsComponents/GoogleMapsIcons.css';
 
 const GoogleMap = () => {
     const [markerData, setMarkerData] = useState(null);
@@ -29,7 +29,6 @@ const GoogleMap = () => {
     const [updDistance, setUpdDistance] = useState(0);
 
     const [isDebugMode, setIsDebugMode] = useState(false);
-
 
     let mouseLatLng = null;
     const radius = 30000;
@@ -104,6 +103,43 @@ const GoogleMap = () => {
         ) {
             // Marker data not available or not in the expected format
             return;
+        }
+
+        class CustomOverlay extends google.maps.OverlayView {
+            constructor(marker, icons, map) {
+                super();
+                this.marker = marker;
+                this.icons = icons;
+                this.map = map;
+                this.div = null;
+                this.setMap(map);
+            }
+
+            onAdd() {
+                this.div = document.createElement('div');
+                this.div.style.position = 'absolute';
+                this.div.style.display = 'none';
+                this.div.innerHTML = this.icons;
+
+                const panes = this.getPanes();
+                panes.overlayMouseTarget.appendChild(this.div);
+            }
+
+            draw() {
+                const overlayProjection = this.getProjection();
+                const markerPosition = this.marker.getPosition();
+                const point = overlayProjection.fromLatLngToDivPixel(markerPosition);
+
+                this.div.style.left = point.x + 'px';
+                this.div.style.top = (point.y + 40) + 'px'; // Adjust the value to position the overlay below the marker
+            }
+
+            onRemove() {
+                if (this.div) {
+                    this.div.parentNode.removeChild(this.div);
+                    this.div = null;
+                }
+            }
         }
 
         // Map initialization logic
@@ -187,12 +223,68 @@ const GoogleMap = () => {
                           : icon,
             });
 
+            // Define HTML content for the custom overlay
+
+
+            // const iconsHTML =
+            // '<div class="icons-bar">' +
+            //     '<div class="icon-box"><img src="http://127.0.0.1:8080/storage/icons/icone_6592073de2da55.31220336.png" /><div class="icon-date">02/01/2024</div></div>' +
+            //     '<div class="icon-box"><img src="http://127.0.0.1:8080/storage/icons/icone_6592073de2da55.31220336.png" /><div class="icon-date">02/01/2024</div></div>' +
+            // '</div>';
+
+            let iconsHTML = null;
+
+            if(markerInfo.iconsbarImpediment){
+                if(markerInfo.iconsbarImpediment){
+                    iconsHTML = '<div class="icons-bar">';
+
+                    markerInfo.iconsbarImpediment.forEach(impediment => {
+                        iconsHTML +=
+                            `<div class="icon-box">
+                                <img src="${impediment.icon}" />
+                                <div class="icon-date">${impediment.impedimentType}</div>
+                            </div>`;
+                    });
+
+                    iconsHTML += '</div>';
+                }
+            }else{
+                if(markerInfo.iconsbarActivity){
+                    iconsHTML = '<div class="icons-bar">';
+
+                    markerInfo.iconsbarActivity.forEach(activity => {
+                        iconsHTML +=
+                            `<div class="icon-box">
+                                <img src="${activity.icon}" />
+                                <div class="icon-date">${activity.date}</div>
+                            </div>`;
+                    });
+
+                    iconsHTML += '</div>';
+                }
+            }
+
+           // Create the custom overlay
+            const customOverlay = new CustomOverlay(marker, iconsHTML, map);
+
             // Adiciona um InfoWindow vazio ao marcador
             const infowindow = new google.maps.InfoWindow();
-            infowindow.setOptions({ disableAutoPan: true });
+            infowindow.setOptions({ disableAutoPan: false });
 
             // Adiciona ouvinte de evento para exibir o InfoWindow no mouseover
             marker.addListener("mouseover", function () {
+
+                // Define HTML content for the custom overlay
+                customOverlay.div.style.display = 'block';
+
+                // const icon1 = "<img src='http://127.0.0.1:8080/storage/icons/icone_6592073de2da55.31220336.png' style='width: 20px; height: 20px;' />";
+                // const icon2 = "<img src='http://127.0.0.1:8080/storage/icons/icone_6592073de2da55.31220336.png' style='width: 20px; height: 20px;' />";
+                // const icon3 = "<img src='http://127.0.0.1:8080/storage/icons/icone_6592073de2da55.31220336.png' style='width: 20px; height: 20px;' />";
+                // const icon4 = "<img src='http://127.0.0.1:8080/storage/icons/icone_6592073de2da55.31220336.png' style='width: 20px; height: 20px;' />";
+
+                // const iconsContainer = `<div style='margin-top: 10px;'>${icon1} ${icon2} ${icon3} ${icon4}</div>`;
+
+
                 // Obtém a última atividade realizada
                 const lastActivity = markerInfo.config_icon.activitie
                     ? `<br><b>Última Atividade:</b> ${markerInfo.config_icon.activitie}`
@@ -232,15 +324,20 @@ const GoogleMap = () => {
                 // Atualiza o conteúdo do InfoWindow com as informações formatadas
                 infowindow.setContent(
                     `<b>Torre:</b> ${markerInfo.label.text}${lastActivity}${impedimentosInfo}${receiveStatusInfo}`,
+                    // `<b>Torre:</b> ${markerInfo.label.text}${lastActivity}${impedimentosInfo}${receiveStatusInfo}${iconsContainer}`,
                 );
 
                 // Abre o InfoWindow
                 infowindow.open(map, marker);
+
+
             });
 
             // Adiciona ouvinte de evento para fechar o InfoWindow no mouseout
             marker.addListener("mouseout", function () {
                 infowindow.close();
+
+                customOverlay.div.style.display = 'none';
             });
 
             // Add a listener for dragend event
@@ -274,7 +371,7 @@ const GoogleMap = () => {
                     lng: parseFloat(event.latLng.lng())
                 })
 
-                console.log()
+                // console.log(currentCalledLatLng)
 
                 // console.log(result)
                 setActualCoordinate({
@@ -323,6 +420,46 @@ const GoogleMap = () => {
                 // }
 
             });
+
+            // map.addListener("rightclick", (e) => {
+            //     const newMarker = new window.google.maps.Marker({
+            //             type: 'any',
+            //             name: 'newMarker',
+            //             position: {
+            //                 lat: currentCalledLatLng.lat,
+            //                 lng: currentCalledLatLng.lng,
+            //                 utmx: 831737.963,
+            //                 utmy: 9677172.421,
+            //                 zone: -20,
+            //                 tower: null
+            //             },
+            //             label: {
+            //                 color: 'blue',
+            //                 text: 'newMarker',
+            //                 towerId: null,
+            //                 project: null,
+            //                 oringalNumber:null,
+            //                 originalName: null
+            //             },
+            //             avc: 0,
+            //             draggable: true,
+            //             config_icon: {
+            //                 activitie: null,
+            //                 date: null,
+            //                 icon: ''
+            //             },
+            //             impediment_icon: null,
+            //             Impediments: [
+            //             ],
+            //             SolicitationDate: "",
+            //             ReceiveDate: "",
+            //             PreviousReceiveDate: "",
+            //             ReceiveStatus: ""
+            //     });
+            //     setMarkerData(prevData => Array.isArray(prevData) ? [...prevData, newMarker] : [newMarker]);
+            // });
+
+
         });
     };
 
@@ -432,6 +569,7 @@ const GoogleMap = () => {
         });
     };
 
+
     function getUtmZone(latitude, longitude) {
         // Calculate the standard UTM zone
         let zone = Math.floor((longitude + 180) / 6) + 1;
@@ -499,6 +637,7 @@ const GoogleMap = () => {
     };
 
 
+
     return (
         <div>
             {loading && (
@@ -532,7 +671,8 @@ const GoogleMap = () => {
                 markerInfo={selectedMarker}
                 onClose={handleCloseModal}
             />
-            <FloatingButton map={map} />
+            <FloatingButton map={map} setMarkerData={setMarkerData}
+                currentCalledLatLng={(currentCalledLatLng) ? currentCalledLatLng : firstCalledLatLng } />
         </div>
     );
 };
