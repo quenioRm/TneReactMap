@@ -86,7 +86,7 @@ export default function Login({
                             }
                         />
                         <span className="ms-2 text-sm text-gray-600">
-                            Remember me
+                            Salvar dados
                         </span>
                     </label>
                 </div>
@@ -94,10 +94,11 @@ export default function Login({
                 <div className="flex items-center justify-end mt-4">
                     {canResetPassword && (
                         <Link
+                        style={{ position: "relative", left: "-40px" }}
                             href={route("password.request")}
                             className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
-                            Forgot your password?
+                            Perdeu sua senha?
                         </Link>
                     )}
 
@@ -106,7 +107,7 @@ export default function Login({
                         href={route("register")}
                         className="ms-4"
                     >
-                        Register
+                        Registro
                     </Link>
                     <PrimaryButton className="ms-4" disabled={processing}>
                         Log in

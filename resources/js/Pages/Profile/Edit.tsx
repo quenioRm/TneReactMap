@@ -15,7 +15,7 @@ export default function Edit({
             user={auth.user}
             header={
                 <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                    Profile
+                    Perfil
                 </h2>
             }
         >
