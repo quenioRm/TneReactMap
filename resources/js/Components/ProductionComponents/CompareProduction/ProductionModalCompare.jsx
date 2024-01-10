@@ -96,7 +96,7 @@ const ProductionModalCompare = ({ uniqueProjects, show, handleClose }) => {
 
         try {
             const response = await axios.post(
-                "/api/production/getperiodproductionchartcompare",
+                "/production/getperiodproductionchartcompare",
                 requestData,
             );
             if (response.status === 200 && response.data) {
@@ -115,7 +115,7 @@ const ProductionModalCompare = ({ uniqueProjects, show, handleClose }) => {
 
     const fetchActivities = async () => {
         try {
-            const response = await axios.get("/api/markers");
+            const response = await axios.get("/markers");
             setActivities(response.data);
         } catch (error) {
             console.error("Error fetching activities:", error);

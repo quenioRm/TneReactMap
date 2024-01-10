@@ -14,7 +14,7 @@ const MarkerManager = ({ show, onHide }) => {
     // Function to fetch markers from the API
     const fetchMarkers = async () => {
         try {
-            const response = await fetch("/api/markers");
+            const response = await fetch("/markers");
             const data = await response.json();
             setMarkers(data);
         } catch (error) {
@@ -44,7 +44,7 @@ const MarkerManager = ({ show, onHide }) => {
             formData.append("unidade", unidade);
             formData.append("icone", icone);
 
-            const response = await fetch("/api/markers", {
+            const response = await fetch("/markers", {
                 method: "POST",
                 body: formData,
             });
@@ -78,7 +78,7 @@ const MarkerManager = ({ show, onHide }) => {
                 formData.append("icone", icone);
             }
 
-            const response = await fetch(`/api/markers/${id}`, {
+            const response = await fetch(`/markers/${id}`, {
                 method: "POST", // Ainda usamos POST, pois alguns servidores podem não entender PUT diretamente
                 body: formData,
             });
@@ -120,7 +120,7 @@ const MarkerManager = ({ show, onHide }) => {
 
     const handleDeleteMarker = async (id) => {
         try {
-            const response = await fetch(`/api/markers/${id}`, {
+            const response = await fetch(`/markers/${id}`, {
                 method: "DELETE",
             });
 

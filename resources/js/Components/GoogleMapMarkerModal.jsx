@@ -33,7 +33,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     const fetchTowerImages = async () => {
         try {
             const response = await axios.get(
-                `/api/get-towerimages/${markerInfo.label.towerId}`,
+                `/get-towerimages/${markerInfo.label.towerId}`,
             );
             setTowerImages(response.data.files);
             setLoading(false);
@@ -45,7 +45,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     const fetchTowerProduction = async () => {
         try {
             const response = await axios.get(
-                `/api/get-towerproduction/${markerInfo.label.towerId}/${markerInfo.label.project}`,
+                `/get-towerproduction/${markerInfo.label.towerId}/${markerInfo.label.project}`,
             );
             setTowerProduction(response.data);
         } catch (error) {
@@ -80,7 +80,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                 formData.append("images[]", file);
             }
 
-            await axios.post("/api/upload-images", formData);
+            await axios.post("/upload-images", formData);
 
             // Atualize a lista de imagens após o upload
             fetchTowerImages();

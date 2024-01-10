@@ -36,7 +36,7 @@ const ProductionTable = () => {
         const fetchProjects = async () => {
             try {
                 const response = await axios.get(
-                    "/api/towers/getuniqueprojects",
+                    "/towers/getuniqueprojects",
                 );
                 setUniqueProjects(response.data);
                 console.log(response.data);
@@ -55,8 +55,8 @@ const ProductionTable = () => {
         const fetchData = async () => {
             try {
                 const endpoint = selectedProject
-                    ? `/api/production/getLatestProduction/${selectedProject}`
-                    : `/api/production/getLatestProduction`;
+                    ? `/production/getLatestProduction/${selectedProject}`
+                    : `/production/getLatestProduction`;
                 const response = await axios.get(endpoint);
                 setProductionData(response.data);
                 // Atualiza o estado de visibilidade para as novas atividades

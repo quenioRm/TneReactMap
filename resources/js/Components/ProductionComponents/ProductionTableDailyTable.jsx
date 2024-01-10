@@ -60,8 +60,8 @@ const ProductionTableDailyTable = () => {
             setIsLoading(true);
             try {
                 const endpoint = selectedProject
-                    ? `/api/production/getperiodProduction/${startDate}/${finishDate}/${selectedProject}`
-                    : `/api/production/getperiodProduction/${startDate}/${finishDate}/`;
+                    ? `/production/getperiodProduction/${startDate}/${finishDate}/${selectedProject}`
+                    : `/production/getperiodProduction/${startDate}/${finishDate}/`;
                 const response = await axios.get(endpoint);
                 setProductionData(response.data);
             } catch (error) {
@@ -117,7 +117,7 @@ const ProductionTableDailyTable = () => {
         const fetchProjects = async () => {
             try {
                 const response = await axios.get(
-                    "/api/towers/getuniqueprojects",
+                    "/towers/getuniqueprojects",
                 );
                 setUniqueProjects(response.data);
             } catch (error) {

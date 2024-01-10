@@ -36,7 +36,7 @@ const TowerStatusChart = () => {
 
     useEffect(() => {
         // Faça a solicitação à API para obter a lista de projetos
-        fetch("/api/towers/getuniqueprojects")
+        fetch("/towers/getuniqueprojects")
             .then((response) => response.json())
             .then((data) => {
                 // Armazene a lista de projetos no estado
@@ -50,7 +50,7 @@ const TowerStatusChart = () => {
     useEffect(() => {
         // Faça a solicitação à API para obter os dados do gráfico quando selectedProject mudar ou ao iniciar o componente
         if (selectedProject || selectedProject === "") {
-            fetch(`/api/towers/gettowerssolicitations/${selectedProject || ""}`)
+            fetch(`/towers/gettowerssolicitations/${selectedProject || ""}`)
                 .then((response) => response.json())
                 .then((data) => {
                     // Armazene os dados do gráfico no estado

@@ -14,7 +14,7 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
     // Function to fetch markers from the API
     const fetchMarkers = async () => {
         try {
-            const response = await axios.get("/api/markersimpediments");
+            const response = await axios.get("/markersimpediments");
             setMarkers(response.data);
         } catch (error) {
             console.error("Error fetching markers:", error);
@@ -50,7 +50,7 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
             formData.append("IsBlocked", isBlocked);
 
             const response = await axios.post(
-                "/api/markersimpediments",
+                "/markersimpediments",
                 formData,
             );
 
@@ -85,7 +85,7 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
                 formData.append("Icon", icon);
             }
 
-            const response = await fetch(`/api/markersimpediments/${id}`, {
+            const response = await fetch(`/markersimpediments/${id}`, {
                 method: "POST", // Ainda usamos POST, pois alguns servidores podem não entender PUT diretamente
                 body: formData,
             });
@@ -127,7 +127,7 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
 
     const handleDeleteMarker = async (id) => {
         try {
-            const response = await fetch(`/api/markersimpediments/${id}`, {
+            const response = await fetch(`/markersimpediments/${id}`, {
                 method: "DELETE",
             });
 

@@ -14,7 +14,7 @@ const ImportImpedimentsModal = ({ show, onHide }) => {
     const handleImportTowers = async (formData) => {
         setImporting(true); // Set the importing state to true when starting the import
         try {
-            const response = await fetch("/api/towers/importimpediments", {
+            const response = await fetch("/towers/importimpediments", {
                 method: "POST",
                 body: formData,
                 headers: {
