@@ -9,7 +9,7 @@ const TowerSelectionModal = ({ rMap, show, onClose }) => {
     useEffect(() => {
         const fetchTowers = async () => {
             try {
-                const response = await fetch("/towers/gettowers");
+                const response = await fetch("/api/towers/gettowers");
                 const data = await response.json();
                 setTowers(data);
             } catch (error) {

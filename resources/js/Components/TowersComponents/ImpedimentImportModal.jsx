@@ -16,7 +16,7 @@ const ImportImpedimentsModal = ({ show, onHide }) => {
         setImporting(true); // Set the importing state to true when starting the import
         try {
             const response = await axios.post(
-                "/towers/importimpediments",
+                "/api/towers/importimpediments",
                 formData,
                 {
                     headers: {

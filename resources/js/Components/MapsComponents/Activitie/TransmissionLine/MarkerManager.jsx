@@ -30,7 +30,7 @@ const MarkerManager = ({ show, onHide }) => {
     // Function to fetch markers from the API
     const fetchMarkers = async () => {
         try {
-            const response = await axios.get("/markers");
+            const response = await axios.get("/api/markers");
             const data = response.data;
             setMarkers(data);
         } catch (error) {
@@ -45,7 +45,7 @@ const MarkerManager = ({ show, onHide }) => {
             formData.append("unidade", unidade);
             formData.append("icone", icone);
 
-            const response = await axios.post("/markers", formData);
+            const response = await axios.post("/api/markers", formData);
 
             if (response.status === 200) {
                 const data = response.data;
@@ -71,7 +71,7 @@ const MarkerManager = ({ show, onHide }) => {
                 formData.append("icone", icone);
             }
 
-            const response = await axios.post(`/markers/${id}`, formData);
+            const response = await axios.post(`/api/markers/${id}`, formData);
 
             if (response.status === 200) {
                 const data = response.data;
@@ -107,7 +107,7 @@ const MarkerManager = ({ show, onHide }) => {
 
     const handleDeleteMarker = async (id) => {
         try {
-            const response = await axios.delete(`/markers/${id}`);
+            const response = await axios.delete(`/api/markers/${id}`);
 
             if (response.status === 200) {
                 setMarkers((prevMarkers) =>

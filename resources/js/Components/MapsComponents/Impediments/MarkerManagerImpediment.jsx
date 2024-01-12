@@ -29,7 +29,7 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
     // Function to fetch markers from the API
     const fetchMarkers = async () => {
         try {
-            const response = await axios.get("/markersimpediments");
+            const response = await axios.get("/api/markersimpediments");
             setMarkers(response.data);
         } catch (error) {
             console.error("Error fetching markers:", error);
@@ -49,7 +49,7 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
             formData.append("Icon", icon);
             formData.append("IsBlocked", isBlocked);
 
-            const response = await axios.post("/markersimpediments", formData);
+            const response = await axios.post("/api/markersimpediments", formData);
 
             if (!response.data) {
                 throw new Error("Erro ao salvar o marcador");
@@ -83,7 +83,7 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
             }
 
             const response = await axios.post(
-                `/markersimpediments/${id}`,
+                `/api/markersimpediments/${id}`,
                 formData,
             );
 
@@ -121,7 +121,7 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
 
     const handleDeleteMarker = async (id) => {
         try {
-            const response = await axios.delete(`/markersimpediments/${id}`);
+            const response = await axios.delete(`/api/markersimpediments/${id}`);
 
             if (response.status === 200) {
                 setMarkers((prevMarkers) =>

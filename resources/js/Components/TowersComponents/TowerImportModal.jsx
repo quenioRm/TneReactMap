@@ -15,7 +15,7 @@ const ImportTowersModal = ({ show, onHide }) => {
     const handleImportTowers = async (formData) => {
         setImporting(true); // Set the importing state to true when starting the import
         try {
-            const response = await axios.post("/towers/import", formData, {
+            const response = await axios.post("/api/towers/import", formData, {
                 headers: {
                     // Add necessary headers, such as authorization headers
                 },

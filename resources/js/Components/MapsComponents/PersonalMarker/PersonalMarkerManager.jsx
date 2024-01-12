@@ -30,8 +30,8 @@ const PersonalMarkerManager = ({ show, onHide }) => {
     // Function to fetch markers from the API
     const fetchMarkers = async () => {
         try {
-            const response = await axios.get("/personalmarkers");
-            console.log(response.data);
+            const response = await axios.get("/api/personalmarkers");
+            // console.log(response.data);
             setPersonalMarkers(response.data);
         } catch (error) {
             console.error("Error fetching personalmarkers:", error);
@@ -56,7 +56,7 @@ const PersonalMarkerManager = ({ show, onHide }) => {
             formData.append("type", type);
             formData.append("icon", icon);
 
-            const response = await axios.post("/personalmarkers", formData);
+            const response = await axios.post("/api/personalmarkers", formData);
 
             if (!response.data) {
                 handleSuccessMessage();
@@ -93,7 +93,7 @@ const PersonalMarkerManager = ({ show, onHide }) => {
             }
 
             const response = await axios.post(
-                `/personalmarkers/${id}`,
+                `/api/personalmarkers/${id}`,
                 formData,
             );
 
@@ -130,7 +130,7 @@ const PersonalMarkerManager = ({ show, onHide }) => {
 
     const handleDeleteMarker = async (id) => {
         try {
-            const response = await axios.delete(`/personalmarkers/${id}`);
+            const response = await axios.delete(`/api/personalmarkers/${id}`);
 
             if (response.status !== 200) {
                 throw new Error("Failed to delete marker");

@@ -10,13 +10,13 @@ import Swal from "sweetalert2";
 
 const appName = import.meta.env.VITE_APP_NAME || "TNEAPP";
 
-const csrfToken = (
-    document.head.querySelector('meta[name="csrf-token"]') as HTMLMetaElement
-)?.content;
+// const csrfToken = (
+//     document.head.querySelector('meta[name="csrf-token"]') as HTMLMetaElement
+// )?.content;
 
-axios.defaults.headers.common["X-CSRF-TOKEN"] = csrfToken;
+// axios.defaults.headers.common["X-CSRF-TOKEN"] = csrfToken;
 
-console.log(csrfToken);
+// console.log(csrfToken);
 
 axios.interceptors.response.use(
     (response) => {
