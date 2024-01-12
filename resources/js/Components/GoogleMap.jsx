@@ -468,7 +468,7 @@ const GoogleMap = () => {
         };
 
         await axios
-            .post("/get-coordinatesbyrange", payload)
+            .get("/get-coordinatesbyrange", payload)
             .then((response) => {
                 const latestItem = response.data[response.data.length - 1];
 
