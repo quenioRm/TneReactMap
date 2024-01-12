@@ -9,7 +9,7 @@ use App\Http\Controllers\MarkerConfigController;
 use App\Http\Controllers\MarkerConfigImpedimentController;
 use App\Http\Controllers\TowerController;
 use App\Http\Controllers\ProductionController;
-
+use App\Http\Controllers\PersonalMarkerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,9 +60,11 @@ Route::middleware(['role:confirmedUser'])->group(function () {
 
     Route::resource('markersimpediments', MarkerConfigImpedimentController::class);
 
+    // Imports ///////////////////////////////////////////////////////////////////////////////////////////////
     Route::post('towers/import', [TowerController::class, 'ImportTowersFromExcelFile']);
 
     Route::post('towers/importimpediments', [TowerController::class, 'ImportTowersImpedimentsFromExcelFile']);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     Route::get('towers/getuniqueprojects', [TowerController::class, 'GetUniqueProjects']);
 
@@ -76,6 +78,12 @@ Route::middleware(['role:confirmedUser'])->group(function () {
 
     Route::post('production/getperiodproductionchartcompare',
         [ProductionController::class, 'getperiodProductionChartCompare']);
+
+
+    ///// Add Personal Marker //////////////////////
+
+    Route::resource('personalmarkers', PersonalMarkerController::class);
+    ////////////////////////////////////////////
 
 });
 

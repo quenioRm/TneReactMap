@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Container, Row, Col } from "react-bootstrap";
-import MarkerConfigImpedimentModal from "./MarkerConfigImpedimentModal";
-import MarkerListImpediment from "./MarkerListImpediment";
+import MarkerConfigModal from "./MarkerConfigModal";
+import MarkerList from "./MarkerList";
 import { ToastContainer, toast } from "react-toastify";
+import TowerImportModal from "../../../TowersComponents/TowerImportModal";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
-const MarkerManagerImpediment = ({ show, onHide }) => {
+const MarkerManagerSub = ({ show, onHide }) => {
     const [editedMarker, setEditedMarker] = useState(null);
     const [markers, setMarkers] = useState([]);
     const [configModalShow, setConfigModalShow] = useState(false);
@@ -29,63 +30,48 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
     // Function to fetch markers from the API
     const fetchMarkers = async () => {
         try {
-            const response = await axios.get("/markersimpediments");
-            setMarkers(response.data);
+            const response = await axios.get("/markers");
+            const data = response.data;
+            setMarkers(data);
         } catch (error) {
             console.error("Error fetching markers:", error);
         }
     };
 
-    const handleSaveMarker = async ({
-        impedimentType,
-        status,
-        icon,
-        isBlocked,
-    }) => {
+    const handleSaveMarker = async ({ atividade, icone, unidade }) => {
         try {
             const formData = new FormData();
-            formData.append("ImpedimentType", impedimentType);
-            formData.append("Status", status);
-            formData.append("Icon", icon);
-            formData.append("IsBlocked", isBlocked);
+            formData.append("atividade", atividade);
+            formData.append("unidade", unidade);
+            formData.append("icone", icone);
 
-            const response = await axios.post("/markersimpediments", formData);
+            const response = await axios.post("/markers", formData);
 
-            if (!response.data) {
+            if (response.status === 200) {
+                const data = response.data;
+                updateMarkersList(data);
+                toast.success("Marcador salvo com sucesso");
+            } else {
+                handleSuccessMessage();
                 throw new Error("Erro ao salvar o marcador");
             }
-
-            updateMarkersList(response.data);
-            toast.success("Marcador salvo com sucesso");
         } catch (error) {
-            console.error("Erro ao salvar o marcador:", error.message);
-            toast.error("Erro ao salvar o marcador: " + error.message);
+            toast.error(error.message);
         }
     };
 
-    const handleUpdateMarker = async ({
-        id,
-        impedimentType,
-        status,
-        icon,
-        isBlocked,
-    }) => {
+    const handleUpdateMarker = async ({ id, atividade, icone, unidade }) => {
         try {
             const formData = new FormData();
             formData.append("_method", "PUT");
-            formData.append("ImpedimentType", impedimentType);
-            formData.append("Status", status);
-            formData.append("IsBlocked", isBlocked);
+            formData.append("atividade", atividade);
+            formData.append("unidade", unidade);
 
-            // If a new icon is provided, add it to the FormData
-            if (icon instanceof File) {
-                formData.append("Icon", icon);
+            if (icone instanceof File) {
+                formData.append("icone", icone);
             }
 
-            const response = await axios.post(
-                `/markersimpediments/${id}`,
-                formData,
-            );
+            const response = await axios.post(`/markers/${id}`, formData);
 
             if (response.status === 200) {
                 const data = response.data;
@@ -101,16 +87,16 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
     };
 
     const updateMarkersList = (newMarker) => {
-        // Check if the new marker already exists in the list by ID
+        // Verifica se o novo marcador já existe na lista pelo ID
         const isMarkerAlreadyExists = markers.some(
             (marker) => marker.id === newMarker.id,
         );
 
-        // If the marker does not exist, add it to the list
+        // Se o marcador não existir, adicione-o à lista
         if (!isMarkerAlreadyExists) {
             setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
         } else {
-            // If the marker already exists, update the list
+            // Se o marcador já existir, atualize a lista
             setMarkers((prevMarkers) =>
                 prevMarkers.map((marker) =>
                     marker.id === newMarker.id ? newMarker : marker,
@@ -121,14 +107,14 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
 
     const handleDeleteMarker = async (id) => {
         try {
-            const response = await axios.delete(`/markersimpediments/${id}`);
+            const response = await axios.delete(`/markers/${id}`);
 
             if (response.status === 200) {
                 setMarkers((prevMarkers) =>
                     prevMarkers.filter((m) => m.id !== id),
                 );
                 toast.success("Deletado com sucesso!");
-                handleCloseModal(); // Close modal after successful deletion
+                handleCloseModal();
             } else {
                 throw new Error("Failed to delete marker");
             }
@@ -141,9 +127,7 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
         <>
             <Modal show={show} onHide={onHide} size="lg">
                 <Modal.Header closeButton>
-                    <Modal.Title>
-                        Gerenciar Marcadores - Impedimentos
-                    </Modal.Title>
+                    <Modal.Title>Gerenciar Marcadores - Atividades</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Container>
@@ -159,7 +143,7 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
                         </Row>
                         <Row>
                             <Col>
-                                <MarkerListImpediment
+                                <MarkerList
                                     markers={markers}
                                     onEdit={handleShowModal}
                                     onDelete={handleDeleteMarker}
@@ -167,7 +151,7 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
                             </Col>
                         </Row>
                     </Container>
-                    <MarkerConfigImpedimentModal
+                    <MarkerConfigModal
                         show={configModalShow}
                         onHide={handleCloseModal}
                         onSave={handleSaveMarker}
@@ -181,4 +165,4 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
     );
 };
 
-export default MarkerManagerImpediment;
+export default MarkerManagerSub;

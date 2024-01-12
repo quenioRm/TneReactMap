@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, ProgressBar } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
 
 const ImportTowersModal = ({ show, onHide }) => {
     const [file, setFile] = useState(null);
@@ -14,15 +15,13 @@ const ImportTowersModal = ({ show, onHide }) => {
     const handleImportTowers = async (formData) => {
         setImporting(true); // Set the importing state to true when starting the import
         try {
-            const response = await fetch("/towers/import", {
-                method: "POST",
-                body: formData,
+            const response = await axios.post("/towers/import", formData, {
                 headers: {
                     // Add necessary headers, such as authorization headers
                 },
             });
 
-            if (response.ok) {
+            if (response.status === 200) {
                 toast.success("Estruturas importadas com sucesso!");
             } else {
                 toast.error(

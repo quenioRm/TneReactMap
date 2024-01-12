@@ -94,7 +94,7 @@ export default function Login({
                 <div className="flex items-center justify-end mt-4">
                     {canResetPassword && (
                         <Link
-                        style={{ position: "relative", left: "-40px" }}
+                            style={{ position: "relative", left: "-40px" }}
                             href={route("password.request")}
                             className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >

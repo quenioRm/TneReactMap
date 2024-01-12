@@ -3,24 +3,14 @@ import { Modal, Button, Container, Row, Col } from "react-bootstrap";
 import MarkerConfigModal from "./MarkerConfigModal";
 import MarkerList from "./MarkerList";
 import { ToastContainer, toast } from "react-toastify";
-import TowerImportModal from "../../TowersComponents/TowerImportModal";
+import TowerImportModal from "../../../TowersComponents/TowerImportModal";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 const MarkerManager = ({ show, onHide }) => {
     const [editedMarker, setEditedMarker] = useState(null);
     const [markers, setMarkers] = useState([]);
     const [configModalShow, setConfigModalShow] = useState(false);
-
-    // Function to fetch markers from the API
-    const fetchMarkers = async () => {
-        try {
-            const response = await fetch("/markers");
-            const data = await response.json();
-            setMarkers(data);
-        } catch (error) {
-            console.error("Error fetching markers:", error);
-        }
-    };
 
     useEffect(() => {
         // Fetch markers when the component mounts
@@ -37,6 +27,17 @@ const MarkerManager = ({ show, onHide }) => {
         setConfigModalShow(false);
     };
 
+    // Function to fetch markers from the API
+    const fetchMarkers = async () => {
+        try {
+            const response = await axios.get("/markers");
+            const data = response.data;
+            setMarkers(data);
+        } catch (error) {
+            console.error("Error fetching markers:", error);
+        }
+    };
+
     const handleSaveMarker = async ({ atividade, icone, unidade }) => {
         try {
             const formData = new FormData();
@@ -44,24 +45,17 @@ const MarkerManager = ({ show, onHide }) => {
             formData.append("unidade", unidade);
             formData.append("icone", icone);
 
-            const response = await fetch("/markers", {
-                method: "POST",
-                body: formData,
-            });
+            const response = await axios.post("/markers", formData);
 
-            if (!response.ok) {
-                //   console.error('Erro ao salvar o marcador:', response.statusText);
-                //   Notification.showToast('Erro ao salvar o marcador: '+ response.statusText);
+            if (response.status === 200) {
+                const data = response.data;
+                updateMarkersList(data);
+                toast.success("Marcador salvo com sucesso");
+            } else {
                 handleSuccessMessage();
                 throw new Error("Erro ao salvar o marcador");
             }
-
-            const data = await response.json();
-            updateMarkersList(data);
-            // console.log('Marcador salvo com sucesso:', data);
-            toast.success("Marcador salvo com sucesso");
         } catch (error) {
-            // console.error('Erro ao salvar o marcador:', error.message);
             toast.error(error.message);
         }
     };
@@ -69,32 +63,25 @@ const MarkerManager = ({ show, onHide }) => {
     const handleUpdateMarker = async ({ id, atividade, icone, unidade }) => {
         try {
             const formData = new FormData();
-            formData.append("_method", "PUT"); // Indica que estamos utilizando o método PUT
+            formData.append("_method", "PUT");
             formData.append("atividade", atividade);
             formData.append("unidade", unidade);
 
-            // Se um novo ícone for fornecido, adicione-o ao FormData
             if (icone instanceof File) {
                 formData.append("icone", icone);
             }
 
-            const response = await fetch(`/markers/${id}`, {
-                method: "POST", // Ainda usamos POST, pois alguns servidores podem não entender PUT diretamente
-                body: formData,
-            });
+            const response = await axios.post(`/markers/${id}`, formData);
 
-            if (!response.ok) {
-                // console.error('Erro ao atualizar o marcador:', response.statusText);
+            if (response.status === 200) {
+                const data = response.data;
+                updateMarkersList(data);
+                toast.success("Marcador atualizado com sucesso!");
+            } else {
                 toast.error(response.statusText);
                 throw new Error("Erro ao atualizar o marcador");
             }
-
-            const data = await response.json();
-            updateMarkersList(data);
-            //   console.log('Marcador atualizado com sucesso:', data);
-            toast.success("Marcador atualizado com sucesso!");
         } catch (error) {
-            //   console.error('Erro ao atualizar o marcador:', error.message);
             toast.error(error.message);
         }
     };
@@ -120,20 +107,19 @@ const MarkerManager = ({ show, onHide }) => {
 
     const handleDeleteMarker = async (id) => {
         try {
-            const response = await fetch(`/markers/${id}`, {
-                method: "DELETE",
-            });
+            const response = await axios.delete(`/markers/${id}`);
 
-            if (!response.ok) {
+            if (response.status === 200) {
+                setMarkers((prevMarkers) =>
+                    prevMarkers.filter((m) => m.id !== id),
+                );
+                toast.success("Deletado com sucesso!");
+                handleCloseModal();
+            } else {
                 throw new Error("Failed to delete marker");
             }
-
-            setMarkers((prevMarkers) => prevMarkers.filter((m) => m.id !== id));
-            toast.success("Deletado com sucesso!");
-            handleCloseModal(); // Close modal after successful deletion
         } catch (error) {
-            //   console.error('Error deleting marker:', error);
-            toast.error("Error deleting marker: " + error);
+            toast.error("Error deleting marker: " + error.message);
         }
     };
 

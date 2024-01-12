@@ -116,9 +116,7 @@ const ProductionTableDailyTable = () => {
         setIsLoading(true);
         const fetchProjects = async () => {
             try {
-                const response = await axios.get(
-                    "/towers/getuniqueprojects",
-                );
+                const response = await axios.get("/towers/getuniqueprojects");
                 setUniqueProjects(response.data);
             } catch (error) {
                 console.error("Error fetching unique projects:", error);
@@ -142,7 +140,11 @@ const ProductionTableDailyTable = () => {
     return (
         <Container fluid>
             <br />
-            {selectedProject ? <h4>Relatório de produção por perido - {selectedProject}</h4> : <h4>Relatório de produção por perido</h4>}
+            {selectedProject ? (
+                <h4>Relatório de produção por perido - {selectedProject}</h4>
+            ) : (
+                <h4>Relatório de produção por perido</h4>
+            )}
             <br />
             <Row>
                 <Col>

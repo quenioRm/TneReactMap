@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Dropdown } from "react-bootstrap";
-import ImageUploadButton from "../../ImageUploadButton";
+import ImageUploadButton from "../../../ImageUploadButton";
 
 const MarkerConfigModal = ({
     show,

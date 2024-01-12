@@ -55,10 +55,10 @@ export default function DeleteUserForm({
                 </h2>
 
                 <p className="mt-1 text-sm text-gray-600">
-                Depois que sua conta for excluída, todos os seus recursos e dados
-                     será excluído permanentemente. Antes de excluir sua conta,
-                     baixe quaisquer dados ou informações que você deseja
-                     reter.
+                    Depois que sua conta for excluída, todos os seus recursos e
+                    dados será excluído permanentemente. Antes de excluir sua
+                    conta, baixe quaisquer dados ou informações que você deseja
+                    reter.
                 </p>
             </header>
 
@@ -69,14 +69,14 @@ export default function DeleteUserForm({
             <Modal show={confirmingUserDeletion} onClose={closeModal}>
                 <form onSubmit={deleteUser} className="p-6">
                     <h2 className="text-lg font-medium text-gray-900">
-                    Tem certeza de que deseja excluir sua conta?
+                        Tem certeza de que deseja excluir sua conta?
                     </h2>
 
                     <p className="mt-1 text-sm text-gray-600">
-                    Depois que sua conta for excluída, todos os seus recursos e
-                         os dados serão excluídos permanentemente. Por favor insira o seu
-                         senha para confirmar que você deseja excluir permanentemente
-                         sua conta.
+                        Depois que sua conta for excluída, todos os seus
+                        recursos e os dados serão excluídos permanentemente. Por
+                        favor insira o seu senha para confirmar que você deseja
+                        excluir permanentemente sua conta.
                     </p>
 
                     <div className="mt-6">

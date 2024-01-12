@@ -71,8 +71,9 @@ export default function Authenticated({
                                         </span>
                                     </Dropdown.Trigger>
 
-                                    <Dropdown.Content >
-                                        <Dropdown.Link className="no-underline-link"
+                                    <Dropdown.Content>
+                                        <Dropdown.Link
+                                            className="no-underline-link"
                                             href={route("profile.edit")}
                                         >
                                             Perfil

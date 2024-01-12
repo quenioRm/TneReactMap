@@ -150,6 +150,93 @@ class MapsController extends Controller
         return response()->json($markers);
     }
 
+    public function getCoordinatesByAnotherMarkers(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'inputX' => 'numeric',
+            'inputY' => 'numeric',
+            'radius' => 'numeric',
+            'getAllPoints' => 'boolean'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $inputX = $request->inputX;
+        $inputY = $request->inputY;
+        $radius = $request->radius;
+
+
+
+        if($radius == 0)
+            $radius = 30000;
+
+
+        $markers = [];
+        $listOfMarkers = Tower::get(); // Substitua por sua lógica para obter a lista de marcadores
+
+        foreach ($listOfMarkers as $markerData) {
+            // Carrega as coordenadas X e Y do marcador
+            $x = (float)$markerData['CoordinateX'];
+            $y = (float)$markerData['CoordinateY'];
+            $zone = (float)$markerData['Zone'];
+
+            // Calcula a distância do marcador para o ponto fornecido
+            $distance = sqrt(pow($x - $inputX, 2) + pow($y - $inputY, 2));
+
+            // Se o marcador está dentro do raio especificado, adiciona ao array de marcadores
+            if ($distance <= $radius) {
+
+                $latlng = null;
+
+                if ($zone < 0) {
+                    $latlng = CoordinateHelper::utm2ll($x, $y, $zone * -1, false);
+                }
+
+                if ($zone > 0) {
+                    $latlng = CoordinateHelper::utm2ll($x, $y, $zone * 1, true);
+                }
+
+                $newCoordinates = json_decode($latlng, true);
+
+                $markers[] = [
+                    'name' => $markerData['Number'] . " - " . $markerData['ProjectName'],
+                    'position' => [
+                        'lat' => $newCoordinates['attr']['lat'],
+                        'lng' => $newCoordinates['attr']['lon'],
+                        'utmx' => $markerData['CoordinateX'],
+                        'utmy' => $markerData['CoordinateY'],
+                        'zone' => $zone,
+                        'tower' => ''
+                    ],
+                    'label' => [
+                        'color' =>'blue',
+                        'text' => '',
+                        'towerId' => '',
+                        'project' => '',
+                        'oringalNumber' => '',
+                        'originalName' => ''
+                    ],
+                    'avc' => 0,
+                    'draggable' => true,
+                    'config_icon' => 'icone',
+                    'impediment_icon' => '',
+                    'Impediments' => null,
+                    'SolicitationDate' => null ,
+                    'ReceiveDate' => null,
+                    'PreviousReceiveDate' => null,
+                    'ReceiveStatus' => null,
+                    'iconsbarActivity' => null,
+                    'iconsbarImpediment' => null
+                ];
+            }
+        }
+
+        // Retorna os marcadores que estão dentro do raio especificado como uma resposta JSON
+        return response()->json($markers);
+    }
+
     public function getCoordinates()
     {
         // Use o Cache para armazenar e recuperar os dados

@@ -7,14 +7,14 @@ import {
     Tooltip,
 } from "react-bootstrap";
 import TowerSelectionModal from "./MapsComponents/TowerSelectionModal";
-import MarkerManager from "./MapsComponents/Activitie/MarkerManager";
+import MarkerManager from "./MapsComponents/Activitie/TransmissionLine/MarkerManager";
 import ImportTowersModal from "../Components/TowersComponents/TowerImportModal";
 import ImportImpedimentsModal from "../Components/TowersComponents/ImpedimentImportModal";
 import MarkerManagerImpediment from "../Components/MapsComponents/Impediments/MarkerManagerImpediment";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHandRock, faBars } from '@fortawesome/free-solid-svg-icons';
-import AddMarkerModal from './MapsComponents/AddMarker/AddMarkerModal';
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHandRock, faBars } from "@fortawesome/free-solid-svg-icons";
+import AddMarkerModal from "./MapsComponents/PersonalMarker/AddMarkerModal";
+import PersonalMarkerManager from "./MapsComponents/PersonalMarker/PersonalMarkerManager";
 
 const FloatingButton = ({ map, setMarkerData, currentCalledLatLng }) => {
     const [showTowerModal, setShowTowerModal] = useState(false);
@@ -93,27 +93,25 @@ const FloatingButton = ({ map, setMarkerData, currentCalledLatLng }) => {
                     id="dropdown-menu"
                 >
                     <Dropdown.Item onClick={handleShowTowerModal}>
-                        Selecionar Torre
+                        Selecionar Torre [LT]
                     </Dropdown.Item>
                     <Dropdown.Item onClick={handleShowManager}>
-                        Configurar Marcador - Atividade
+                        Configurar Marcador - Atividade [LT]
                     </Dropdown.Item>
                     <Dropdown.Item onClick={handleShowManageImpediment}>
-                        Configurar Marcador - Impedimento
+                        Configurar Marcador - Impedimento [LT]
                     </Dropdown.Item>
                     <Dropdown.Item onClick={handleShowImportTowerModal}>
-                        Importar Estruturas/Produção
+                        Importar Estruturas/Produção [LT]
                     </Dropdown.Item>
                     <Dropdown.Item
                         onClick={handleShowImportImpedimentTowerModal}
                     >
-                        Importar Impedimentos Estruturas
+                        Importar Impedimentos Estruturas [LT]
                     </Dropdown.Item>
-                    {/* <Dropdown.Item
-                        onClick={handleShowAddMarkerModal}
-                    >
-                        Adicionar Marcador
-                    </Dropdown.Item> */}
+                    <Dropdown.Item onClick={handleShowAddMarkerModal}>
+                        Adicionar Marcador Personalizado
+                    </Dropdown.Item>
                 </DropdownButton>
             </OverlayTrigger>
 
@@ -141,11 +139,10 @@ const FloatingButton = ({ map, setMarkerData, currentCalledLatLng }) => {
                 onHide={handleCloseImportImpedimentTowerModal}
             />
 
-            <AddMarkerModal
+            <PersonalMarkerManager
                 show={showAddMarkerModal}
-                handleClose={handleCloseAddMarkerModal}
+                onHide={handleCloseAddMarkerModal}
             />
-
         </div>
     );
 };

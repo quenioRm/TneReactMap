@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import TowerSelectionModal from "./TowerSelectionModal";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHandRock } from '@fortawesome/free-solid-svg-icons';
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHandRock } from "@fortawesome/free-solid-svg-icons";
 
 const TowerSelectButton = (rMap) => {
     const [showTowerModal, setShowTowerModal] = useState(null);

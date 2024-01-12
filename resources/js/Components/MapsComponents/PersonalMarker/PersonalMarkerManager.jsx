@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Container, Row, Col } from "react-bootstrap";
-import MarkerConfigImpedimentModal from "./MarkerConfigImpedimentModal";
-import MarkerListImpediment from "./MarkerListImpediment";
+import PersonalMarkerConfigModal from "./PersonalMarkerConfigModal";
+import PersonalMarkerList from "./PersonalMarkerList";
 import { ToastContainer, toast } from "react-toastify";
+// import TowerImportModal from "../../../TowersComponents/TowerImportModal";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
-const MarkerManagerImpediment = ({ show, onHide }) => {
+const PersonalMarkerManager = ({ show, onHide }) => {
     const [editedMarker, setEditedMarker] = useState(null);
-    const [markers, setMarkers] = useState([]);
+    const [personalMarkers, setPersonalMarkers] = useState([]);
     const [configModalShow, setConfigModalShow] = useState(false);
 
     useEffect(() => {
@@ -29,89 +30,97 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
     // Function to fetch markers from the API
     const fetchMarkers = async () => {
         try {
-            const response = await axios.get("/markersimpediments");
-            setMarkers(response.data);
+            const response = await axios.get("/personalmarkers");
+            console.log(response.data);
+            setPersonalMarkers(response.data);
         } catch (error) {
-            console.error("Error fetching markers:", error);
+            console.error("Error fetching personalmarkers:", error);
+            toast.error(error.message);
         }
     };
 
     const handleSaveMarker = async ({
-        impedimentType,
-        status,
+        name,
+        coordinateX,
+        coordinateY,
+        zone,
+        type,
         icon,
-        isBlocked,
     }) => {
         try {
             const formData = new FormData();
-            formData.append("ImpedimentType", impedimentType);
-            formData.append("Status", status);
-            formData.append("Icon", icon);
-            formData.append("IsBlocked", isBlocked);
+            formData.append("name", name);
+            formData.append("coordinateX", coordinateX);
+            formData.append("coordinateY", coordinateY);
+            formData.append("zone", zone);
+            formData.append("type", type);
+            formData.append("icon", icon);
 
-            const response = await axios.post("/markersimpediments", formData);
+            const response = await axios.post("/personalmarkers", formData);
 
             if (!response.data) {
+                handleSuccessMessage();
                 throw new Error("Erro ao salvar o marcador");
             }
 
             updateMarkersList(response.data);
             toast.success("Marcador salvo com sucesso");
         } catch (error) {
-            console.error("Erro ao salvar o marcador:", error.message);
-            toast.error("Erro ao salvar o marcador: " + error.message);
+            toast.error(error.message);
         }
     };
 
     const handleUpdateMarker = async ({
         id,
-        impedimentType,
-        status,
+        name,
+        coordinateX,
+        coordinateY,
+        zone,
+        type,
         icon,
-        isBlocked,
     }) => {
         try {
             const formData = new FormData();
             formData.append("_method", "PUT");
-            formData.append("ImpedimentType", impedimentType);
-            formData.append("Status", status);
-            formData.append("IsBlocked", isBlocked);
+            formData.append("name", name);
+            formData.append("coordinateX", coordinateX);
+            formData.append("coordinateY", coordinateY);
+            formData.append("zone", zone);
+            formData.append("type", type);
 
-            // If a new icon is provided, add it to the FormData
             if (icon instanceof File) {
-                formData.append("Icon", icon);
+                formData.append("icon", icon);
             }
 
             const response = await axios.post(
-                `/markersimpediments/${id}`,
+                `/personalmarkers/${id}`,
                 formData,
             );
 
-            if (response.status === 200) {
-                const data = response.data;
-                updateMarkersList(data);
-                toast.success("Marcador atualizado com sucesso!");
-            } else {
-                toast.error(response.statusText);
+            if (!response.data) {
+                toast.error("Erro ao atualizar o marcador");
                 throw new Error("Erro ao atualizar o marcador");
             }
+
+            updateMarkersList(response.data);
+            toast.success("Marcador atualizado com sucesso!");
         } catch (error) {
             toast.error(error.message);
         }
     };
 
     const updateMarkersList = (newMarker) => {
-        // Check if the new marker already exists in the list by ID
-        const isMarkerAlreadyExists = markers.some(
-            (marker) => marker.id === newMarker.id,
+        // Verifica se o novo marcador já existe na lista pelo ID
+        const isMarkerAlreadyExists = personalMarkers.some(
+            (personalMarker) => personalMarker.id === newMarker.id,
         );
 
-        // If the marker does not exist, add it to the list
+        // Se o marcador não existir, adicione-o à lista
         if (!isMarkerAlreadyExists) {
-            setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+            setPersonalMarkers((prevMarkers) => [...prevMarkers, newMarker]);
         } else {
-            // If the marker already exists, update the list
-            setMarkers((prevMarkers) =>
+            // Se o marcador já existir, atualize a lista
+            setPersonalMarkers((prevMarkers) =>
                 prevMarkers.map((marker) =>
                     marker.id === newMarker.id ? newMarker : marker,
                 ),
@@ -121,18 +130,19 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
 
     const handleDeleteMarker = async (id) => {
         try {
-            const response = await axios.delete(`/markersimpediments/${id}`);
+            const response = await axios.delete(`/personalmarkers/${id}`);
 
-            if (response.status === 200) {
-                setMarkers((prevMarkers) =>
-                    prevMarkers.filter((m) => m.id !== id),
-                );
-                toast.success("Deletado com sucesso!");
-                handleCloseModal(); // Close modal after successful deletion
-            } else {
+            if (response.status !== 200) {
                 throw new Error("Failed to delete marker");
             }
+
+            setPersonalMarkers((prevMarkers) =>
+                prevMarkers.filter((m) => m.id !== id),
+            );
+            toast.success("Deletado com sucesso!");
+            handleCloseModal(); // Close modal after successful deletion
         } catch (error) {
+            console.error("Error deleting marker:", error);
             toast.error("Error deleting marker: " + error.message);
         }
     };
@@ -142,7 +152,7 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
             <Modal show={show} onHide={onHide} size="lg">
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        Gerenciar Marcadores - Impedimentos
+                        Gerenciar Marcadores - Personalizados
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -159,15 +169,15 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
                         </Row>
                         <Row>
                             <Col>
-                                <MarkerListImpediment
-                                    markers={markers}
+                                <PersonalMarkerList
+                                    markers={personalMarkers}
                                     onEdit={handleShowModal}
                                     onDelete={handleDeleteMarker}
                                 />
                             </Col>
                         </Row>
                     </Container>
-                    <MarkerConfigImpedimentModal
+                    <PersonalMarkerConfigModal
                         show={configModalShow}
                         onHide={handleCloseModal}
                         onSave={handleSaveMarker}
@@ -181,4 +191,4 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
     );
 };
 
-export default MarkerManagerImpediment;
+export default PersonalMarkerManager;

@@ -15,7 +15,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Select from "react-select";
 import DynamicLineChart from "./DynamicLineChart";
-import getFirstErrorMessage from '../../processLaravelErrors';
+import getFirstErrorMessage from "../../processLaravelErrors";
 
 const ProductionModalCompare = ({ uniqueProjects, show, handleClose }) => {
     const [chartData, setChartData] = useState([]);
@@ -250,11 +250,9 @@ const ProductionModalCompare = ({ uniqueProjects, show, handleClose }) => {
                     </div>
                 ) : (
                     <>
-                        {chartData &&
-                            <DynamicLineChart
-                                chartData={chartData}
-                            />
-                        }
+                        {chartData && (
+                            <DynamicLineChart chartData={chartData} />
+                        )}
                         {/* <Table striped bordered hover responsive>
                             <thead>
                                 <tr>

@@ -35,9 +35,7 @@ const ProductionTable = () => {
         setIsLoading(true); // Ativa o estado de carregamento
         const fetchProjects = async () => {
             try {
-                const response = await axios.get(
-                    "/towers/getuniqueprojects",
-                );
+                const response = await axios.get("/towers/getuniqueprojects");
                 setUniqueProjects(response.data);
                 console.log(response.data);
             } catch (error) {

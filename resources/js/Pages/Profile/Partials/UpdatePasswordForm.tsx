@@ -56,8 +56,8 @@ export default function UpdatePasswordForm({
                 </h2>
 
                 <p className="mt-1 text-sm text-gray-600">
-                     Certifique-se de que sua conta esteja usando uma senha longa e aleatória para permanecer
-                     seguro.
+                    Certifique-se de que sua conta esteja usando uma senha longa
+                    e aleatória para permanecer seguro.
                 </p>
             </header>
 

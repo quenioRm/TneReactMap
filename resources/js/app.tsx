@@ -5,36 +5,44 @@ import "./Components/css/TextDecoration.css";
 import { createRoot } from "react-dom/client";
 import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
-import axios from 'axios';
+import axios from "axios";
 import Swal from "sweetalert2";
 
 const appName = import.meta.env.VITE_APP_NAME || "TNEAPP";
 
-axios.interceptors.response.use(
-    response => {
-      // Se a resposta for bem-sucedida, apenas retorne a resposta
-      return response;
-    },
-    error => {
-      // Se houver um erro, verifique se é um erro 403
-      if (error.response && error.response.status === 403) {
-        // Lidar com erro 403 aqui
-        // console.error("Acesso negado. Você não tem permissão para acessar este recurso.");
-        Swal.fire({
-            position: "center",
-            icon: "error",
-            title: "Acesso negado. Você não tem permissão para acessar este recurso.",
-            showConfirmButton: false,
-            timer: 10000
-        });
+const csrfToken = (
+    document.head.querySelector('meta[name="csrf-token"]') as HTMLMetaElement
+)?.content;
 
-        setTimeout(() =>{
-            window.location.href = '/';
-        },10000)
-      }
-      // Retornar uma Promise de rejeição com o erro
-      return Promise.reject(error);
-    }
+axios.defaults.headers.common["X-CSRF-TOKEN"] = csrfToken;
+
+console.log(csrfToken);
+
+axios.interceptors.response.use(
+    (response) => {
+        // Se a resposta for bem-sucedida, apenas retorne a resposta
+        return response;
+    },
+    (error) => {
+        // Se houver um erro, verifique se é um erro 403
+        if (error.response && error.response.status === 403) {
+            // Lidar com erro 403 aqui
+            // console.error("Acesso negado. Você não tem permissão para acessar este recurso.");
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "Acesso negado. Você não tem permissão para acessar este recurso.",
+                showConfirmButton: false,
+                timer: 10000,
+            });
+
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 10000);
+        }
+        // Retornar uma Promise de rejeição com o erro
+        return Promise.reject(error);
+    },
 );
 
 createInertiaApp({

@@ -38,7 +38,8 @@ export default function UpdateProfileInformation({
                 </h2>
 
                 <p className="mt-1 text-sm text-gray-600">
-                Atualize as informações de perfil e endereço de e-mail da sua conta.
+                    Atualize as informações de perfil e endereço de e-mail da
+                    sua conta.
                 </p>
             </header>
 
@@ -78,21 +79,22 @@ export default function UpdateProfileInformation({
                 {mustVerifyEmail && user.email_verified_at === null && (
                     <div>
                         <p className="text-sm mt-2 text-gray-800">
-                        Seu endereço de e-mail não foi verificado.
+                            Seu endereço de e-mail não foi verificado.
                             <Link
                                 href={route("verification.send")}
                                 method="post"
                                 as="button"
                                 className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
-                                Clique aqui para reenviar o e-mail de verificação.
+                                Clique aqui para reenviar o e-mail de
+                                verificação.
                             </Link>
                         </p>
 
                         {status === "verification-link-sent" && (
                             <div className="mt-2 font-medium text-sm text-green-600">
-                                Um novo link de verificação foi enviado para o seu
-                                 endereço de email.
+                                Um novo link de verificação foi enviado para o
+                                seu endereço de email.
                             </div>
                         )}
                     </div>

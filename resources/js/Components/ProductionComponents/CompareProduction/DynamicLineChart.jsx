@@ -21,9 +21,9 @@ const DynamicLineChart = ({ chartData }) => {
         const { projects } = dateInfo; // Extract the projects
 
         // Iterate through each project
-        Object.keys(projects).forEach(projectKey => {
+        Object.keys(projects).forEach((projectKey) => {
             const project = projects[projectKey];
-            const projectId = projectKey.replace('project', ''); // Extract the project ID
+            const projectId = projectKey.replace("project", ""); // Extract the project ID
             const productionKey = `productionInDayAcumulated${projectId}`;
             const uniqueKey = `${projectId}:${project.name}`;
 
@@ -32,14 +32,14 @@ const DynamicLineChart = ({ chartData }) => {
                 processedData[uniqueKey] = {
                     projectId: projectId,
                     projectName: project.name,
-                    data: []
+                    data: [],
                 };
             }
 
             // Add the production data for this date to the project's data
             processedData[uniqueKey].data.push({
                 date,
-                production: project[productionKey]
+                production: project[productionKey],
             });
         });
     });
@@ -53,11 +53,11 @@ const DynamicLineChart = ({ chartData }) => {
         const uniqueDataKey = `production${projectId}`; // Unique key for the data
 
         // Normalize the data for each line to include all dates
-        const normalizedData = allDates.map(date => {
-            const existingData = data.find(d => d.date === date);
+        const normalizedData = allDates.map((date) => {
+            const existingData = data.find((d) => d.date === date);
             return {
                 date,
-                [uniqueDataKey]: existingData ? existingData.production : null // Use existing data or null if no data for this date
+                [uniqueDataKey]: existingData ? existingData.production : null, // Use existing data or null if no data for this date
             };
         });
 
@@ -86,7 +86,12 @@ const DynamicLineChart = ({ chartData }) => {
                 }}
             >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" style={{ fontSize: "10px" }} minTickGap={30} allowDuplicatedCategory={false}  />
+                <XAxis
+                    dataKey="date"
+                    style={{ fontSize: "10px" }}
+                    minTickGap={30}
+                    allowDuplicatedCategory={false}
+                />
                 <YAxis />
                 <Tooltip />
                 <Legend />

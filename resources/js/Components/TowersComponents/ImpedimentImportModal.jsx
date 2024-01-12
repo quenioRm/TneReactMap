@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, ProgressBar } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
 
 const ImportImpedimentsModal = ({ show, onHide }) => {
     const [file, setFile] = useState(null);
@@ -11,18 +12,20 @@ const ImportImpedimentsModal = ({ show, onHide }) => {
         setFile(e.target.files[0]);
     };
 
-    const handleImportTowers = async (formData) => {
+    const handleImportImpediments = async (formData) => {
         setImporting(true); // Set the importing state to true when starting the import
         try {
-            const response = await fetch("/towers/importimpediments", {
-                method: "POST",
-                body: formData,
-                headers: {
-                    // Add necessary headers, such as authorization headers
+            const response = await axios.post(
+                "/towers/importimpediments",
+                formData,
+                {
+                    headers: {
+                        // Add necessary headers, such as authorization headers
+                    },
                 },
-            });
+            );
 
-            if (response.ok) {
+            if (response.status === 200) {
                 toast.success(
                     "Impedimentos em estruturas importadas com sucesso!",
                 );
@@ -65,7 +68,7 @@ const ImportImpedimentsModal = ({ show, onHide }) => {
                     }
                 }, interval);
 
-                await handleImportTowers(formData);
+                await handleImportImpediments(formData);
             } finally {
                 setImporting(false); // Set the importing state to false after the import is completed
                 setTimeout(() => {
