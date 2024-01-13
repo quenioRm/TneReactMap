@@ -13,18 +13,18 @@ return new class extends Migration
      {
          Schema::create('personal_marker_activity', function (Blueprint $table) {
              $table->id();
-             $table->unsignedInteger('personalMarkerId');
+             $table->integer('personalMarkerId');
              $table->string('unity')->nullable();
              $table->decimal('previouscount', 5, 2)->default(0);
              $table->decimal('lenPercent', 5, 2)->default(0);
              $table->string('icon');
              $table->timestamps();
 
-             $table->foreign('personalMarkerId')
-                 ->references('id')
-                 ->on('personal_markers')
-                 ->onDelete('restrict')
-                 ->onUpdate('cascade');
+            //  $table->foreign('personalMarkerId')
+            //      ->references('id')
+            //      ->on('personal_markers')
+            //      ->onDelete('restrict')
+            //      ->onUpdate('cascade');
          });
      }
 
