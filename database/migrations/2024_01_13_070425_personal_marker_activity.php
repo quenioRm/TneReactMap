@@ -19,13 +19,14 @@ return new class extends Migration
             $table->decimal('lenPercent', 5, 2)->default(0);
             $table->string('icon');
             $table->timestamps();
+
+            $table->foreign('personalMarkerId')
+                ->references('id')
+                ->on('personal_markers')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
         });
 
-        $table->foreign('personalMarkerId')
-            ->references('id')
-            ->on('personal_markers')
-            ->onDelete('restrict') // You can specify the onDelete behavior
-            ->onUpdate('cascade');
     }
 
     /**
