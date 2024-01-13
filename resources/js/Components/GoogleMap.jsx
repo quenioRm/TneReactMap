@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 // import axios from "axios";
 import MarkerModal from "../Components/GoogleMapMarkerModal";
+import GoogleMapMarkerAnotherModal from "../Components/GoogleMapMarkerAnotherModal";
 import FloatingButton from "./FloatingButton";
 import { ProgressBar, Spinner } from "react-bootstrap"; // Import ProgressBar from react-bootstrap
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -61,6 +62,7 @@ const GoogleMap = () => {
         loadGoogleMapScript();
         fetchMarkerData(0, 0, radius, false);
     }, []);
+
 
     useEffect(() => {
         if (markerData) {
@@ -222,7 +224,7 @@ const GoogleMap = () => {
                     markerInfo.config_icon && markerInfo.config_icon.icon
                         ? markerInfo.config_icon.icon
                         : defaultIcon,
-                scaledSize: new google.maps.Size(40, 40),
+                scaledSize: (markerInfo.type === 0) ? new google.maps.Size(40, 40) : new google.maps.Size(80, 80),
                 labelOrigin: new google.maps.Point(100, 20),
                 labelAnchor: new google.maps.Point(100, 20),
             };
@@ -337,10 +339,18 @@ const GoogleMap = () => {
                 receiveStatusInfo += `<br>- Status: ${markerInfo.ReceiveStatus}`;
 
                 // Atualiza o conteúdo do InfoWindow com as informações formatadas
-                infowindow.setContent(
-                    `<b>Torre:</b> ${markerInfo.label.text}${lastActivity}${impedimentosInfo}${receiveStatusInfo}`,
-                    // `<b>Torre:</b> ${markerInfo.label.text}${lastActivity}${impedimentosInfo}${receiveStatusInfo}${iconsContainer}`,
-                );
+                if(markerInfo.type === 0){
+                    infowindow.setContent(
+                        `<b>Torre:</b> ${markerInfo.label.text}${lastActivity}${impedimentosInfo}${receiveStatusInfo}`,
+                    );
+                }
+
+                if(markerInfo.type === 1){
+                    infowindow.setContent(
+                        `<b>${markerInfo.name}</b>`,
+                    );
+                }
+
 
                 // Abre o InfoWindow
                 infowindow.open(map, marker);
@@ -558,54 +568,6 @@ const GoogleMap = () => {
             });
     };
 
-    const fetchAnotherMarkerData = async (
-        coordinateX,
-        coordinateY,
-        radius,
-        getAllPoints,
-    ) => {
-        const payload = {
-            inputX: coordinateX,
-            inputY: coordinateY,
-            radius: radius,
-            getAllPoints: getAllPoints,
-        };
-
-        await axios
-            .post("/api/get-coordinatesbyrange", payload)
-            .then((response) => {
-                const latestItem = response.data[response.data.length - 1];
-
-                setLastestCalledCoordinate({
-                    x: parseFloat(latestItem.position.utmx),
-                    y: parseFloat(latestItem.position.utmy),
-                    zone: latestItem.position.zone,
-                });
-
-                setFirstCalledLatLng({
-                    lat: lastestCalledLatLng.lat,
-                    lng: lastestCalledLatLng.lng,
-                });
-
-                setLastestCalledLatLng({
-                    lat: latestItem.position.lat,
-                    lng: latestItem.position.lng,
-                });
-
-                const newData = response.data;
-
-                setMarkerData(newData);
-
-                let lat = lastestCalledLatLng.lat;
-                let lng = lastestCalledLatLng.lng;
-                map.panTo({ lat, lng });
-                map.setZoom(10);
-            })
-            .catch((error) => {
-                // Handle any errors here
-                console.error("Error fetching marker data:", error);
-            });
-    };
 
     function getUtmZone(latitude, longitude) {
         // Calculate the standard UTM zone
@@ -706,10 +668,17 @@ const GoogleMap = () => {
                     Coordenadas: {actualCoordinate.x}, {actualCoordinate.y}
                 </div>
             )}
+            {selectedMarker && selectedMarker.type === 0 ?
             <MarkerModal
                 markerInfo={selectedMarker}
                 onClose={handleCloseModal}
             />
+            :
+            <GoogleMapMarkerAnotherModal
+                markerInfo={selectedMarker}
+                onClose={handleCloseModal}
+            />
+            }
             <FloatingButton
                 map={map}
                 setMarkerData={setMarkerData}

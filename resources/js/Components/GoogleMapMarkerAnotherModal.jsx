@@ -18,7 +18,7 @@ import ImageUploadButton from "./ImageUploadButton";
 import "../Components/css/uploadImages.css";
 import Swal from "sweetalert2";
 
-const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
+const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
     const [towerImages, setTowerImages] = useState([]);
     const [towerProduction, setTowerProduction] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -30,30 +30,18 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     useEffect(() => {
         if (markerInfo) {
             fetchTowerImages();
-            fetchTowerProduction();
         }
     }, [markerInfo]);
 
     const fetchTowerImages = async () => {
         try {
             const response = await axios.get(
-                `/api/get-towerimages/${markerInfo.label.towerId}`,
+                `/api/get-towerimages/${markerInfo.name}`,
             );
             setTowerImages(response.data.files);
             setLoading(false);
         } catch (error) {
             console.error("Error fetching tower images:", error);
-        }
-    };
-
-    const fetchTowerProduction = async () => {
-        try {
-            const response = await axios.get(
-                `/api/get-towerproduction/${markerInfo.label.towerId}/${markerInfo.label.project}`,
-            );
-            setTowerProduction(response.data);
-        } catch (error) {
-            console.error("Error fetching tower production:", error);
         }
     };
 
@@ -78,7 +66,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     const handleImageUpload = async (files) => {
         try {
             const formData = new FormData();
-            formData.append("towerId", markerInfo.label.towerId);
+            formData.append("towerId", markerInfo.name);
 
             for (const file of files) {
                 formData.append("images[]", file);
@@ -149,9 +137,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
             <Modal.Header closeButton>
                 <Modal.Title>
                     {markerInfo
-                        ? markerInfo.label.text +
-                          " - " +
-                          markerInfo.label.project
+                        ? markerInfo.label.text
                         : ""}
                 </Modal.Title>
             </Modal.Header>
@@ -162,77 +148,23 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
 
                             <Tab eventKey="info" title="Info">
                                 <br />
-                                <h5>Dados da Estrutura</h5>
+                                <h5>Dados da Básicos</h5>
                                 <Table striped bordered hover>
                                     <thead>
                                         <tr>
-                                            <th>LT - Trecho</th>
-                                            <th>Número</th>
                                             <th>Nome</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td>{markerInfo.label.project}</td>
                                             <td>
-                                                {markerInfo.label.oringalNumber}
-                                            </td>
-                                            <td>
-                                                {markerInfo.label.originalName}
+                                                {markerInfo.name}
                                             </td>
                                         </tr>
                                     </tbody>
                                 </Table>
-                                <h5>Impedimentos</h5>
-                                <Table striped bordered hover>
-                                    <thead>
-                                        <tr>
-                                            <th>Tipo de Impedimento</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {markerInfo.Impediments.map(
-                                            (impediment, index) => (
-                                                <tr key={index}>
-                                                    <td>
-                                                        {
-                                                            impediment.ImpedimentType
-                                                        }
-                                                    </td>
-                                                    <td>{impediment.Status}</td>
-                                                </tr>
-                                            ),
-                                        )}
-                                    </tbody>
-                                </Table>
-                                <h5>Recebimento</h5>
-                                <Table striped bordered hover>
-                                    <thead>
-                                        <tr>
-                                            <th>Data Solicitação</th>
-                                            <th>Data Recebimento</th>
-                                            <th>
-                                                Data Prevista Recebimento
-                                                Fornecedor
-                                            </th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                {markerInfo.SolicitationDate}
-                                            </td>
-                                            <td>{markerInfo.ReceiveDate}</td>
-                                            <td>
-                                                {markerInfo.PreviousReceiveDate}
-                                            </td>
-                                            <td>{markerInfo.ReceiveStatus}</td>
-                                        </tr>
-                                    </tbody>
-                                </Table>
-                                <h5>Posição da Estrutura</h5>
+
+                                <h5>Posição da UTM</h5>
                                 <Table striped bordered hover>
                                     <thead>
                                         <tr>
@@ -251,63 +183,13 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
 
                             <Tab eventKey="production" title="Produção">
                                 <div>
-                                    <Table striped bordered hover>
-                                        <thead>
-                                            <tr>
-                                                <th>Atividade</th>
-                                                <th>Icone</th>
-                                                <th>Data de execução</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {currentItems.map(
-                                                (tower, index) => (
-                                                    <tr key={index}>
-                                                        <td>
-                                                            {tower.activitie}
-                                                        </td>
-                                                        <td>
-                                                            <img
-                                                                src={tower.icon}
-                                                                alt={
-                                                                    tower.activitie
-                                                                }
-                                                                width={30}
-                                                                height={30}
-                                                            />
-                                                        </td>
-                                                        <td>{tower.date}</td>
-                                                    </tr>
-                                                ),
-                                            )}
-                                        </tbody>
-                                    </Table>
-                                    <Pagination>
-                                        {Array.from({
-                                            length: Math.ceil(
-                                                towerProduction.length /
-                                                    itemsPerPage,
-                                            ),
-                                        }).map((_, index) => (
-                                            <Pagination.Item
-                                                key={index}
-                                                active={
-                                                    index + 1 === currentPage
-                                                }
-                                                onClick={() =>
-                                                    paginate(index + 1)
-                                                }
-                                            >
-                                                {index + 1}
-                                            </Pagination.Item>
-                                        ))}
-                                    </Pagination>
+
                                 </div>
                             </Tab>
 
                             <Tab eventKey="gallery" title="Galeria">
                                 {loading ? (
-                                    <p>Loading tower images...</p>
+                                    <p>Loading images...</p>
                                 ) : (
                                     <>
                                         {images.length > 0 && (
@@ -361,4 +243,4 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     );
 };
 
-export default GoogleMapMarkerModal;
+export default GoogleMapMarkerAnotherModal;

@@ -31,6 +31,7 @@ Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
 
     Route::get('/get-coordinates', [MapsController::class, 'getCoordinates']);
     Route::post('/get-coordinatesbyrange', [MapsController::class, 'getCoordinatesByRange']);
+    Route::post('/get-coordinatesbyrange-from-personal', [MapsController::class, 'getCoordinatesByAnotherMarkers']);
     Route::get('/get-towerimages/{tower}', [MapsController::class, 'getImagesFromTower']);
     Route::get('/get-towerproduction/{tower}/{project}', [MapsController::class, 'getTowerProduction']);
     Route::post('/upload-images', [MapsController::class, 'uploadGaleryImages']);

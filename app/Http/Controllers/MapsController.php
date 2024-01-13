@@ -17,6 +17,8 @@ use App\Models\Marker;
 use Illuminate\Support\Facades\Validator;
 use Str;
 use Illuminate\Support\Facades\Auth;
+use App\Models\PersonalMarker;
+
 
 class MapsController extends Controller
 {
@@ -56,7 +58,15 @@ class MapsController extends Controller
 
 
         $markers = [];
-        $listOfMarkers = Tower::get(); // Substitua por sua lógica para obter a lista de marcadores
+        $listOfMarkers = Tower::get();
+
+        $firstX = 0;
+        $firstY = 0;
+
+        if(!empty($listOfMarkers)){
+            $firstX = (float)$listOfMarkers[0]->CoordinateX;
+            $firstY = (float)$listOfMarkers[0]->CoordinateY;
+        }
 
         foreach ($listOfMarkers as $markerData) {
             // Carrega as coordenadas X e Y do marcador
@@ -113,6 +123,7 @@ class MapsController extends Controller
                 ///////////
 
                 $markers[] = [
+                    'type' => 0,
                     'name' => $markerData['Number'] . " - " . $markerData['ProjectName'],
                     'position' => [
                         'lat' => $newCoordinates['attr']['lat'],
@@ -148,41 +159,22 @@ class MapsController extends Controller
             }
         }
 
-        // Retorna os marcadores que estão dentro do raio especificado como uma resposta JSON
-        return response()->json($markers);
+        $anotherMarkers = $this->getCoordinatesByAnotherMarkers($firstX, $firstY, 50000, false);
+        $mergedArray = array_merge($anotherMarkers, $markers);
+
+        return response()->json($mergedArray);
     }
 
-    public function getCoordinatesByAnotherMarkers(Request $request)
+    public function getCoordinatesByAnotherMarkers($inputX, $inputY, $radius, $getAllPoints)
     {
-        $validator = Validator::make($request->all(), [
-            'inputX' => 'numeric',
-            'inputY' => 'numeric',
-            'radius' => 'numeric',
-            'getAllPoints' => 'boolean'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
-        }
-
-        $inputX = $request->inputX;
-        $inputY = $request->inputY;
-        $radius = $request->radius;
-
-
-
-        if($radius == 0)
-            $radius = 30000;
-
-
         $markers = [];
-        $listOfMarkers = Tower::get(); // Substitua por sua lógica para obter a lista de marcadores
+        $listOfMarkers = PersonalMarker::get();
 
         foreach ($listOfMarkers as $markerData) {
             // Carrega as coordenadas X e Y do marcador
-            $x = (float)$markerData['CoordinateX'];
-            $y = (float)$markerData['CoordinateY'];
-            $zone = (float)$markerData['Zone'];
+            $x = (float)$markerData['coordinateX'];
+            $y = (float)$markerData['coordinateY'];
+            $zone = (float)$markerData['zone'];
 
             // Calcula a distância do marcador para o ponto fornecido
             $distance = sqrt(pow($x - $inputX, 2) + pow($y - $inputY, 2));
@@ -203,18 +195,19 @@ class MapsController extends Controller
                 $newCoordinates = json_decode($latlng, true);
 
                 $markers[] = [
-                    'name' => $markerData['Number'] . " - " . $markerData['ProjectName'],
+                    'type' => 1,
+                    'name' => $markerData['name'],
                     'position' => [
                         'lat' => $newCoordinates['attr']['lat'],
                         'lng' => $newCoordinates['attr']['lon'],
-                        'utmx' => $markerData['CoordinateX'],
-                        'utmy' => $markerData['CoordinateY'],
+                        'utmx' => $markerData['coordinateX'],
+                        'utmy' => $markerData['coordinateY'],
                         'zone' => $zone,
-                        'tower' => ''
+                        'tower' => $markerData['name']
                     ],
                     'label' => [
                         'color' =>'blue',
-                        'text' => '',
+                        'text' => $markerData['name'],
                         'towerId' => '',
                         'project' => '',
                         'oringalNumber' => '',
@@ -222,7 +215,11 @@ class MapsController extends Controller
                     ],
                     'avc' => 0,
                     'draggable' => false,
-                    'config_icon' => 'icone',
+                    'config_icon' => [
+                        'activitie' => null,
+                        'date' => null,
+                        'icon' =>  asset('assets/images/SE.png')
+                    ],
                     'impediment_icon' => '',
                     'Impediments' => null,
                     'SolicitationDate' => null ,
@@ -235,8 +232,7 @@ class MapsController extends Controller
             }
         }
 
-        // Retorna os marcadores que estão dentro do raio especificado como uma resposta JSON
-        return response()->json($markers);
+        return $markers;
     }
 
     public function getCoordinates()

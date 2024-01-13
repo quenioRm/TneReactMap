@@ -22,7 +22,7 @@ class PersonalMarkerController extends Controller
 
             // Validação dos campos
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255|unique:personal_marker,name',
+                'name' => 'required|string|max:255|unique:personal_markers,name',
                 'coordinateX' => 'required|string|max:255',
                 'coordinateY' => 'required|string|max:255',
                 'zone' => 'required|string|max:255',
@@ -79,7 +79,7 @@ class PersonalMarkerController extends Controller
                     'required',
                     'string',
                     'max:255',
-                    Rule::unique('personal_marker')->ignore($id),
+                    Rule::unique('personal_markers')->ignore($id),
                 ],
                 'coordinateX' => 'required|string|max:255',
                 'coordinateY' => 'required|string|max:255',

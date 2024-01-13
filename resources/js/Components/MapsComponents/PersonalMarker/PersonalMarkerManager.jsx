@@ -7,11 +7,13 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import axios from "axios";
 import axios from '../../../Components/axiosInstance';
+import getFirstErrorMessage from "../../processLaravelErrors";
 
 const PersonalMarkerManager = ({ show, onHide }) => {
     const [editedMarker, setEditedMarker] = useState(null);
     const [personalMarkers, setPersonalMarkers] = useState([]);
     const [configModalShow, setConfigModalShow] = useState(false);
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         // Fetch markers when the component mounts
@@ -67,7 +69,10 @@ const PersonalMarkerManager = ({ show, onHide }) => {
             updateMarkersList(response.data);
             toast.success("Marcador salvo com sucesso");
         } catch (error) {
-            toast.error(error.message);
+            const message = getFirstErrorMessage(error.response.data);
+            console.log(message)
+            setErrors(error.response.data);
+            toast.error(message);
         }
     };
 
@@ -184,6 +189,7 @@ const PersonalMarkerManager = ({ show, onHide }) => {
                         onSave={handleSaveMarker}
                         onUpdate={handleUpdateMarker}
                         editedMarker={editedMarker}
+                        errors={errors}
                     />
                 </Modal.Body>
                 <ToastContainer />
