@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use App\Models\Marker;
 use Illuminate\Support\Facades\Validator;
 use Str;
+use Illuminate\Support\Facades\Auth;
 
 class MapsController extends Controller
 {

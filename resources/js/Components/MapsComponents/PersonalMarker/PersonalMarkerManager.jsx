@@ -5,7 +5,8 @@ import PersonalMarkerList from "./PersonalMarkerList";
 import { ToastContainer, toast } from "react-toastify";
 // import TowerImportModal from "../../../TowersComponents/TowerImportModal";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
+// import axios from "axios";
+import axios from '../../../Components/axiosInstance';
 
 const PersonalMarkerManager = ({ show, onHide }) => {
     const [editedMarker, setEditedMarker] = useState(null);

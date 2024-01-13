@@ -10,7 +10,7 @@ export default function Dashboard({ auth }: PageProps) {
             header={
                 <div className="d-flex justify-content-between align-items-center">
                     <h2 className="font-weight-bold text-xl text-gray-800">
-                        Dashboard - Controle TNE
+                        Controle TNE
                     </h2>
                     {/* Adicione seus botões à direita aqui */}
                     <div className="d-flex">

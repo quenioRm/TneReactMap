@@ -1,0 +1,52 @@
+import axios from 'axios';
+import Swal from 'sweetalert2';
+
+const axiosInstance = axios.create({
+//   timeout: 5000,
+});
+
+axiosInstance.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem('authToken');
+
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      return config;
+    },
+    (error) => {
+
+        console.log(error)
+      return Promise.reject(error);
+    }
+);
+
+axiosInstance.interceptors.response.use(
+    (response) => {
+        // Se a resposta for bem-sucedida, apenas retorne a resposta
+        return response;
+    },
+    (error) => {
+        // Se houver um erro, verifique se é um erro 403
+        if (error.response && error.response.status === 403) {
+            // Lidar com erro 403 aqui
+            // console.error("Acesso negado. Você não tem permissão para acessar este recurso.");
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "Acesso negado. Você não tem permissão para acessar este recurso.",
+                showConfirmButton: false,
+                timer: 10000,
+            });
+
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 10000);
+        }
+        // Retornar uma Promise de rejeição com o erro
+        return Promise.reject(error);
+    },
+);
+
+export default axiosInstance;

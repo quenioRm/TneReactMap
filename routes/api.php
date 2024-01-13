@@ -8,6 +8,7 @@ use App\Http\Controllers\MarkerConfigImpedimentController;
 use App\Http\Controllers\TowerController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\PersonalMarkerController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,45 +25,47 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Route::middleware(['role:confirmedUser'])->group(function () {
+Route::post('/login', [AuthenticatedSessionController::class, 'apiLogin']);
 
-Route::get('/get-coordinates', [MapsController::class, 'getCoordinates']);
-Route::post('/get-coordinatesbyrange', [MapsController::class, 'getCoordinatesByRange']);
-Route::get('/get-towerimages/{tower}', [MapsController::class, 'getImagesFromTower']);
-Route::get('/get-towerproduction/{tower}/{project}', [MapsController::class, 'getTowerProduction']);
-Route::post('/upload-images', [MapsController::class, 'uploadGaleryImages']);
-Route::post('/delete-gallery-image', [MapsController::class, 'deleteGalleryImage']);
+Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
 
-Route::get('/getlatesticons/{tower}/{project}', [MapsController::class, 'GetLatestIcons']);
+    Route::get('/get-coordinates', [MapsController::class, 'getCoordinates']);
+    Route::post('/get-coordinatesbyrange', [MapsController::class, 'getCoordinatesByRange']);
+    Route::get('/get-towerimages/{tower}', [MapsController::class, 'getImagesFromTower']);
+    Route::get('/get-towerproduction/{tower}/{project}', [MapsController::class, 'getTowerProduction']);
+    Route::post('/upload-images', [MapsController::class, 'uploadGaleryImages']);
+    Route::post('/delete-gallery-image', [MapsController::class, 'deleteGalleryImage']);
 
-Route::resource('markers', MarkerConfigController::class);
+    Route::get('/getlatesticons/{tower}/{project}', [MapsController::class, 'GetLatestIcons']);
 
-Route::resource('markersimpediments', MarkerConfigImpedimentController::class);
+    Route::resource('markers', MarkerConfigController::class);
 
-// Imports ///////////////////////////////////////////////////////////////////////////////////////////////
-Route::post('towers/import', [TowerController::class, 'ImportTowersFromExcelFile']);
+    Route::resource('markersimpediments', MarkerConfigImpedimentController::class);
 
-Route::post('towers/importimpediments', [TowerController::class, 'ImportTowersImpedimentsFromExcelFile']);
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Imports ///////////////////////////////////////////////////////////////////////////////////////////////
+    Route::post('towers/import', [TowerController::class, 'ImportTowersFromExcelFile']);
 
-Route::get('towers/getuniqueprojects', [TowerController::class, 'GetUniqueProjects']);
+    Route::post('towers/importimpediments', [TowerController::class, 'ImportTowersImpedimentsFromExcelFile']);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Route::get('towers/gettowers', [TowerController::class, 'GetTowers']);
+    Route::get('towers/getuniqueprojects', [TowerController::class, 'GetUniqueProjects']);
 
-Route::get('towers/gettowerssolicitations/{project?}', [TowerController::class, 'GetTowersSolicitations']);
+    Route::get('towers/gettowers', [TowerController::class, 'GetTowers']);
 
-Route::get('production/getLatestProduction/{project?}', [ProductionController::class, 'getLatestProduction']);
+    Route::get('towers/gettowerssolicitations/{project?}', [TowerController::class, 'GetTowersSolicitations']);
 
-Route::get('production/getperiodProduction/{startDate}/{finishDate}/{project?}/', [ProductionController::class, 'getperiodProduction']);
+    Route::get('production/getLatestProduction/{project?}', [ProductionController::class, 'getLatestProduction']);
 
-Route::post('production/getperiodproductionchartcompare',
-    [ProductionController::class, 'getperiodProductionChartCompare']);
+    Route::get('production/getperiodProduction/{startDate}/{finishDate}/{project?}/', [ProductionController::class, 'getperiodProduction']);
+
+    Route::post('production/getperiodproductionchartcompare',
+        [ProductionController::class, 'getperiodProductionChartCompare']);
 
 
-///// Add Personal Marker //////////////////////
+    ///// Add Personal Marker //////////////////////
 
-Route::resource('personalmarkers', PersonalMarkerController::class);
-////////////////////////////////////////////
+    Route::resource('personalmarkers', PersonalMarkerController::class);
+    ////////////////////////////////////////////
 
-// });
+});
 

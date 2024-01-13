@@ -34,6 +34,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $this->apiLogin($request);
+
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 
@@ -49,5 +51,27 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    public function apiLogin(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            // Authentication successful
+            $user = Auth::user();
+            $token = $user->createToken('authToken')->plainTextToken;
+
+            $user->api_token = $token;
+            $user->save();
+
+            return response()->json([
+                'user' => $user,
+                'token' => $token,
+            ]);
+        }
+
+        // Authentication failed
+        return response()->json(['message' => 'Invalid credentials'], 401);
     }
 }

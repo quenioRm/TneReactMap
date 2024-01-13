@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, ProgressBar } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
-import axios from "axios";
+// import axios from "axios";
+import axios from '../../Components/axiosInstance';
 
 const ImportTowersModal = ({ show, onHide }) => {
     const [file, setFile] = useState(null);

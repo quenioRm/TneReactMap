@@ -4,7 +4,8 @@ import MarkerConfigImpedimentModal from "./MarkerConfigImpedimentModal";
 import MarkerListImpediment from "./MarkerListImpediment";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
+// import axios from "axios";
+import axios from '../../../Components/axiosInstance';
 
 const MarkerManagerImpediment = ({ show, onHide }) => {
     const [editedMarker, setEditedMarker] = useState(null);
@@ -49,7 +50,10 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
             formData.append("Icon", icon);
             formData.append("IsBlocked", isBlocked);
 
-            const response = await axios.post("/api/markersimpediments", formData);
+            const response = await axios.post(
+                "/api/markersimpediments",
+                formData,
+            );
 
             if (!response.data) {
                 throw new Error("Erro ao salvar o marcador");
@@ -121,7 +125,9 @@ const MarkerManagerImpediment = ({ show, onHide }) => {
 
     const handleDeleteMarker = async (id) => {
         try {
-            const response = await axios.delete(`/api/markersimpediments/${id}`);
+            const response = await axios.delete(
+                `/api/markersimpediments/${id}`,
+            );
 
             if (response.status === 200) {
                 setMarkers((prevMarkers) =>

@@ -5,7 +5,9 @@ import MarkerList from "./MarkerList";
 import { ToastContainer, toast } from "react-toastify";
 import TowerImportModal from "../../../TowersComponents/TowerImportModal";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
+// import axios from "axios";
+import axios from '../../../../Components/axiosInstance';
+
 
 const MarkerManagerSub = ({ show, onHide }) => {
     const [editedMarker, setEditedMarker] = useState(null);

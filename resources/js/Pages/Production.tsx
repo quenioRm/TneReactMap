@@ -32,7 +32,7 @@ export default function Production({ auth }: PageProps) {
             header={
                 <div className="d-flex justify-content-between align-items-center">
                     <h2 className="font-weight-bold text-xl text-gray-800">
-                        Produção - Controle TNE
+                        Controle TNE
                     </h2>
                     <div className="d-flex"></div>
                 </div>

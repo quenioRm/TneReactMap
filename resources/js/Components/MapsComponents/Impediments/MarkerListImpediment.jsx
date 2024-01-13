@@ -1,7 +1,6 @@
 // Import React, useState, and the required Bootstrap components
 import React, { useState } from "react";
 import { Table, Button, Pagination } from "react-bootstrap";
-import axios from "axios";
 
 // Define the MarkerList component
 const MarkerListImpediment = ({ markers, onEdit, onDelete }) => {

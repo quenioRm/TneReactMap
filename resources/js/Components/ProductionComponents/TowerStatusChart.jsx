@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import axios from '../../Components/axiosInstance';
+
 import {
     LineChart,
     Line,
@@ -35,33 +37,31 @@ const TowerStatusChart = () => {
     });
 
     useEffect(() => {
-        // Faça a solicitação à API para obter a lista de projetos
-        fetch("/towers/getuniqueprojects")
-            .then((response) => response.json())
-            .then((data) => {
-                // Armazene a lista de projetos no estado
+        // Make the API request to get the list of projects
+        axios.get("/api/towers/getuniqueprojects")
+            .then((response) => {
+                // Extract the data from the response
+                const data = response.data;
+                // Store the list of projects in the state
                 setProjects(data);
             })
             .catch((error) => {
-                console.error("Erro ao buscar projetos da API:", error);
+                console.error("Error fetching projects from the API:", error);
             });
     }, []);
 
     useEffect(() => {
-        // Faça a solicitação à API para obter os dados do gráfico quando selectedProject mudar ou ao iniciar o componente
+        // Make the API request to get chart data when selectedProject changes or when the component mounts
         if (selectedProject || selectedProject === "") {
-            fetch(`/towers/gettowerssolicitations/${selectedProject || ""}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    // Armazene os dados do gráfico no estado
+            axios.get(`/api/towers/gettowerssolicitations/${selectedProject || ""}`)
+                .then((response) => {
+                    // Extract the data from the response
+                    const data = response.data;
+                    // Store the chart data in the state
                     setChartData(data);
-                    // console.log(data)
                 })
                 .catch((error) => {
-                    console.error(
-                        "Erro ao buscar dados do gráfico da API:",
-                        error,
-                    );
+                    console.error("Error fetching chart data from the API:", error);
                 });
         }
     }, [selectedProject]);

@@ -12,9 +12,10 @@ import {
 } from "react-bootstrap";
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
-import axios from "axios";
+// import axios from "axios";
+import axios from '../Components/axiosInstance';
 import ImageUploadButton from "./ImageUploadButton";
-import '../Components/css/uploadImages.css';
+import "../Components/css/uploadImages.css";
 import Swal from "sweetalert2";
 
 const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
@@ -102,14 +103,16 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Sim, exclua-o!"
+            confirmButtonText: "Sim, exclua-o!",
         }).then((result) => {
             if (result.isConfirmed) {
                 // Fazer a requisição HTTP para deletar a imagem
                 const imageUrlToDelete = updatedImages[currentImageIndex];
 
                 axios
-                    .post("/api/delete-gallery-image", { image_url: imageUrlToDelete })
+                    .post("/api/delete-gallery-image", {
+                        image_url: imageUrlToDelete,
+                    })
                     .then((response) => {
                         if (response.status === 200) {
                             // Remover a imagem da lista após a exclusão bem-sucedida
@@ -140,7 +143,6 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
             }
         });
     };
-
 
     return (
         <Modal show={markerInfo !== null} onHide={onClose} size="lg">
@@ -307,24 +309,30 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                 ) : (
                                     <>
                                         {images.length > 0 && (
-                                        <div>
-                                        <Gallery
-                                            items={images}
-                                            onSlide={(currentIndex) =>
-                                            setCurrentImageIndex(currentIndex)
-                                            }
-                                        />
-                                        <div>
-                                        <button
-            onClick={handleImageDelete}
-            className="btn btn-danger"
-            style={{ marginTop: '10px' }}
-            >
-            Deletar imagem
-            </button>
-                                                    </div>
-                                        <hr />
-                                        </div>
+                                            <div>
+                                                <Gallery
+                                                    items={images}
+                                                    onSlide={(currentIndex) =>
+                                                        setCurrentImageIndex(
+                                                            currentIndex,
+                                                        )
+                                                    }
+                                                />
+                                                <div>
+                                                    <button
+                                                        onClick={
+                                                            handleImageDelete
+                                                        }
+                                                        className="btn btn-danger"
+                                                        style={{
+                                                            marginTop: "10px",
+                                                        }}
+                                                    >
+                                                        Deletar imagem
+                                                    </button>
+                                                </div>
+                                                <hr />
+                                            </div>
                                         )}
                                         <hr />
                                         {/* Botão de upload */}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 import MarkerModal from "../Components/GoogleMapMarkerModal";
 import FloatingButton from "./FloatingButton";
 import { ProgressBar, Spinner } from "react-bootstrap"; // Import ProgressBar from react-bootstrap
@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import UtmConverter from "./Converters/UtmConverter";
 import "./css/Spinner.css";
 import "./MapsComponents/GoogleMapsIcons.css";
+import axios from '../Components/axiosInstance';
 
 const GoogleMap = () => {
     const [markerData, setMarkerData] = useState(null);
@@ -46,10 +47,12 @@ const GoogleMap = () => {
 
     const [isDebugMode, setIsDebugMode] = useState(false);
 
-    const mapType = (localStorage.getItem('mapType')) ? localStorage.getItem('mapType') : 'hybrid';
-    const labelColor = (localStorage.getItem('currentLabelMapColor')) ? localStorage.getItem('currentLabelMapColor') : 'white';
-
-
+    const mapType = localStorage.getItem("mapType")
+        ? localStorage.getItem("mapType")
+        : "hybrid";
+    const labelColor = localStorage.getItem("currentLabelMapColor")
+        ? localStorage.getItem("currentLabelMapColor")
+        : "white";
 
     let mouseLatLng = null;
     const radius = 30000;
@@ -74,7 +77,6 @@ const GoogleMap = () => {
     // update Map Coordinates
 
     useEffect(() => {
-
         if (radius - updDistance >= 25000 && updDistance > 0) {
             if (!isFetchingData) {
                 // Defina isFetchingData como true para indicar que a solicitação está em andamento
@@ -176,7 +178,10 @@ const GoogleMap = () => {
             },
             zoom: 15,
             gestureHandling: "greedy",
-            mapTypeId: (mapType === 'hybrid') ? google.maps.MapTypeId.SATELLITE : google.maps.MapTypeId.ROADMAP
+            mapTypeId:
+                mapType === "hybrid"
+                    ? google.maps.MapTypeId.SATELLITE
+                    : google.maps.MapTypeId.ROADMAP,
         });
 
         setMap(map);
@@ -423,26 +428,27 @@ const GoogleMap = () => {
                 setUpdDistance(distance);
 
                 if (isDebugMode) console.log(distance, updDistance);
-
             });
 
-            google.maps.event.addListener(map, 'maptypeid_changed', function() {
-                var currentMapType = map.getMapTypeId();
+            google.maps.event.addListener(
+                map,
+                "maptypeid_changed",
+                function () {
+                    var currentMapType = map.getMapTypeId();
 
-                if (currentMapType === 'hybrid') {
-                    localStorage.setItem('currentLabelMapColor', 'white');
-                    localStorage.setItem('mapType', currentMapType);
-                }
-                else if (currentMapType === 'sattelite') {
-                    localStorage.setItem('currentLabelMapColor', 'white');
-                    localStorage.setItem('mapType', currentMapType);
-                } else {
-                    localStorage.setItem('currentLabelMapColor', 'black');
-                    localStorage.setItem('mapType', currentMapType);
-                }
-                window.location.reload();
-            });
-
+                    if (currentMapType === "hybrid") {
+                        localStorage.setItem("currentLabelMapColor", "white");
+                        localStorage.setItem("mapType", currentMapType);
+                    } else if (currentMapType === "sattelite") {
+                        localStorage.setItem("currentLabelMapColor", "white");
+                        localStorage.setItem("mapType", currentMapType);
+                    } else {
+                        localStorage.setItem("currentLabelMapColor", "black");
+                        localStorage.setItem("mapType", currentMapType);
+                    }
+                    window.location.reload();
+                },
+            );
         });
     };
 
@@ -509,7 +515,6 @@ const GoogleMap = () => {
         radius,
         getAllPoints,
     ) => {
-
         const payload = {
             inputX: coordinateX,
             inputY: coordinateY,
@@ -559,8 +564,6 @@ const GoogleMap = () => {
         radius,
         getAllPoints,
     ) => {
-
-
         const payload = {
             inputX: coordinateX,
             inputY: coordinateY,

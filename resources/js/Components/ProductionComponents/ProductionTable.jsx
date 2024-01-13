@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+// import axios from "axios";
+import axios from '../../Components/axiosInstance';
+
 import {
     Button,
     Container,
@@ -35,7 +37,7 @@ const ProductionTable = () => {
         setIsLoading(true); // Ativa o estado de carregamento
         const fetchProjects = async () => {
             try {
-                const response = await axios.get("/towers/getuniqueprojects");
+                const response = await axios.get("/api/towers/getuniqueprojects");
                 setUniqueProjects(response.data);
                 console.log(response.data);
             } catch (error) {
@@ -53,8 +55,8 @@ const ProductionTable = () => {
         const fetchData = async () => {
             try {
                 const endpoint = selectedProject
-                    ? `/production/getLatestProduction/${selectedProject}`
-                    : `/production/getLatestProduction`;
+                    ? `/api/production/getLatestProduction/${selectedProject}`
+                    : `/api/production/getLatestProduction`;
                 const response = await axios.get(endpoint);
                 setProductionData(response.data);
                 // Atualiza o estado de visibilidade para as novas atividades

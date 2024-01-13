@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { Typeahead } from "react-bootstrap-typeahead";
+import axios from '../../Components/axiosInstance';
+
 
 const TowerSelectionModal = ({ rMap, show, onClose }) => {
     const [towers, setTowers] = useState([]);
@@ -9,8 +11,8 @@ const TowerSelectionModal = ({ rMap, show, onClose }) => {
     useEffect(() => {
         const fetchTowers = async () => {
             try {
-                const response = await fetch("/api/towers/gettowers");
-                const data = await response.json();
+                const response = await axios.get("/api/towers/gettowers");
+                const data = response.data;
                 setTowers(data);
             } catch (error) {
                 console.error("Erro ao buscar torres:", error);
