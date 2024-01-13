@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 use App\Models\Marker;
 use Illuminate\Support\Facades\Validator;
+use Str;
 
 class MapsController extends Controller
 {
@@ -129,7 +130,7 @@ class MapsController extends Controller
                         'originalName' => $markerData['Name']
                     ],
                     'avc' => TowerActivity::CaclPercentageIsExecuted($markerData['Number'], $markerData['ProjectName']),
-                    'draggable' => true,
+                    'draggable' => false,
                     'config_icon' => Production::getLatestTowerActivityWithIcon($changedTowerId, $markerData['ProjectName']),
                     'impediment_icon' => Production::GetIconFromLatestImpediment($impediments),
                     'Impediments' => $impediments,
@@ -219,7 +220,7 @@ class MapsController extends Controller
                         'originalName' => ''
                     ],
                     'avc' => 0,
-                    'draggable' => true,
+                    'draggable' => false,
                     'config_icon' => 'icone',
                     'impediment_icon' => '',
                     'Impediments' => null,
@@ -309,7 +310,7 @@ class MapsController extends Controller
                         'originalName' => $markerData['Name']
                     ],
                     'avc' => TowerActivity::CaclPercentageIsExecuted($markerData['Number'], $markerData['ProjectName']),
-                    'draggable' => true,
+                    'draggable' => false,
                     'config_icon' => Production::getLatestTowerActivityWithIcon($changedTowerId, $markerData['ProjectName']),
                     'impediment_icon' => Production::GetIconFromLatestImpediment($impediments),
                     'Impediments' => $impediments,
@@ -407,15 +408,61 @@ class MapsController extends Controller
 
         $imageUrls = [];
 
-        // Salvar cada imagem no diretório de armazenamento (pasta storage/app/public)
         foreach ($request->file('images') as $file) {
-            $imagePath = $file->store($request->towerId);
-            $imageUrl = url('storage/' . $request->towerId . DIRECTORY_SEPARATOR . basename($imagePath));
+            // Generate a unique ID for each image using timestamp and random string
+            $uniqueId = time() . '_' . Str::random(10); // You may need to import Str class
+
+            // Determine the file extension (e.g., jpg, png)
+            $extension = $file->getClientOriginalExtension();
+
+            // Generate the file name with the unique ID and extension
+            $fileName = $uniqueId . '.' . $extension;
+
+            // Save the image to the storage/app/public directory with the generated filename
+            $imagePath = $file->storeAs($request->towerId, $fileName);
+
+            // Generate the image URL
+            $imageUrl = url('storage/' . $request->towerId . '/' . $fileName);
+
             $imageUrls[] = $imageUrl;
         }
 
         // Retorna as URLs das imagens
         return response()->json(['imageUrls' => $imageUrls]);
+    }
+
+
+
+    public function deleteGalleryImage(Request $request)
+    {
+        // Validação dos dados da requisição
+        $request->validate([
+            'image_url' => 'required|url',
+        ]);
+
+        $imageUrl = $request->input('image_url');
+
+        $imagePath = parse_url($imageUrl, PHP_URL_PATH);
+
+        $folder = explode('/', $imagePath);
+
+        $filePath = $folder[2] . '/' . $folder[3];
+
+        if (Storage::disk('public')->exists($filePath)) {
+            // Exclua o arquivo físico da pasta public
+            Storage::disk('public')->delete($filePath);
+
+            // Exclua o arquivo físico da pasta app
+            $appFilePath = storage_path('app/' . $folder[2] . '/' . $folder[3]);
+            if (file_exists($appFilePath)) {
+                unlink($appFilePath);
+            }
+
+            return response()->json(['message' => 'Imagem excluída com sucesso']);
+        } else {
+            // A imagem não foi encontrada
+            return response()->json(['message' => 'Imagem não encontrada'], 404);
+        }
     }
 
     public function GetLatestIcons($tower, $project)

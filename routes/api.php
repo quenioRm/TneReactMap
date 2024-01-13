@@ -31,6 +31,7 @@ Route::post('/get-coordinatesbyrange', [MapsController::class, 'getCoordinatesBy
 Route::get('/get-towerimages/{tower}', [MapsController::class, 'getImagesFromTower']);
 Route::get('/get-towerproduction/{tower}/{project}', [MapsController::class, 'getTowerProduction']);
 Route::post('/upload-images', [MapsController::class, 'uploadGaleryImages']);
+Route::post('/delete-gallery-image', [MapsController::class, 'deleteGalleryImage']);
 
 Route::get('/getlatesticons/{tower}/{project}', [MapsController::class, 'GetLatestIcons']);
 

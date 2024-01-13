@@ -1,0 +1,32 @@
+.image-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .delete-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: red;
+    cursor: pointer;
+  }
+
+  .tooltip {
+    visibility: hidden;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    top: -30px;
+    right: 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .image-container:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }

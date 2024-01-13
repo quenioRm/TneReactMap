@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('zone');
             $table->string('type');
             $table->string('icon');
+            $table->string('unity')->nullable();
+            $table->decimal('count', 5, 2)->default(0);
+            $table->decimal('lenPercent', 5, 2)->default(0);
             $table->timestamps();
         });
     }

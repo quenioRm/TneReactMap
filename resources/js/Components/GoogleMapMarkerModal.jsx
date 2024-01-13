@@ -14,6 +14,8 @@ import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import axios from "axios";
 import ImageUploadButton from "./ImageUploadButton";
+import '../Components/css/uploadImages.css';
+import Swal from "sweetalert2";
 
 const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     const [towerImages, setTowerImages] = useState([]);
@@ -21,7 +23,8 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("info");
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(5); // Adjust the number of items per page as needed
+    const [itemsPerPage] = useState(5);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     useEffect(() => {
         if (markerInfo) {
@@ -88,6 +91,56 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
             console.error("Error uploading images:", error);
         }
     };
+
+    const handleImageDelete = () => {
+        const updatedImages = [...towerImages];
+
+        Swal.fire({
+            title: "Você tem certeza?",
+            text: "Você não poderá reverter isso!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sim, exclua-o!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Fazer a requisição HTTP para deletar a imagem
+                const imageUrlToDelete = updatedImages[currentImageIndex];
+
+                axios
+                    .post("/api/delete-gallery-image", { image_url: imageUrlToDelete })
+                    .then((response) => {
+                        if (response.status === 200) {
+                            // Remover a imagem da lista após a exclusão bem-sucedida
+                            updatedImages.splice(currentImageIndex, 1);
+                            setTowerImages(updatedImages);
+
+                            Swal.fire({
+                                title: "Excluída!",
+                                text: response.data.message,
+                                icon: "success",
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Erro!",
+                                text: response.data.message,
+                                icon: "error",
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao excluir imagem:", error);
+                        Swal.fire({
+                            title: "Erro!",
+                            text: "Ocorreu um erro ao excluir o arquivo.",
+                            icon: "error",
+                        });
+                    });
+            }
+        });
+    };
+
 
     return (
         <Modal show={markerInfo !== null} onHide={onClose} size="lg">
@@ -192,33 +245,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                     </tbody>
                                 </Table>
                             </Tab>
-                            <Tab eventKey="gallery" title="Galeria">
-                                {loading ? (
-                                    <p>Loading tower images...</p>
-                                ) : (
-                                    <>
-                                        {images.length > 0 && (
-                                            <div>
-                                                <Gallery items={images} />
-                                                {/* Linha horizontal */}
-                                            </div>
-                                        )}
-                                        <hr />
-                                        {/* Botão de upload */}
-                                        <Container>
-                                            <Row>
-                                                <Col className="text-right">
-                                                    <ImageUploadButton
-                                                        onUpload={
-                                                            handleImageUpload
-                                                        }
-                                                    />
-                                                </Col>
-                                            </Row>
-                                        </Container>
-                                    </>
-                                )}
-                            </Tab>
+
                             <Tab eventKey="production" title="Produção">
                                 <div>
                                     <Table striped bordered hover>
@@ -273,6 +300,47 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                         ))}
                                     </Pagination>
                                 </div>
+                            </Tab>
+                            <Tab eventKey="gallery" title="Galeria">
+                                {loading ? (
+                                    <p>Loading tower images...</p>
+                                ) : (
+                                    <>
+                                        {images.length > 0 && (
+                                        <div>
+                                        <Gallery
+                                            items={images}
+                                            onSlide={(currentIndex) =>
+                                            setCurrentImageIndex(currentIndex)
+                                            }
+                                        />
+                                        <div>
+                                        <button
+            onClick={handleImageDelete}
+            className="btn btn-danger"
+            style={{ marginTop: '10px' }}
+            >
+            Deletar imagem
+            </button>
+                                                    </div>
+                                        <hr />
+                                        </div>
+                                        )}
+                                        <hr />
+                                        {/* Botão de upload */}
+                                        <Container>
+                                            <Row>
+                                                <Col className="text-right">
+                                                    <ImageUploadButton
+                                                        onUpload={
+                                                            handleImageUpload
+                                                        }
+                                                    />
+                                                </Col>
+                                            </Row>
+                                        </Container>
+                                    </>
+                                )}
                             </Tab>
                         </Tabs>
                     </div>

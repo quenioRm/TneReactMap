@@ -40,12 +40,16 @@ const GoogleMap = () => {
         lng: 0,
     });
 
-    const [updatingCoordinate, setUpdatingCoordinate] = useState(false);
     const [isFetchingData, setIsFetchingData] = useState(false);
 
     const [updDistance, setUpdDistance] = useState(0);
 
     const [isDebugMode, setIsDebugMode] = useState(false);
+
+    const mapType = (localStorage.getItem('mapType')) ? localStorage.getItem('mapType') : 'hybrid';
+    const labelColor = (localStorage.getItem('currentLabelMapColor')) ? localStorage.getItem('currentLabelMapColor') : 'white';
+
+
 
     let mouseLatLng = null;
     const radius = 30000;
@@ -70,8 +74,6 @@ const GoogleMap = () => {
     // update Map Coordinates
 
     useEffect(() => {
-        // console.log((radius - updDistance ))
-        // return;
 
         if (radius - updDistance >= 25000 && updDistance > 0) {
             if (!isFetchingData) {
@@ -174,6 +176,7 @@ const GoogleMap = () => {
             },
             zoom: 15,
             gestureHandling: "greedy",
+            mapTypeId: (mapType === 'hybrid') ? google.maps.MapTypeId.SATELLITE : google.maps.MapTypeId.ROADMAP
         });
 
         setMap(map);
@@ -229,7 +232,7 @@ const GoogleMap = () => {
 
             const label = {
                 text: markerInfo.label.text + " - " + formattedPercentage,
-                color: "black",
+                color: labelColor,
                 fontSize: "12px",
                 fontWeight: "bold",
                 labelOrigin: new google.maps.Point(100, 20),
@@ -249,14 +252,6 @@ const GoogleMap = () => {
                           ? ""
                           : icon,
             });
-
-            // Define HTML content for the custom overlay
-
-            // const iconsHTML =
-            // '<div class="icons-bar">' +
-            //     '<div class="icon-box"><img src="http://127.0.0.1:8080/storage/icons/icone_6592073de2da55.31220336.png" /><div class="icon-date">02/01/2024</div></div>' +
-            //     '<div class="icon-box"><img src="http://127.0.0.1:8080/storage/icons/icone_6592073de2da55.31220336.png" /><div class="icon-date">02/01/2024</div></div>' +
-            // '</div>';
 
             let iconsHTML = null;
 
@@ -293,19 +288,12 @@ const GoogleMap = () => {
 
             // Adiciona um InfoWindow vazio ao marcador
             const infowindow = new google.maps.InfoWindow();
-            infowindow.setOptions({ disableAutoPan: false });
+            infowindow.setOptions({ disableAutoPan: true });
 
             // Adiciona ouvinte de evento para exibir o InfoWindow no mouseover
             marker.addListener("mouseover", function () {
                 // Define HTML content for the custom overlay
                 customOverlay.div.style.display = "block";
-
-                // const icon1 = "<img src='http://127.0.0.1:8080/storage/icons/icone_6592073de2da55.31220336.png' style='width: 20px; height: 20px;' />";
-                // const icon2 = "<img src='http://127.0.0.1:8080/storage/icons/icone_6592073de2da55.31220336.png' style='width: 20px; height: 20px;' />";
-                // const icon3 = "<img src='http://127.0.0.1:8080/storage/icons/icone_6592073de2da55.31220336.png' style='width: 20px; height: 20px;' />";
-                // const icon4 = "<img src='http://127.0.0.1:8080/storage/icons/icone_6592073de2da55.31220336.png' style='width: 20px; height: 20px;' />";
-
-                // const iconsContainer = `<div style='margin-top: 10px;'>${icon1} ${icon2} ${icon3} ${icon4}</div>`;
 
                 // Obtém a última atividade realizada
                 const lastActivity = markerInfo.config_icon.activitie
@@ -376,9 +364,6 @@ const GoogleMap = () => {
 
                 mouseLatLng = event.latLng;
 
-                // Update Coordinate
-                // const coordinates = convertLatLongToUTM(event.latLng.lat(), event.latLng.lng());
-                // console.log(coordinates);
                 const result = UtmConverter.convertLatLngToUtm(
                     parseFloat(event.latLng.lat()),
                     parseFloat(event.latLng.lng()),
@@ -440,6 +425,24 @@ const GoogleMap = () => {
                 if (isDebugMode) console.log(distance, updDistance);
 
             });
+
+            google.maps.event.addListener(map, 'maptypeid_changed', function() {
+                var currentMapType = map.getMapTypeId();
+
+                if (currentMapType === 'hybrid') {
+                    localStorage.setItem('currentLabelMapColor', 'white');
+                    localStorage.setItem('mapType', currentMapType);
+                }
+                else if (currentMapType === 'sattelite') {
+                    localStorage.setItem('currentLabelMapColor', 'white');
+                    localStorage.setItem('mapType', currentMapType);
+                } else {
+                    localStorage.setItem('currentLabelMapColor', 'black');
+                    localStorage.setItem('mapType', currentMapType);
+                }
+                window.location.reload();
+            });
+
         });
     };
 
@@ -506,7 +509,6 @@ const GoogleMap = () => {
         radius,
         getAllPoints,
     ) => {
-        if (updatingCoordinate) return;
 
         const payload = {
             inputX: coordinateX,
@@ -557,7 +559,7 @@ const GoogleMap = () => {
         radius,
         getAllPoints,
     ) => {
-        if (updatingCoordinate) return;
+
 
         const payload = {
             inputX: coordinateX,
