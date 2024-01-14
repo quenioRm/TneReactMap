@@ -175,7 +175,7 @@ class MapsController extends Controller
     public function getCoordinates()
     {
         // Use o Cache para armazenar e recuperar os dados
-        $initialMarkers = Cache::remember('coordinates_data_general', 360, function () {
+        $initialMarkers = Cache::remember('coordinates_data_general', 1440, function () {
 
             $markers = [];
             $listOfMarkers = Tower::get();
