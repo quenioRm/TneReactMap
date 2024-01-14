@@ -262,7 +262,8 @@ const GoogleMap = () => {
             );
 
             const label = {
-                text: markerInfo.label.text + " - " + formattedPercentage,
+                // text: markerInfo.label.text + " - " + formattedPercentage,
+                text: markerInfo.label.text,
                 color: labelColor,
                 fontSize: "12px",
                 fontWeight: "bold",
