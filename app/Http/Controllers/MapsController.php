@@ -24,61 +24,175 @@ class MapsController extends Controller
 {
     public function getCoordinatesByRange(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'inputX' => 'numeric',
-            'inputY' => 'numeric',
-            'radius' => 'numeric',
-            'getAllPoints' => 'boolean'
-        ]);
+        $cacheKey = 'coordinates_data_' . $request->inputX . '_' . $request->inputY;
 
-        if($request->getAllPoints == true){
-            return $this->getCoordinates();
-        }
+        $cachedData = Cache::remember($cacheKey, 360, function () use ($request) {
 
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
-        }
+            $validator = Validator::make($request->all(), [
+                'inputX' => 'numeric',
+                'inputY' => 'numeric',
+                'radius' => 'numeric',
+                'getAllPoints' => 'boolean'
+            ]);
 
-        $inputX = $request->inputX;
-        $inputY = $request->inputY;
-        $radius = $request->radius;
+            // if($request->getAllPoints == true){
+            //     return $this->getCoordinates();
+            // }
 
-        if($inputX == 0 || $inputY == 0){
-            $firstTower = Tower::first();
-            if($firstTower){
-                $inputX = $firstTower->CoordinateX;
-                $inputY = $firstTower->CoordinateY;
-            }else{
-                return response()->json(['error' => 'Não existem estruturas cadastradas!'], 400);
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
             }
-        }
 
-        if($radius == 0)
-            $radius = 30000;
+            $inputX = $request->inputX;
+            $inputY = $request->inputY;
+            $radius = $request->radius;
+
+            if($inputX == 0 || $inputY == 0){
+                $firstTower = Tower::first();
+                if($firstTower){
+                    $inputX = $firstTower->CoordinateX;
+                    $inputY = $firstTower->CoordinateY;
+                }else{
+                    return response()->json(['error' => 'Não existem estruturas cadastradas!'], 400);
+                }
+            }
+
+            if($radius == 0)
+                $radius = 30000;
 
 
-        $markers = [];
-        $listOfMarkers = Tower::get();
+            $markers = [];
+            $listOfMarkers = Tower::get();
 
-        $firstX = 0;
-        $firstY = 0;
+            $firstX = 0;
+            $firstY = 0;
 
-        if(!empty($listOfMarkers)){
-            $firstX = (float)$listOfMarkers[0]->CoordinateX;
-            $firstY = (float)$listOfMarkers[0]->CoordinateY;
-        }
+            if(!empty($listOfMarkers)){
+                $firstX = (float)$listOfMarkers[0]->CoordinateX;
+                $firstY = (float)$listOfMarkers[0]->CoordinateY;
+            }
 
-        foreach ($listOfMarkers as $markerData) {
-            // Carrega as coordenadas X e Y do marcador
-            $x = (float)$markerData['CoordinateX'];
-            $y = (float)$markerData['CoordinateY'];
-            $zone = (float)$markerData['Zone'];
+            foreach ($listOfMarkers as $markerData) {
+                // Carrega as coordenadas X e Y do marcador
+                $x = (float)$markerData['CoordinateX'];
+                $y = (float)$markerData['CoordinateY'];
+                $zone = (float)$markerData['Zone'];
 
-            // Calcula a distância do marcador para o ponto fornecido
-            $distance = sqrt(pow($x - $inputX, 2) + pow($y - $inputY, 2));
+                // Calcula a distância do marcador para o ponto fornecido
+                $distance = sqrt(pow($x - $inputX, 2) + pow($y - $inputY, 2));
 
-            // Se o marcador está dentro do raio especificado, adiciona ao array de marcadores
-            if ($distance <= $radius) {
+                // Se o marcador está dentro do raio especificado, adiciona ao array de marcadores
+                if ($distance <= $radius) {
+
+                    $latlng = null;
+
+                    if ($zone < 0) {
+                        $latlng = CoordinateHelper::utm2ll($x, $y, $zone * -1, false);
+                    }
+
+                    if ($zone > 0) {
+                        $latlng = CoordinateHelper::utm2ll($x, $y, $zone * 1, true);
+                    }
+
+                    $newCoordinates = json_decode($latlng, true);
+
+                    $changedTowerId = str_replace('/', '_', $markerData['Number']);
+
+                    $impediments = TowerImpediment::GetImpediments($markerData['ProjectName'], $markerData['Number']);
+
+                    // Receive Status
+                    $receiveStatus = '';
+                    $solicitationDate = ($markerData['SolicitationDate'] == '') ? '' : Carbon::parse($markerData['SolicitationDate']);
+                    $previousReceiveDate = ($markerData['SolicitationDate'] == '') ? '' : Carbon::parse($markerData['SolicitationDate'])->addDays(120);
+                    $receiveDate = ($markerData['ReceiveDate'] == '') ? '' : Carbon::parse($markerData['ReceiveDate']);
+
+                    if ($solicitationDate == '')
+                        $receiveStatus = 'Á Solicitar';
+
+                    if ($receiveDate != '' && $receiveDate < $previousReceiveDate && $previousReceiveDate != '')
+                        $receiveStatus = 'Chegou dentro do prazo';
+
+                    if ($receiveDate != '' && $receiveDate > $previousReceiveDate && $previousReceiveDate != '')
+                        $receiveStatus = 'Chegou fora do prazo';
+
+                    if ($receiveDate == '' && $solicitationDate < $previousReceiveDate && $previousReceiveDate > Carbon::now()
+                    && $solicitationDate != '')
+                        $receiveStatus = 'Aguardando Recebimento';
+
+                    if ($receiveDate == '' && $solicitationDate > $previousReceiveDate && $solicitationDate != '')
+                        $receiveStatus = 'Atrasado';
+
+                    if ($previousReceiveDate != '' && $receiveStatus == '' && $previousReceiveDate < Carbon::now())
+                        $receiveStatus = 'Atrasado';
+                    ///////////
+
+                    $markers[] = [
+                        'type' => 0,
+                        'name' => $markerData['Number'] . " - " . $markerData['ProjectName'],
+                        'position' => [
+                            'lat' => $newCoordinates['attr']['lat'],
+                            'lng' => $newCoordinates['attr']['lon'],
+                            'utmx' => $markerData['CoordinateX'],
+                            'utmy' => $markerData['CoordinateY'],
+                            'zone' => $zone,
+                            'tower' => $markerData['Number']
+                        ],
+                        'label' => [
+                            'color' =>'blue',
+                            'text' => $markerData['Number'] . " - " . $markerData['Name'],
+                            'towerId' => $changedTowerId,
+                            'project' => $markerData['ProjectName'],
+                            'oringalNumber' => $markerData['Number'],
+                            'originalName' => $markerData['Name']
+                        ],
+                        'avc' => TowerActivity::CaclPercentageIsExecuted($markerData['Number'], $markerData['ProjectName']),
+                        'draggable' => false,
+                        'config_icon' => Production::getLatestTowerActivityWithIcon($changedTowerId, $markerData['ProjectName']),
+                        'impediment_icon' => Production::GetIconFromLatestImpediment($impediments),
+                        'Impediments' => $impediments,
+                        'SolicitationDate' => ($markerData['SolicitationDate'] == '') ? '' :
+                            Carbon::parse($markerData['SolicitationDate'])->format('d-m-y') ,
+                        'ReceiveDate' => ($markerData['ReceiveDate'] == '') ? '' :
+                            Carbon::parse($markerData['ReceiveDate'])->format('d-m-y'),
+                        'PreviousReceiveDate' => ($markerData['SolicitationDate'] == '') ? '' :
+                            Carbon::parse($markerData['SolicitationDate'])->addDays(120)->format('d-m-y'),
+                        'ReceiveStatus' => $receiveStatus,
+                        'iconsbarActivity' => Production::getLatestTowerActivityWithIcons($changedTowerId, $markerData['ProjectName']),
+                        'iconsbarImpediment' => Production::GetIconFromLatestImpedimentIcons($impediments)
+                    ];
+                }
+            }
+
+            $anotherMarkers = $this->getCoordinatesByAnotherMarkers($firstX, $firstY, 50000, false);
+            $mergedArray = array_merge($anotherMarkers, $markers);
+
+            return $mergedArray;
+        });
+
+        return response()->json($cachedData);
+    }
+
+    public function getCoordinates()
+    {
+        // Use o Cache para armazenar e recuperar os dados
+        $initialMarkers = Cache::remember('coordinates_data_general', 360, function () {
+
+            $markers = [];
+            $listOfMarkers = Tower::get();
+
+            $firstX = 0;
+            $firstY = 0;
+
+            if(!empty($listOfMarkers)){
+                $firstX = (float)$listOfMarkers[0]->CoordinateX;
+                $firstY = (float)$listOfMarkers[0]->CoordinateY;
+            }
+
+            foreach ($listOfMarkers as $markerData) {
+
+                $x = (float)$markerData['CoordinateX'];
+                $y = (float)$markerData['CoordinateY'];
+                $zone = (float)$markerData['Zone'];
 
                 $latlng = null;
 
@@ -156,13 +270,16 @@ class MapsController extends Controller
                     'iconsbarActivity' => Production::getLatestTowerActivityWithIcons($changedTowerId, $markerData['ProjectName']),
                     'iconsbarImpediment' => Production::GetIconFromLatestImpedimentIcons($impediments)
                 ];
+
             }
-        }
 
-        $anotherMarkers = $this->getCoordinatesByAnotherMarkers($firstX, $firstY, 50000, false);
-        $mergedArray = array_merge($anotherMarkers, $markers);
+            $anotherMarkers = $this->getCoordinatesByAnotherMarkers($firstX, $firstY, 5000000000, false);
+            $mergedArray = array_merge($anotherMarkers, $markers);
 
-        return response()->json($mergedArray);
+            return $mergedArray;
+        });
+
+        return response()->json($initialMarkers);
     }
 
     public function getCoordinatesByAnotherMarkers($inputX, $inputY, $radius, $getAllPoints)
@@ -233,99 +350,6 @@ class MapsController extends Controller
         }
 
         return $markers;
-    }
-
-    public function getCoordinates()
-    {
-        // Use o Cache para armazenar e recuperar os dados
-        $initialMarkers = Cache::remember('coordinates_data', 120, function () {
-            $markers = [];
-            $listOfMarkers = Tower::get();
-
-            foreach ($listOfMarkers as $markerData) {
-                $x = (float)$markerData['CoordinateX'];
-                $y = (float)$markerData['CoordinateY'];
-                $zone = (float)$markerData['Zone'];
-
-                $latlng = null;
-
-                if ($zone < 0) {
-                    $latlng = CoordinateHelper::utm2ll($x, $y, $zone * -1, false);
-                }
-
-                if ($zone > 0) {
-                    $latlng = CoordinateHelper::utm2ll($x, $y, $zone * 1, true);
-                }
-
-                $newCoordinates = json_decode($latlng, true);
-
-                $changedTowerId = str_replace('/', '_', $markerData['Number']);
-
-                $impediments = TowerImpediment::GetImpediments($markerData['ProjectName'], $markerData['Number']);
-
-                // Receive Status
-                $receiveStatus = '';
-                $solicitationDate = ($markerData['SolicitationDate'] == '') ? '' : Carbon::parse($markerData['SolicitationDate']);
-                $previousReceiveDate = ($markerData['SolicitationDate'] == '') ? '' : Carbon::parse($markerData['SolicitationDate'])->addDays(120);
-                $receiveDate = ($markerData['ReceiveDate'] == '') ? '' : Carbon::parse($markerData['ReceiveDate']);
-
-                if ($solicitationDate == '')
-                    $receiveStatus = 'Á Solicitar';
-
-                if ($receiveDate != '' && $receiveDate < $previousReceiveDate && $previousReceiveDate != '')
-                    $receiveStatus = 'Chegou dentro do prazo';
-
-                if ($receiveDate != '' && $receiveDate > $previousReceiveDate && $previousReceiveDate != '')
-                    $receiveStatus = 'Chegou fora do prazo';
-
-                if ($receiveDate == '' && $solicitationDate < $previousReceiveDate && $previousReceiveDate > Carbon::now()
-                && $solicitationDate != '')
-                    $receiveStatus = 'Aguardando Recebimento';
-
-                if ($receiveDate == '' && $solicitationDate > $previousReceiveDate && $solicitationDate != '')
-                    $receiveStatus = 'Atrasado';
-
-                if ($previousReceiveDate != '' && $receiveStatus == '' && $previousReceiveDate < Carbon::now())
-                    $receiveStatus = 'Atrasado';
-                ///////////
-
-                $markers[] = [
-                    'type' => 'tower',
-                    'name' => $markerData['Number'] . " - " . $markerData['ProjectName'],
-                    'position' => [
-                        'lat' => $newCoordinates['attr']['lat'],
-                        'lng' => $newCoordinates['attr']['lon'],
-                        'utmx' => $markerData['CoordinateX'],
-                        'utmy' => $markerData['CoordinateY']
-                    ],
-                    'label' => [
-                        'color' =>'blue',
-                        'text' => $markerData['Number'] . " - " . $markerData['Name'],
-                        'towerId' => $changedTowerId,
-                        'project' => $markerData['ProjectName'],
-                        'oringalNumber' => $markerData['Number'],
-                        'originalName' => $markerData['Name']
-                    ],
-                    'avc' => TowerActivity::CaclPercentageIsExecuted($markerData['Number'], $markerData['ProjectName']),
-                    'draggable' => false,
-                    'config_icon' => Production::getLatestTowerActivityWithIcon($changedTowerId, $markerData['ProjectName']),
-                    'impediment_icon' => Production::GetIconFromLatestImpediment($impediments),
-                    'Impediments' => $impediments,
-                    'SolicitationDate' => ($markerData['SolicitationDate'] == '') ? '' :
-                        Carbon::parse($markerData['SolicitationDate'])->format('d-m-y') ,
-                    'ReceiveDate' => ($markerData['ReceiveDate'] == '') ? '' :
-                        Carbon::parse($markerData['ReceiveDate'])->format('d-m-y'),
-                    'PreviousReceiveDate' => ($markerData['SolicitationDate'] == '') ? '' :
-                        Carbon::parse($markerData['SolicitationDate'])->addDays(120)->format('d-m-y'),
-                    'ReceiveStatus' => $receiveStatus
-                ];
-
-            }
-
-            return $markers;
-        });
-
-        return response()->json($initialMarkers);
     }
 
     public function getImagesFromTower($tower)

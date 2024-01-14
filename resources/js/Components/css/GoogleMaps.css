@@ -53,3 +53,11 @@
 .icons-bar::-webkit-scrollbar {
     display: none;
 }
+
+.centered-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Define a altura para ocupar toda a tela verticalmente */
+}

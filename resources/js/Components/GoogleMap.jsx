@@ -7,7 +7,7 @@ import { ProgressBar, Spinner } from "react-bootstrap"; // Import ProgressBar fr
 import "bootstrap/dist/css/bootstrap.min.css";
 import UtmConverter from "./Converters/UtmConverter";
 import "./css/Spinner.css";
-import "./MapsComponents/GoogleMapsIcons.css";
+import "../Components/css/GoogleMaps.css";
 import axios from '../Components/axiosInstance';
 
 const GoogleMap = () => {
@@ -55,6 +55,10 @@ const GoogleMap = () => {
         ? localStorage.getItem("currentLabelMapColor")
         : "white";
 
+    const [currentZoom, setCurrentZoom] = useState(15); // Define o nível de zoom inicial
+
+    const [allPointsLoaded, setAllPointsLoaded] = useState(false);
+
     let mouseLatLng = null;
     const radius = 30000;
 
@@ -62,6 +66,18 @@ const GoogleMap = () => {
         loadGoogleMapScript();
         fetchMarkerData(0, 0, radius, false);
     }, []);
+
+    useEffect(() => {
+        if(allPointsLoaded === true){
+            setIsFetchingData(true);
+
+            fetchMarkerData(0, 0, radius, allPointsLoaded)
+            .then(() => {
+                setIsFetchingData(false);
+            });
+
+        }
+    }, [allPointsLoaded]);
 
 
     useEffect(() => {
@@ -79,7 +95,8 @@ const GoogleMap = () => {
     // update Map Coordinates
 
     useEffect(() => {
-        if (radius - updDistance >= 25000 && updDistance > 0) {
+
+        if (radius - updDistance >= 25000 && updDistance > 0 && allPointsLoaded === false) {
             if (!isFetchingData) {
                 // Defina isFetchingData como true para indicar que a solicitação está em andamento
                 setIsFetchingData(true);
@@ -178,7 +195,7 @@ const GoogleMap = () => {
                 lat: currentCalledLatLng.lat,
                 lng: currentCalledLatLng.lng,
             },
-            zoom: 15,
+            zoom: currentZoom,
             gestureHandling: "greedy",
             mapTypeId:
                 mapType === "hybrid"
@@ -459,6 +476,16 @@ const GoogleMap = () => {
                     window.location.reload();
                 },
             );
+
+            map.addListener('zoom_changed', () => {
+                setCurrentZoom(map.getZoom());
+                if(map.getZoom() <= 11){
+                    setAllPointsLoaded(true);
+                }else{
+                    setAllPointsLoaded(false);
+                }
+            });
+
         });
     };
 
@@ -478,15 +505,16 @@ const GoogleMap = () => {
         setSelectedMarker(null);
     };
 
-    const fetchMarkerData = async (coordinateX, coordinateY) => {
+    const fetchMarkerData = async (coordinateX, coordinateY, radius, getAllPoints) => {
         const payload = {
             inputX: coordinateX,
             inputY: coordinateY,
             radius: radius,
-            getAllPoints: false,
+            getAllPoints: getAllPoints,
         };
 
-        await axios
+        if(getAllPoints === false){
+            await axios
             .post("/api/get-coordinatesbyrange", payload)
             .then((response) => {
                 const latestItem = response.data[response.data.length - 1];
@@ -517,6 +545,41 @@ const GoogleMap = () => {
             .catch((error) => {
                 console.error("Error fetching marker data:", error);
             });
+
+        }else{
+
+            await axios
+            .get("/api/get-coordinates")
+            .then((response) => {
+                const latestItem = response.data[response.data.length - 1];
+
+                setLastestCalledCoordinate({
+                    x: parseFloat(latestItem.position.utmx),
+                    y: parseFloat(latestItem.position.utmy),
+                    zone: latestItem.position.zone,
+                });
+
+                setCurrentCalledLatLng({
+                    lat: response.data[0].position.lat,
+                    lng: response.data[0].position.lng,
+                });
+
+                setFirstCalledLatLng({
+                    lat: response.data[0].position.lat,
+                    lng: response.data[0].position.lng,
+                });
+
+                setLastestCalledLatLng({
+                    lat: latestItem.position.lat,
+                    lng: latestItem.position.lng,
+                });
+
+                setMarkerData(response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching marker data:", error);
+            });
+        }
     };
 
     const fetchNewMarkerData = async (
@@ -525,6 +588,9 @@ const GoogleMap = () => {
         radius,
         getAllPoints,
     ) => {
+
+        const adjustedRadius = radius * Math.pow(2, 15 - currentZoom);
+
         const payload = {
             inputX: coordinateX,
             inputY: coordinateY,
@@ -647,6 +713,7 @@ const GoogleMap = () => {
             {/* Display progress bar while loading */}
             {isFetchingData && (
                 <div className="centered-spinner">
+                    {allPointsLoaded ? <strong>Estamos carregando todos os objetos do mapa, aguarde...</strong> : <></>}
                     <Spinner animation="border" variant="primary" />
                 </div>
             )}
