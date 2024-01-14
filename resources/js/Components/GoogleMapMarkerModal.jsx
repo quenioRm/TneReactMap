@@ -21,6 +21,7 @@ import Swal from "sweetalert2";
 const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     const [towerImages, setTowerImages] = useState([]);
     const [towerProduction, setTowerProduction] = useState([]);
+    const [towerAVC, setTowerAVC] = useState(0);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("info");
     const [currentPage, setCurrentPage] = useState(1);
@@ -31,6 +32,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
         if (markerInfo) {
             fetchTowerImages();
             fetchTowerProduction();
+            fetchTowerAVC();
         }
     }, [markerInfo]);
 
@@ -57,10 +59,29 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
         }
     };
 
+    const fetchTowerAVC = async () => {
+        try {
+            const response = await axios.get(
+                `/api/get-avc/${markerInfo.label.towerId}/${markerInfo.label.project}`,
+            );
+            setTowerAVC(response.data);
+        } catch (error) {
+            console.error("Error fetching tower production:", error);
+        }
+    };
+
     const images = towerImages.map((image) => ({
         original: image,
         thumbnail: image,
     }));
+
+    const formattedPercentage = towerAVC.toLocaleString(
+        undefined,
+        {
+            style: "percent",
+            minimumFractionDigits: 2,
+        },
+    );
 
     const handleTabSelect = (tab) => {
         setActiveTab(tab);
@@ -251,6 +272,15 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
 
                             <Tab eventKey="production" title="Produção">
                                 <div>
+                                <Table striped bordered hover>
+                                        <thead>
+                                            <tr>
+                                                <th>%Avanço na estrutura : {formattedPercentage}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </Table>
                                     <Table striped bordered hover>
                                         <thead>
                                             <tr>

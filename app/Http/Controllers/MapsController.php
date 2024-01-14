@@ -175,7 +175,7 @@ class MapsController extends Controller
     public function getCoordinates()
     {
         // Use o Cache para armazenar e recuperar os dados
-        $initialMarkers = Cache::remember('coordinates_data_general', 1440, function () {
+        $initialMarkers = Cache::remember('coordinates_data_general', 86400, function () {
 
             $markers = [];
             $listOfMarkers = Tower::get();
@@ -490,5 +490,24 @@ class MapsController extends Controller
     {
 
         return response()->json(Production::getLatestTowerActivityWithIcons($tower, $project));
+    }
+
+    public function GetTowerAvc($tower, $project)
+    {
+        $cacheKey = 'tower_avc_' . $tower . '_' . $project;
+
+        if (Cache::has($cacheKey)) {
+
+            $avc = Cache::get($cacheKey);
+
+        } else {
+
+            $tower = str_replace('_', '/', $tower);
+            $avc = TowerActivity::CaclPercentageIsExecuted($tower, $project);
+
+            Cache::put($cacheKey, $avc, 60);
+        }
+
+        return response()->json($avc);
     }
 }

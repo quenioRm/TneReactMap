@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Table, Button, Pagination } from "react-bootstrap";
 
 // Define the MarkerList component
-const MarkerListSub = ({ markers, onEdit, onDelete }) => {
+const MarkerListPersonal = ({ markers, onEdit, onDelete }) => {
     // Set the number of items per page
     const itemsPerPage = 5;
     // Initialize the currentPage state
@@ -82,4 +82,4 @@ const MarkerListSub = ({ markers, onEdit, onDelete }) => {
 };
 
 // Export the MarkerList component
-export default MarkerListSub;
+export default MarkerListPersonal;

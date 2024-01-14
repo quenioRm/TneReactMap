@@ -36,6 +36,7 @@ Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
     Route::get('/get-towerproduction/{tower}/{project}', [MapsController::class, 'getTowerProduction']);
     Route::post('/upload-images', [MapsController::class, 'uploadGaleryImages']);
     Route::post('/delete-gallery-image', [MapsController::class, 'deleteGalleryImage']);
+    Route::get('/get-avc/{tower}/{project}', [MapsController::class, 'GetTowerAvc']);
 
     Route::get('/getlatesticons/{tower}/{project}', [MapsController::class, 'GetLatestIcons']);
 

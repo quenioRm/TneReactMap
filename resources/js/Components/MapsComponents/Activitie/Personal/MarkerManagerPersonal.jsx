@@ -3,13 +3,12 @@ import { Modal, Button, Container, Row, Col } from "react-bootstrap";
 import MarkerConfigModal from "./MarkerConfigModal";
 import MarkerList from "./MarkerList";
 import { ToastContainer, toast } from "react-toastify";
-import TowerImportModal from "../../../TowersComponents/TowerImportModal";
 import "react-toastify/dist/ReactToastify.css";
 // import axios from "axios";
-import axios from '../../../../Components/axiosInstance';
+import axios from '../../../axiosInstance';
 
 
-const MarkerManagerSub = ({ show, onHide }) => {
+const MarkerManagerPersonal = ({ show, onHide }) => {
     const [editedMarker, setEditedMarker] = useState(null);
     const [markers, setMarkers] = useState([]);
     const [configModalShow, setConfigModalShow] = useState(false);
