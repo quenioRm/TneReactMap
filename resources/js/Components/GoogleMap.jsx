@@ -755,7 +755,7 @@ const GoogleMap = () => {
             {/* Display progress bar while loading */}
             {isFetchingData && (
                 <div className="centered-spinner">
-                    {allPointsLoaded ? <strong>Estamos carregando todos os objetos do mapa, aguarde...</strong> : <></>}
+                    {allPointsLoaded ? <strong>Hummm... sua internet não está muito boa, acessando servidor de suporte, aguarde...</strong> : <></>}
                     <Spinner animation="border" variant="primary" />
                 </div>
             )}
