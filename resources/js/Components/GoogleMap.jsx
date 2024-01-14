@@ -121,7 +121,7 @@ const GoogleMap = () => {
             }
         }
 
-        if (updDistance > radius + 10000) {
+        if (updDistance > radius + 10000 && allPointsLoaded === false) {
             if (!isFetchingData) {
                 // Defina isFetchingData como true para indicar que a solicitação está em andamento
                 setIsFetchingData(true);

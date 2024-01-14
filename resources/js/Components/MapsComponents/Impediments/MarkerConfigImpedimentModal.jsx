@@ -125,7 +125,7 @@ const MarkerConfigImpedimentModal = ({
                                     Sitio Arqueologico
                                 </Dropdown.Item>
                                 <Dropdown.Item
-                                    onClick={() => setStatus("Não Liberrado")}
+                                    onClick={() => setStatus("Não Liberado")}
                                 >
                                     Não Liberrado
                                 </Dropdown.Item>

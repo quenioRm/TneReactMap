@@ -44,6 +44,19 @@ axiosInstance.interceptors.response.use(
                 window.location.href = "/";
             }, 10000);
         }
+
+        if (error.response && error.response.status === 524) {
+            // Lidar com erro 403 aqui
+            // console.error("Acesso negado. Você não tem permissão para acessar este recurso.");
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "Sua conexão está lenta, atualize a página e tente novamente!.",
+                showConfirmButton: false,
+                timer: 10000,
+            });
+        }
+
         // Retornar uma Promise de rejeição com o erro
         return Promise.reject(error);
     },
