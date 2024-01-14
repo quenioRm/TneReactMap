@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Table, Button, Pagination } from "react-bootstrap";
 
-// Define the MarkerList component
+// Define the MarkerListPersonal component
 const MarkerListPersonal = ({ markers, onEdit, onDelete }) => {
     // Set the number of items per page
     const itemsPerPage = 5;
@@ -18,7 +18,7 @@ const MarkerListPersonal = ({ markers, onEdit, onDelete }) => {
     // Define the paginate function to handle page changes
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    // Return the JSX for the MarkerList component
+    // Return the JSX for the MarkerListPersonal component
     return (
         <>
             <Table striped bordered hover>
@@ -31,15 +31,14 @@ const MarkerListPersonal = ({ markers, onEdit, onDelete }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {currentMarkers.map((marker, index) => (
-                        <tr key={index}>
-                            <td>{marker.atividade}</td>
-                            {/* Use an <img> tag to display the icon with a resolution of 30x30 */}
-                            <td>{marker.unidade}</td>
+                    {currentMarkers.map((marker) => (
+                        <tr key={marker.id}>
+                            <td>{marker.personalMarkerId}</td>
+                            <td>{marker.unity}</td>
                             <td>
                                 <img
-                                    src={"storage/" + marker.icone}
-                                    alt={marker.atividade}
+                                    src={"storage/" + marker.icon}
+                                    alt={marker.unity}
                                     width={30}
                                     height={30}
                                 />
@@ -81,5 +80,5 @@ const MarkerListPersonal = ({ markers, onEdit, onDelete }) => {
     );
 };
 
-// Export the MarkerList component
+// Export the MarkerListPersonal component
 export default MarkerListPersonal;

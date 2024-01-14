@@ -4,7 +4,7 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import axios from '../../Components/axiosInstance';
 
 
-const TowerSelectionModal = ({ rMap, show, onClose }) => {
+const TowerSelectionModal = ({ rMap, show, onClose, fetchNewMarkerData, allPointsLoaded, setActualCoordinate }) => {
     const [towers, setTowers] = useState([]);
     const [selectedTower, setSelectedTower] = useState([]);
 
@@ -24,10 +24,22 @@ const TowerSelectionModal = ({ rMap, show, onClose }) => {
 
     const handleTowerSelect = () => {
         if (selectedTower.length > 0) {
+
+            let utmx = selectedTower[0].tower.CoordinateX;
+            let utmy = selectedTower[0].tower.CoordinateY;
+            let zone = selectedTower[0].tower.Zone;
+
+            setActualCoordinate({
+                x: parseFloat(utmx),
+                y: parseFloat(utmy),
+                zone: parseFloat(zone)
+            })
+
             goToCoordinate(
                 selectedTower[0].position.lat,
                 selectedTower[0].position.lng,
             );
+
             onClose();
         }
     };

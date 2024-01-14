@@ -8,6 +8,7 @@ use App\Http\Controllers\MarkerConfigImpedimentController;
 use App\Http\Controllers\TowerController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\PersonalMarkerController;
+use App\Http\Controllers\PersonalMarkerActivityController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 /*
@@ -67,6 +68,7 @@ Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
     ///// Add Personal Marker //////////////////////
 
     Route::resource('personalmarkers', PersonalMarkerController::class);
+    Route::resource('personalmarkersactivity', PersonalMarkerActivityController::class);
     ////////////////////////////////////////////
 
 });

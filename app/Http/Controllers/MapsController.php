@@ -35,10 +35,6 @@ class MapsController extends Controller
                 'getAllPoints' => 'boolean'
             ]);
 
-            // if($request->getAllPoints == true){
-            //     return $this->getCoordinates();
-            // }
-
             if ($validator->fails()) {
                 return response()->json(['error' => $validator->errors()], 400);
             }
@@ -174,8 +170,8 @@ class MapsController extends Controller
 
     public function getCoordinates()
     {
-        // Use o Cache para armazenar e recuperar os dados
-        $initialMarkers = Cache::remember('coordinates_data_general', 86400, function () {
+        // Use o Cache para armazenar e recuperar os dados 86400 1 dia / 43200 12 horas
+        $initialMarkers = Cache::remember('coordinates_data_general', 43200, function () {
 
             $markers = [];
             $listOfMarkers = Tower::get();

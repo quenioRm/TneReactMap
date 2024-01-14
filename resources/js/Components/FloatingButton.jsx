@@ -15,8 +15,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHandRock, faBars } from "@fortawesome/free-solid-svg-icons";
 import AddMarkerModal from "./MapsComponents/PersonalMarker/AddMarkerModal";
 import PersonalMarkerManager from "./MapsComponents/PersonalMarker/PersonalMarkerManager";
+import MarkerManagerPersonal from "../Components/MapsComponents/Activitie/Personal/MarkerManagerPersonal";
 
-const FloatingButton = ({ map, setMarkerData, currentCalledLatLng }) => {
+const FloatingButton = ({ map, setMarkerData, currentCalledLatLng, fetchNewMarkerData, allPointsLoaded, setActualCoordinate }) => {
     const [showTowerModal, setShowTowerModal] = useState(false);
     const [showMarkerConfigModal, setShowMarkerConfigModal] = useState(false);
     const [showManager, setShowManager] = useState(false);
@@ -25,6 +26,7 @@ const FloatingButton = ({ map, setMarkerData, currentCalledLatLng }) => {
         useState(false);
     const [showManagerImpediment, setShowManagerImpediment] = useState(false);
     const [showAddMarkerModal, setShowAddMarkerModal] = useState(false);
+    const [showAddPersonalActivity, setShowAddPersonalActivity] = useState(false);
 
     const handleShowTowerModal = () => {
         setShowTowerModal(true);
@@ -76,6 +78,14 @@ const FloatingButton = ({ map, setMarkerData, currentCalledLatLng }) => {
         setShowAddMarkerModal(false);
     };
 
+    const handleShowAddPersonalActivity = () => {
+        setShowAddPersonalActivity(true);
+    };
+
+    const handleClosePersonalActivity = () => {
+        setShowAddPersonalActivity(false);
+    };
+
     return (
         <div>
             <OverlayTrigger
@@ -112,6 +122,9 @@ const FloatingButton = ({ map, setMarkerData, currentCalledLatLng }) => {
                     <Dropdown.Item onClick={handleShowAddMarkerModal}>
                         Adicionar Marcador Personalizado
                     </Dropdown.Item>
+                    <Dropdown.Item onClick={handleShowAddPersonalActivity}>
+                        Configurar Marcador - Atividade [Personalizados]
+                    </Dropdown.Item>
                 </DropdownButton>
             </OverlayTrigger>
 
@@ -120,6 +133,9 @@ const FloatingButton = ({ map, setMarkerData, currentCalledLatLng }) => {
                 rMap={map}
                 show={showTowerModal}
                 onClose={handleCloseModals}
+                fetchNewMarkerData={fetchNewMarkerData}
+                allPointsLoaded={allPointsLoaded}
+                setActualCoordinate={setActualCoordinate}
             />
             {/* <MarkerConfigModal show={showMarkerConfigModal} onHide={handleCloseModals} onSave={() => {}} /> */}
             <MarkerManager show={showManager} onHide={handleCloseManager} />
@@ -142,6 +158,10 @@ const FloatingButton = ({ map, setMarkerData, currentCalledLatLng }) => {
             <PersonalMarkerManager
                 show={showAddMarkerModal}
                 onHide={handleCloseAddMarkerModal}
+            />
+            <MarkerManagerPersonal
+                show={showAddPersonalActivity}
+                onHide={handleClosePersonalActivity}
             />
         </div>
     );

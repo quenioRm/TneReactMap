@@ -44,6 +44,8 @@ const GoogleMap = () => {
 
     const [isFetchingData, setIsFetchingData] = useState(false);
 
+    const [isFetchingGeneralData, setIsFetchingGeneralData] = useState(false);
+
     const [updDistance, setUpdDistance] = useState(0);
 
     const [isDebugMode, setIsDebugMode] = useState(false);
@@ -57,7 +59,7 @@ const GoogleMap = () => {
 
     const [currentZoom, setCurrentZoom] = useState(15); // Define o nível de zoom inicial
 
-    const [allPointsLoaded, setAllPointsLoaded] = useState(true);
+    const [allPointsLoaded, setAllPointsLoaded] = useState(false);
 
     let mouseLatLng = null;
     const radius = 30000;
@@ -67,29 +69,17 @@ const GoogleMap = () => {
 
         setIsFetchingData(true);
 
-        fetchMarkerData(0, 0, radius, false).then(() => {
-                    setIsFetchingData(false);
-                });
+        fetchFirstMarkerData(0, 0, radius, false).then(() => {
+            setIsFetchingData(false);
+        });
+
     }, []);
-
-    // useEffect(() => {
-    //     if(allPointsLoaded === true){
-    //         if(!isFetchingData){
-    //             setIsFetchingData(true);
-    //             console.log(isFetchingData)
-
-    //             fetchMarkerData(0, 0, radius, allPointsLoaded)
-    //             .then(() => {
-    //                 setIsFetchingData(false);
-    //             });
-    //         }
-    //     }
-    // }, [allPointsLoaded]);
 
 
     useEffect(() => {
         if (markerData) {
             initMap();
+
         }
     }, [markerData]);
 
@@ -101,8 +91,18 @@ const GoogleMap = () => {
 
     // update Map Coordinates
 
-    useEffect(() => {
+    useEffect(() =>{
+        setTimeout(async () => {
+            if(!allPointsLoaded && !isFetchingGeneralData){
+                setIsFetchingGeneralData(true);
+                await fetchAllMarkerData().then(() => {
+                    setAllPointsLoaded(true);
+                });
+            }
+        },100)
+    },[map, markerData])
 
+    useEffect(() => {
         if (radius - updDistance >= 25000 && updDistance > 0 && allPointsLoaded === false) {
             if (!isFetchingData) {
                 // Defina isFetchingData como true para indicar que a solicitação está em andamento
@@ -488,7 +488,7 @@ const GoogleMap = () => {
             map.addListener('zoom_changed', () => {
                 setCurrentZoom(map.getZoom());
                 if(map.getZoom() <= 11){
-                    setAllPointsLoaded(true);
+                    // setAllPointsLoaded(true);
                 }else{
                     // setAllPointsLoaded(false);
                 }
@@ -513,7 +513,7 @@ const GoogleMap = () => {
         setSelectedMarker(null);
     };
 
-    const fetchMarkerData = async (coordinateX, coordinateY, radius, getAllPoints) => {
+    const fetchAllMarkerData = async () => {
         await axios
             .get("/api/get-coordinates")
             .then((response) => {
@@ -541,88 +541,53 @@ const GoogleMap = () => {
                 });
 
                 setMarkerData(response.data);
+
             })
             .catch((error) => {
                 console.error("Error fetching marker data:", error);
         });
     };
 
-    // const fetchMarkerData = async (coordinateX, coordinateY, radius, getAllPoints) => {
-    //     const payload = {
-    //         inputX: coordinateX,
-    //         inputY: coordinateY,
-    //         radius: radius,
-    //         getAllPoints: getAllPoints,
-    //     };
+    const fetchFirstMarkerData = async (coordinateX, coordinateY, radius, getAllPoints) => {
+        const payload = {
+            inputX: coordinateX,
+            inputY: coordinateY,
+            radius: radius,
+            getAllPoints: getAllPoints,
+        };
 
-    //     if(getAllPoints === false){
-    //         await axios
-    //         .post("/api/get-coordinatesbyrange", payload)
-    //         .then((response) => {
-    //             const latestItem = response.data[response.data.length - 1];
+        await axios
+        .post("/api/get-coordinatesbyrange", payload)
+        .then((response) => {
+            const latestItem = response.data[response.data.length - 1];
 
-    //             setLastestCalledCoordinate({
-    //                 x: parseFloat(latestItem.position.utmx),
-    //                 y: parseFloat(latestItem.position.utmy),
-    //                 zone: latestItem.position.zone,
-    //             });
+            setLastestCalledCoordinate({
+                x: parseFloat(latestItem.position.utmx),
+                y: parseFloat(latestItem.position.utmy),
+                zone: latestItem.position.zone,
+            });
 
-    //             setCurrentCalledLatLng({
-    //                 lat: response.data[0].position.lat,
-    //                 lng: response.data[0].position.lng,
-    //             });
+            setCurrentCalledLatLng({
+                lat: response.data[0].position.lat,
+                lng: response.data[0].position.lng,
+            });
 
-    //             setFirstCalledLatLng({
-    //                 lat: response.data[0].position.lat,
-    //                 lng: response.data[0].position.lng,
-    //             });
+            setFirstCalledLatLng({
+                lat: response.data[0].position.lat,
+                lng: response.data[0].position.lng,
+            });
 
-    //             setLastestCalledLatLng({
-    //                 lat: latestItem.position.lat,
-    //                 lng: latestItem.position.lng,
-    //             });
+            setLastestCalledLatLng({
+                lat: latestItem.position.lat,
+                lng: latestItem.position.lng,
+            });
 
-    //             setMarkerData(response.data);
-    //         })
-    //         .catch((error) => {
-    //             console.error("Error fetching marker data:", error);
-    //         });
-
-    //     }else{
-
-    //         await axios
-    //         .get("/api/get-coordinates")
-    //         .then((response) => {
-    //             const latestItem = response.data[response.data.length - 1];
-
-    //             setLastestCalledCoordinate({
-    //                 x: parseFloat(latestItem.position.utmx),
-    //                 y: parseFloat(latestItem.position.utmy),
-    //                 zone: latestItem.position.zone,
-    //             });
-
-    //             setCurrentCalledLatLng({
-    //                 lat: response.data[0].position.lat,
-    //                 lng: response.data[0].position.lng,
-    //             });
-
-    //             setFirstCalledLatLng({
-    //                 lat: response.data[0].position.lat,
-    //                 lng: response.data[0].position.lng,
-    //             });
-
-    //             setLastestCalledLatLng({
-    //                 lat: latestItem.position.lat,
-    //                 lng: latestItem.position.lng,
-    //             });
-
-    //             setMarkerData(response.data);
-    //         })
-    //         .catch((error) => {
-    //             console.error("Error fetching marker data:", error);
-    //         });
-    //     }
-    // };
+            setMarkerData(response.data);
+        })
+        .catch((error) => {
+            console.error("Error fetching marker data:", error);
+        });
+    };
 
     const fetchNewMarkerData = async (
         coordinateX,
@@ -644,6 +609,7 @@ const GoogleMap = () => {
             .post("/api/get-coordinatesbyrange", payload)
             .then((response) => {
                 const latestItem = response.data[response.data.length - 1];
+
 
                 setLastestCalledCoordinate({
                     x: parseFloat(latestItem.position.utmx),
@@ -668,7 +634,7 @@ const GoogleMap = () => {
                 let lat = lastestCalledLatLng.lat;
                 let lng = lastestCalledLatLng.lng;
                 map.panTo({ lat, lng });
-                map.setZoom(10);
+                map.setZoom(15);
             })
             .catch((error) => {
                 // Handle any errors here
@@ -796,6 +762,9 @@ const GoogleMap = () => {
                         ? currentCalledLatLng
                         : firstCalledLatLng
                 }
+                fetchNewMarkerData={fetchNewMarkerData}
+                allPointsLoaded={allPointsLoaded}
+                setActualCoordinate={setActualCoordinate}
             />
         </div>
     );

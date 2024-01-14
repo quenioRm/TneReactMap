@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Container, Row, Col } from "react-bootstrap";
-import MarkerConfigModal from "./MarkerConfigModal";
-import MarkerList from "./MarkerList";
+import MarkerConfigModal from "./MarkerConfigModalPersonal";
+import MarkerList from "./MarkerListPersonal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import axios from "axios";
@@ -31,7 +31,7 @@ const MarkerManagerPersonal = ({ show, onHide }) => {
     // Function to fetch markers from the API
     const fetchMarkers = async () => {
         try {
-            const response = await axios.get("/api/markers");
+            const response = await axios.get("/api/personalmarkersactivity");
             const data = response.data;
             setMarkers(data);
         } catch (error) {
@@ -46,7 +46,7 @@ const MarkerManagerPersonal = ({ show, onHide }) => {
             formData.append("unidade", unidade);
             formData.append("icone", icone);
 
-            const response = await axios.post("/api/markers", formData);
+            const response = await axios.post("/api/personalmarkersactivity", formData);
 
             if (response.status === 200) {
                 const data = response.data;
@@ -72,7 +72,7 @@ const MarkerManagerPersonal = ({ show, onHide }) => {
                 formData.append("icone", icone);
             }
 
-            const response = await axios.post(`/api/markers/${id}`, formData);
+            const response = await axios.post(`/api/personalmarkersactivity/${id}`, formData);
 
             if (response.status === 200) {
                 const data = response.data;
@@ -108,7 +108,7 @@ const MarkerManagerPersonal = ({ show, onHide }) => {
 
     const handleDeleteMarker = async (id) => {
         try {
-            const response = await axios.delete(`/api/markers/${id}`);
+            const response = await axios.delete(`/api/personalmarkersactivity/${id}`);
 
             if (response.status === 200) {
                 setMarkers((prevMarkers) =>
@@ -128,7 +128,7 @@ const MarkerManagerPersonal = ({ show, onHide }) => {
         <>
             <Modal show={show} onHide={onHide} size="lg">
                 <Modal.Header closeButton>
-                    <Modal.Title>Gerenciar Marcadores - Atividades</Modal.Title>
+                    <Modal.Title>Gerenciar Marcadores Personalizados - Atividades</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Container>
@@ -166,4 +166,4 @@ const MarkerManagerPersonal = ({ show, onHide }) => {
     );
 };
 
-export default MarkerManagerSub;
+export default MarkerManagerPersonal;
