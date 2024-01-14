@@ -26,7 +26,7 @@ class MapsController extends Controller
     {
         $cacheKey = 'coordinates_data_' . $request->inputX . '_' . $request->inputY;
 
-        $cachedData = Cache::remember($cacheKey, 360, function () use ($request) {
+        $cachedData = Cache::remember($cacheKey, 43200, function () use ($request) {
 
             $validator = Validator::make($request->all(), [
                 'inputX' => 'numeric',

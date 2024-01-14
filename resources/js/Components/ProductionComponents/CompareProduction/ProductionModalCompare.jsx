@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 // import axios from "axios";
 import axios from "../../../Components/axiosInstance";
+import Swal from "sweetalert2";
 
 import {
     Spinner,
@@ -40,6 +41,8 @@ const ProductionModalCompare = ({ uniqueProjects, show, handleClose }) => {
     // States for pagination
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
+
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         localStorage.setItem(
@@ -102,14 +105,16 @@ const ProductionModalCompare = ({ uniqueProjects, show, handleClose }) => {
                 requestData,
             );
             if (response.status === 200 && response.data) {
-                console.log(response.data);
                 setChartData(response.data);
+                setErrors({});
             } else {
                 toast.error("Erro ao buscar os dados do gráfico.");
             }
-        } catch (objRes) {
-            const message = getFirstErrorMessage(objRes.response.data);
-            toast.error(message);
+        } catch (error) {
+            const message = getFirstErrorMessage(error.response.data);
+            // console.log(message)
+            setErrors(error.response.data);
+            // toast.error(message);
         }
 
         setIsLoading(false);
@@ -180,7 +185,23 @@ const ProductionModalCompare = ({ uniqueProjects, show, handleClose }) => {
                                         value: project,
                                         label: project.name,
                                     }))}
+                                    className={
+                                        errors &&
+                                        errors.error &&
+                                        errors.error.project !== undefined
+                                            ? "is-invalid"
+                                            : "is-valid"
+                                    }
                                 />
+                                {errors &&
+                                errors.error &&
+                                errors.error.project !== undefined ? (
+                                    <div className="invalid-feedback">
+                                        {errors.error.project}
+                                    </div>
+                                ) : (
+                                    <></>
+                                )}
                             </Form.Group>
                         </Col>
                         <Col md={2}>
@@ -190,6 +211,13 @@ const ProductionModalCompare = ({ uniqueProjects, show, handleClose }) => {
                                     as="select"
                                     onChange={handleActivityChange}
                                     value={selectedActivity}
+                                    className={
+                                        errors &&
+                                        errors.error &&
+                                        errors.error.activitie !== undefined
+                                            ? "is-invalid"
+                                            : "is-valid"
+                                    }
                                 >
                                     {/* <option value="">
                                         Todas as Atividades
@@ -203,6 +231,15 @@ const ProductionModalCompare = ({ uniqueProjects, show, handleClose }) => {
                                         </option>
                                     ))}
                                 </Form.Control>
+                                {errors &&
+                                errors.error &&
+                                errors.error.activitie !== undefined ? (
+                                    <div className="invalid-feedback">
+                                        {errors.error.activitie}
+                                    </div>
+                                ) : (
+                                    <></>
+                                )}
                             </Form.Group>
                         </Col>
                         <Col md={2}>
@@ -213,7 +250,23 @@ const ProductionModalCompare = ({ uniqueProjects, show, handleClose }) => {
                                     required
                                     value={startDate}
                                     onChange={handleStartDateChange}
+                                    className={
+                                        errors &&
+                                        errors.error &&
+                                        errors.error.startDate !== undefined
+                                            ? "is-invalid"
+                                            : "is-valid"
+                                    }
                                 />
+                                {errors &&
+                                errors.error &&
+                                errors.error.startDate !== undefined ? (
+                                    <div className="invalid-feedback">
+                                        {errors.error.startDate}
+                                    </div>
+                                ) : (
+                                    <></>
+                                )}
                             </Form.Group>
                         </Col>
                         <Col md={2}>
@@ -224,7 +277,23 @@ const ProductionModalCompare = ({ uniqueProjects, show, handleClose }) => {
                                     required
                                     value={finishDate}
                                     onChange={handleFinishDateChange}
+                                    className={
+                                        errors &&
+                                        errors.error &&
+                                        errors.error.finishDate !== undefined
+                                            ? "is-invalid"
+                                            : "is-valid"
+                                    }
                                 />
+                                {errors &&
+                                errors.error &&
+                                errors.error.finishDate !== undefined ? (
+                                    <div className="invalid-feedback">
+                                        {errors.error.finishDate}
+                                    </div>
+                                ) : (
+                                    <></>
+                                )}
                             </Form.Group>
                         </Col>
                         <Col md={1}>

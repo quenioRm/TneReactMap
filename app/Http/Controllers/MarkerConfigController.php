@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Marker;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 class MarkerConfigController extends Controller
 {

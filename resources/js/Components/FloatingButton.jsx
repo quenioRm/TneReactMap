@@ -111,8 +111,9 @@ const FloatingButton = ({
                     id="dropdown-menu"
                 >
                     <Dropdown.Item onClick={handleShowTowerModal}>
-                        Selecionar Torre [LT]
+                        Selecionar Ponto
                     </Dropdown.Item>
+                    <Dropdown.Divider />
                     <Dropdown.Item onClick={handleShowManager}>
                         Configurar Marcador - Atividade [LT]
                     </Dropdown.Item>
@@ -127,6 +128,7 @@ const FloatingButton = ({
                     >
                         Importar Impedimentos Estruturas [LT]
                     </Dropdown.Item>
+                    <Dropdown.Divider />
                     <Dropdown.Item onClick={handleShowAddMarkerModal}>
                         Adicionar Marcador Personalizado
                     </Dropdown.Item>

@@ -20,7 +20,7 @@ class ProductionController extends Controller
     public function getLatestProduction($project = '')
     {
         $cacheKey = 'latest_production_' . $project;
-        return Cache::remember($cacheKey, 60 * 60, function () use ($project) {
+        return Cache::remember($cacheKey, 43200, function () use ($project) {
             return $this->calculateProductionResults($project);
         });
     }
@@ -28,7 +28,7 @@ class ProductionController extends Controller
     public function getperiodProduction($startDate, $finishDate, $project = '')
     {
         $cacheKey = 'period_latest_production_' . $project . '_' . $startDate . '_' . $finishDate;
-        return Cache::remember($cacheKey, 60 * 60, function () use ($project, $startDate, $finishDate) {
+        return Cache::remember($cacheKey, 43200, function () use ($project, $startDate, $finishDate) {
             $results = $this->calculateProductionResults($project, $finishDate);
             foreach ($results as &$result) {
                 $result['dailyProduction'] = $this->getProductionByDate($result['activitieObject'], $project, $startDate, $finishDate);

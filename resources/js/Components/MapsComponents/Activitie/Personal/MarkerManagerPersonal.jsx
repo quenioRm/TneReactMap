@@ -64,12 +64,12 @@ const MarkerManagerPersonal = ({ show, onHide }) => {
             if (response.status === 200 || response.status === 201) {
                 const data = response.data;
                 updateMarkersList(data);
-                toast.success("Marcador salvo com sucesso");
+                toast.success("Atividade salva com sucesso");
                 setErrors({});
                 setConfigModalShow(false);
             } else {
                 toast.error(response.statusText);
-                throw new Error("Erro ao atualizar o marcador");
+                throw new Error("Erro ao atualizar");
             }
         } catch (error) {
             const message = getFirstErrorMessage(error.response.data);
@@ -108,6 +108,7 @@ const MarkerManagerPersonal = ({ show, onHide }) => {
                 const data = response.data;
                 updateMarkersList(data);
                 toast.success("Atualizado com sucesso!");
+                setErrors({});
                 setConfigModalShow(false);
             } else {
                 toast.error(response.statusText);
@@ -167,7 +168,7 @@ const MarkerManagerPersonal = ({ show, onHide }) => {
                             text: "Seu registro foi excluído.",
                             icon: "success",
                         });
-                        handleCloseModal();
+                        // handleCloseModal();
                     } else {
                         throw new Error("Falha ao excluir");
                     }

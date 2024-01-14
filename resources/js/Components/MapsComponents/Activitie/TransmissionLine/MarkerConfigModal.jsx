@@ -8,6 +8,7 @@ const MarkerConfigModal = ({
     onSave,
     onUpdate,
     editedMarker,
+    errors,
 }) => {
     const [id, setAtividadeId] = useState("");
     const [atividade, setAtividade] = useState("");
@@ -26,7 +27,7 @@ const MarkerConfigModal = ({
             setAtividade(editedMarker.atividade || "");
             setIcone(editedMarker.icone || "");
             setSelectedMarker(editedMarker.selectedMarker || "");
-            setSelectedUnidade(editedMarker.selectedUnidade || "");
+            setSelectedUnidade(editedMarker.unidade || "");
         } else {
             setAtividade("");
             setIcone("");
@@ -40,7 +41,9 @@ const MarkerConfigModal = ({
         } else {
             onSave({ atividade, icone, unidade: selectedUnidade });
         }
-        onHide();
+        if (!errors) {
+            onHide();
+        }
     };
 
     return (
@@ -60,7 +63,23 @@ const MarkerConfigModal = ({
                             placeholder="Digite a atividade"
                             value={atividade}
                             onChange={(e) => setAtividade(e.target.value)}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.atividade !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
                         />
+                        {errors &&
+                        errors.error &&
+                        errors.error.atividade !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.atividade}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                     </Form.Group>
 
                     <Form.Group controlId="formUnidade">
@@ -69,6 +88,13 @@ const MarkerConfigModal = ({
                             <Dropdown.Toggle
                                 variant="success"
                                 id="dropdown-unidade"
+                                className={
+                                    errors &&
+                                    errors.error &&
+                                    errors.error.unidade !== undefined
+                                        ? "is-invalid"
+                                        : "is-valid"
+                                }
                             >
                                 {selectedUnidade
                                     ? selectedUnidade
@@ -87,51 +113,43 @@ const MarkerConfigModal = ({
                                     Km
                                 </Dropdown.Item>
                             </Dropdown.Menu>
+                            {errors &&
+                            errors.error &&
+                            errors.error.unidade !== undefined ? (
+                                <div className="invalid-feedback">
+                                    {errors.error.unidade}
+                                </div>
+                            ) : (
+                                <></>
+                            )}
                         </Dropdown>
                     </Form.Group>
 
-                    <Form.Group controlId="formIcone">
-                        <Form.Label>Tipo de Ícone</Form.Label>
-                        <Dropdown>
-                            <Dropdown.Toggle
-                                variant="success"
-                                id="dropdown-basic"
-                            >
-                                {selectedMarker
-                                    ? selectedMarker
-                                    : "Selecione o tipo de marcador"}
-                            </Dropdown.Toggle>
-
-                            <Dropdown.Menu>
-                                <Dropdown.Item
-                                    onClick={() =>
-                                        setSelectedMarker("google-marker")
-                                    }
-                                >
-                                    Marcador do Google
-                                </Dropdown.Item>
-                                <Dropdown.Item
-                                    onClick={() =>
-                                        setSelectedMarker("custom-marker")
-                                    }
-                                >
-                                    Carregar Ícone Personalizado
-                                </Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
+                    <Form.Group controlId="formCustomIcon">
+                        <Form.Label>Ícone Personalizado</Form.Label>
+                        <Form.Control
+                            type="file"
+                            name="icone"
+                            accept=".png, .jpg, .jpeg, .gif"
+                            onChange={(e) => setIcone(e.target.files[0])}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.icone !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
+                        />
+                        {errors &&
+                        errors.error &&
+                        errors.error.icone !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.icone}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                     </Form.Group>
-
-                    {selectedMarker === "custom-marker" && (
-                        <Form.Group controlId="formCustomIcon">
-                            <Form.Label>Ícone Personalizado</Form.Label>
-                            <Form.Control
-                                type="file"
-                                name="icone"
-                                accept=".png, .jpg, .jpeg, .gif"
-                                onChange={(e) => setIcone(e.target.files[0])}
-                            />
-                        </Form.Group>
-                    )}
 
                     {selectedMarker === "google-marker" && (
                         <Form.Group controlId="formGoogleIcons">

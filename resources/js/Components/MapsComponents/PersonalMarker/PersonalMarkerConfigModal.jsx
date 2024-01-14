@@ -47,8 +47,9 @@ const PersonalMarkerConfigModal = ({
         } else {
             onSave({ name, coordinateX, coordinateY, zone, type, icon });
         }
-        console.log(errors);
-        if (Object.keys(errors).length === 0) onHide();
+        if (!errors) {
+            onHide();
+        }
     };
 
     return (
@@ -67,7 +68,23 @@ const PersonalMarkerConfigModal = ({
                             placeholder="Nome"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.name !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
                         />
+                        {errors &&
+                        errors.error &&
+                        errors.error.name !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.name}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                     </Form.Group>
 
                     <Form.Group controlId="formCoordinateX">
@@ -77,7 +94,23 @@ const PersonalMarkerConfigModal = ({
                             placeholder="Coordenada X"
                             value={coordinateX}
                             onChange={(e) => setCoordinateX(e.target.value)}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.coordinateX !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
                         />
+                        {errors &&
+                        errors.error &&
+                        errors.error.coordinateX !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.coordinateX}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                     </Form.Group>
 
                     <Form.Group controlId="formCoordinateY">
@@ -87,7 +120,23 @@ const PersonalMarkerConfigModal = ({
                             placeholder="Coordenada Y"
                             value={coordinateY}
                             onChange={(e) => setCoordinateY(e.target.value)}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.coordinateY !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
                         />
+                        {errors &&
+                        errors.error &&
+                        errors.error.coordinateY !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.coordinateY}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                     </Form.Group>
 
                     <Form.Group controlId="formZone">
@@ -97,7 +146,23 @@ const PersonalMarkerConfigModal = ({
                             placeholder="Zona"
                             value={zone}
                             onChange={(e) => setZone(e.target.value)}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.zone !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
                         />
+                        {errors &&
+                        errors.error &&
+                        errors.error.zone !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.zone}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                     </Form.Group>
 
                     <Form.Group controlId="formType">
@@ -106,6 +171,13 @@ const PersonalMarkerConfigModal = ({
                             <Dropdown.Toggle
                                 variant="success"
                                 id="dropdown-type"
+                                className={
+                                    errors &&
+                                    errors.error &&
+                                    errors.error.type !== undefined
+                                        ? "is-invalid"
+                                        : "is-valid"
+                                }
                             >
                                 {type ? type : "Selecione o tipo"}
                             </Dropdown.Toggle>
@@ -126,6 +198,15 @@ const PersonalMarkerConfigModal = ({
                                     Não representa Atividades
                                 </Dropdown.Item>
                             </Dropdown.Menu>
+                            {errors &&
+                            errors.error &&
+                            errors.error.type !== undefined ? (
+                                <div className="invalid-feedback">
+                                    {errors.error.type}
+                                </div>
+                            ) : (
+                                <></>
+                            )}
                         </Dropdown>
                     </Form.Group>
 
@@ -136,7 +217,23 @@ const PersonalMarkerConfigModal = ({
                             name="icon"
                             accept=".png, .jpg, .jpeg, .gif"
                             onChange={(e) => setIcon(e.target.files[0])}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.icon !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
                         />
+                        {errors &&
+                        errors.error &&
+                        errors.error.icon !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.icon}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                     </Form.Group>
                 </Form>
             </Modal.Body>

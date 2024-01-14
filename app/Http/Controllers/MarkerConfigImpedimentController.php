@@ -27,7 +27,7 @@ class MarkerConfigImpedimentController extends Controller
                     'max:255',
                 ],
                 'Status' => 'required|string|max:255',
-                'Icon' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'Icon' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'IsBlocked' =>'required|string|max:255',
             ], [], [
                 'ImpedimentType' =>  'tipo de impedimento',
@@ -35,6 +35,10 @@ class MarkerConfigImpedimentController extends Controller
                 'Icon' => 'icone',
                 'IsBlocked' => 'paralisa atividades?'
             ]);
+
+            if(!$validator->passes()){
+                return response()->json(['error' => $validator->errors()], 404);
+            }
 
             // Get the icon file from the request
             $icon = $request->file('Icon');
@@ -86,7 +90,6 @@ class MarkerConfigImpedimentController extends Controller
             if(!$validator->passes()){
                 return response()->json(['error' => $validator->errors()], 404);
             }
-
 
             // Get the marker by ID
             $marker = MarkerConfigImpediment::findOrFail((int)$id);

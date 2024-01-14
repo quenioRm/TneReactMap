@@ -85,7 +85,7 @@ class PersonalMarkerController extends Controller
                 'coordinateY' => 'required|string|max:255',
                 'zone' => 'required|string|max:255',
                 'type' => 'required|string|max:255',
-                'icon' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'icon' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
             ], [], [
                 'name' =>  'nome',
                 'coordinateX' => 'coordenada [X]',

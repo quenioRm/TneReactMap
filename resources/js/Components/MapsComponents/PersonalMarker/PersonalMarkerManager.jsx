@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 // import axios from "axios";
 import axios from "../../../Components/axiosInstance";
 import getFirstErrorMessage from "../../processLaravelErrors";
+import Swal from "sweetalert2";
 
 const PersonalMarkerManager = ({ show, onHide }) => {
     const [editedMarker, setEditedMarker] = useState(null);
@@ -68,11 +69,13 @@ const PersonalMarkerManager = ({ show, onHide }) => {
 
             updateMarkersList(response.data);
             toast.success("Marcador salvo com sucesso");
+            setErrors({});
+            setConfigModalShow(false);
         } catch (error) {
             const message = getFirstErrorMessage(error.response.data);
-            console.log(message);
+            // console.log(message)
             setErrors(error.response.data);
-            toast.error(message);
+            // toast.error(message);
         }
     };
 
@@ -110,11 +113,13 @@ const PersonalMarkerManager = ({ show, onHide }) => {
 
             updateMarkersList(response.data);
             toast.success("Marcador atualizado com sucesso!");
+            setErrors({});
+            setConfigModalShow(false);
         } catch (error) {
             const message = getFirstErrorMessage(error.response.data);
-            console.log(message);
+            // console.log(message)
             setErrors(error.response.data);
-            toast.error(message);
+            // toast.error(message);
         }
     };
 
@@ -139,20 +144,39 @@ const PersonalMarkerManager = ({ show, onHide }) => {
 
     const handleDeleteMarker = async (id) => {
         try {
-            const response = await axios.delete(`/api/personalmarkers/${id}`);
+            Swal.fire({
+                title: "Tem certeza?",
+                text: "Você não poderá reverter isso!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sim, exclua!",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const response = await axios.delete(
+                        `/api/personalmarkers/${id}`,
+                    );
 
-            if (response.status !== 200) {
-                throw new Error("Failed to delete marker");
-            }
+                    if (response.status === 200 || response.status === 204) {
+                        setPersonalMarkers((prevMarkers) =>
+                            prevMarkers.filter((m) => m.id !== id),
+                        );
+                        toast.success("Excluído com sucesso!");
 
-            setPersonalMarkers((prevMarkers) =>
-                prevMarkers.filter((m) => m.id !== id),
-            );
-            toast.success("Deletado com sucesso!");
-            handleCloseModal(); // Close modal after successful deletion
+                        Swal.fire({
+                            title: "Excluído!",
+                            text: "Seu registro foi excluído.",
+                            icon: "success",
+                        });
+                        // handleCloseModal();
+                    } else {
+                        throw new Error("Falha ao excluir");
+                    }
+                }
+            });
         } catch (error) {
-            console.error("Error deleting marker:", error);
-            toast.error("Error deleting marker: " + error.message);
+            toast.error(error.message);
         }
     };
 

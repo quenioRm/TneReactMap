@@ -7,6 +7,7 @@ const MarkerConfigImpedimentModal = ({
     onSave,
     onUpdate,
     editedMarker,
+    errors,
 }) => {
     const [id, setImpedimentId] = useState("");
     const [impedimentType, setImpedimentType] = useState("");
@@ -26,7 +27,7 @@ const MarkerConfigImpedimentModal = ({
             setImpedimentType("");
             setStatus("");
             setIcon("");
-            setIsBlocked(0);
+            setIsBlocked("");
         }
     }, [editedMarker, show]);
 
@@ -36,7 +37,9 @@ const MarkerConfigImpedimentModal = ({
         } else {
             onSave({ impedimentType, status, icon, isBlocked });
         }
-        onHide();
+        if (!errors) {
+            onHide();
+        }
     };
 
     return (
@@ -54,6 +57,13 @@ const MarkerConfigImpedimentModal = ({
                             <Dropdown.Toggle
                                 variant="success"
                                 id="dropdown-unidade"
+                                className={
+                                    errors &&
+                                    errors.error &&
+                                    errors.error.ImpedimentType !== undefined
+                                        ? "is-invalid"
+                                        : "is-valid"
+                                }
                             >
                                 {impedimentType
                                     ? impedimentType
@@ -81,6 +91,15 @@ const MarkerConfigImpedimentModal = ({
                                     Projeto
                                 </Dropdown.Item>
                             </Dropdown.Menu>
+                            {errors &&
+                            errors.error &&
+                            errors.error.ImpedimentType !== undefined ? (
+                                <div className="invalid-feedback">
+                                    {errors.error.ImpedimentType}
+                                </div>
+                            ) : (
+                                <></>
+                            )}
                         </Dropdown>
                     </Form.Group>
 
@@ -90,6 +109,13 @@ const MarkerConfigImpedimentModal = ({
                             <Dropdown.Toggle
                                 variant="success"
                                 id="dropdown-unidade"
+                                className={
+                                    errors &&
+                                    errors.error &&
+                                    errors.error.Status !== undefined
+                                        ? "is-invalid"
+                                        : "is-valid"
+                                }
                             >
                                 {status
                                     ? status
@@ -130,6 +156,15 @@ const MarkerConfigImpedimentModal = ({
                                     Não Liberrado
                                 </Dropdown.Item>
                             </Dropdown.Menu>
+                            {errors &&
+                            errors.error &&
+                            errors.error.Status !== undefined ? (
+                                <div className="invalid-feedback">
+                                    {errors.error.Status}
+                                </div>
+                            ) : (
+                                <></>
+                            )}
                         </Dropdown>
                     </Form.Group>
 
@@ -140,7 +175,23 @@ const MarkerConfigImpedimentModal = ({
                             name="icon"
                             accept=".png, .jpg, .jpeg, .gif"
                             onChange={(e) => setIcon(e.target.files[0])}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.Icon !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
                         />
+                        {errors &&
+                        errors.error &&
+                        errors.error.Icon !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.Icon}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                     </Form.Group>
 
                     <Form.Group controlId="formIsBlocked">
@@ -149,6 +200,13 @@ const MarkerConfigImpedimentModal = ({
                             <Dropdown.Toggle
                                 variant="success"
                                 id="dropdown-unidade"
+                                className={
+                                    errors &&
+                                    errors.error &&
+                                    errors.error.IsBlocked !== undefined
+                                        ? "is-invalid"
+                                        : "is-valid"
+                                }
                             >
                                 {isBlocked ? isBlocked : "Selecione"}
                             </Dropdown.Toggle>
@@ -165,6 +223,15 @@ const MarkerConfigImpedimentModal = ({
                                     Sim
                                 </Dropdown.Item>
                             </Dropdown.Menu>
+                            {errors &&
+                            errors.error &&
+                            errors.error.IsBlocked !== undefined ? (
+                                <div className="invalid-feedback">
+                                    {errors.error.IsBlocked}
+                                </div>
+                            ) : (
+                                <></>
+                            )}
                         </Dropdown>
                     </Form.Group>
                 </Form>
