@@ -482,7 +482,7 @@ const GoogleMap = () => {
                 if(map.getZoom() <= 11){
                     setAllPointsLoaded(true);
                 }else{
-                    setAllPointsLoaded(false);
+                    // setAllPointsLoaded(false);
                 }
             });
 
