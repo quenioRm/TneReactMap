@@ -1,170 +1,250 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form, Dropdown } from "react-bootstrap";
-import ImageUploadButton from "../../../ImageUploadButton";
 
-const MarkerConfigModalSub = ({
+const MarkerConfigModalPersonal = ({
     show,
     onHide,
     onSave,
     onUpdate,
     editedMarker,
+    errors,
 }) => {
-    const [id, setAtividadeId] = useState("");
-    const [atividade, setAtividade] = useState("");
-    const [icone, setIcone] = useState("");
-    const [selectedMarker, setSelectedMarker] = useState("");
-    const [selectedUnidade, setSelectedUnidade] = useState(
-        editedMarker ? editedMarker.unidade || "" : "",
+    const [id, setId] = useState("");
+    const [activity, setActivity] = useState("");
+    const [previouscount, setPreviouscount] = useState("");
+    const [lenPercent, setLenPercent] = useState("");
+    const [icon, setIcon] = useState("");
+    const [selectedUnity, setSelectedUnity] = useState(
+        editedMarker ? editedMarker.unity || "" : "",
     );
-    const [googleIcons] = useState([
-        /* Adicione aqui os ícones do Google */
-    ]);
 
     useEffect(() => {
         if (editedMarker) {
-            setAtividadeId(editedMarker.id || "");
-            setAtividade(editedMarker.atividade || "");
-            setIcone(editedMarker.icone || "");
-            setSelectedMarker(editedMarker.selectedMarker || "");
-            setSelectedUnidade(editedMarker.selectedUnidade || "");
+            setId(editedMarker.id || "");
+            setActivity(editedMarker.activity || "");
+            setSelectedUnity(editedMarker.unity || "");
+            setPreviouscount(editedMarker.previouscount || "");
+            setLenPercent(editedMarker.lenPercent || "");
+            setIcon(editedMarker.icon || "");
         } else {
-            setAtividade("");
-            setIcone("");
-            setSelectedMarker("");
+            setId("");
+            setActivity("");
+            setSelectedUnity("");
+            setPreviouscount("");
+            setLenPercent("");
+            setIcon("");
         }
     }, [editedMarker, show]);
 
     const handleSave = () => {
         if (editedMarker) {
-            onUpdate({ id, atividade, icone, unidade: selectedUnidade });
+            // Se estiver editando, envie o ID
+            onUpdate({
+                id,
+                activity,
+                unity: selectedUnity,
+                previouscount,
+                lenPercent,
+                icon,
+            });
         } else {
-            onSave({ atividade, icone, unidade: selectedUnidade });
+            onSave({
+                activity,
+                unity: selectedUnity,
+                previouscount,
+                lenPercent,
+                icon,
+            });
         }
-        onHide();
+        if (!errors) {
+            onHide();
+        }
     };
 
     return (
         <Modal show={show} onHide={onHide}>
             <Modal.Header closeButton>
                 <Modal.Title>
-                    {editedMarker ? "Editar" : "Adicionar"} Marcador
+                    {editedMarker ? "Editar" : "Adicionar"} Atividade
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
-                    <Form.Group controlId="formAtividade">
+                    <Form.Group controlId="formActivity">
                         <Form.Label>Nome da Atividade</Form.Label>
                         <Form.Control
                             type="text"
-                            name="atividade"
-                            placeholder="Digite a atividade"
-                            value={atividade}
-                            onChange={(e) => setAtividade(e.target.value)}
+                            name="activity"
+                            placeholder="Nome da Atividade"
+                            value={activity}
+                            onChange={(e) => setActivity(e.target.value)}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.activity !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
                         />
+                        {errors &&
+                        errors.error &&
+                        errors.error.activity !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.activity}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                     </Form.Group>
 
-                    <Form.Group controlId="formUnidade">
+                    <Form.Group controlId="formUnity">
                         <Form.Label>Unidade</Form.Label>
                         <Dropdown>
                             <Dropdown.Toggle
                                 variant="success"
-                                id="dropdown-unidade"
+                                id="dropdown-unity"
+                                className={
+                                    errors &&
+                                    errors.error &&
+                                    errors.error.unity !== undefined
+                                        ? "is-invalid"
+                                        : "is-valid"
+                                }
                             >
-                                {selectedUnidade
-                                    ? selectedUnidade
-                                    : "Selecione a unidade"}
+                                {selectedUnity
+                                    ? selectedUnity
+                                    : "Selecione Unidade"}
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
                                 <Dropdown.Item
-                                    onClick={() => setSelectedUnidade("Torre")}
-                                >
-                                    Torre
-                                </Dropdown.Item>
-                                <Dropdown.Item
-                                    onClick={() => setSelectedUnidade("Km")}
+                                    onClick={() => setSelectedUnity("Km")}
                                 >
                                     Km
                                 </Dropdown.Item>
+                                <Dropdown.Item
+                                    onClick={() => setSelectedUnity("M")}
+                                >
+                                    M
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                    onClick={() => setSelectedUnity("M2")}
+                                >
+                                    M2
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                    onClick={() => setSelectedUnity("M3")}
+                                >
+                                    M3
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                    onClick={() => setSelectedUnity("KG")}
+                                >
+                                    KG
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                    onClick={() => setSelectedUnity("TON")}
+                                >
+                                    TON
+                                </Dropdown.Item>
                             </Dropdown.Menu>
+                            {errors &&
+                            errors.error &&
+                            errors.error.unity !== undefined ? (
+                                <div className="invalid-feedback">
+                                    {errors.error.unity}
+                                </div>
+                            ) : (
+                                <></>
+                            )}
                         </Dropdown>
                     </Form.Group>
 
-                    <Form.Group controlId="formIcone">
-                        <Form.Label>Tipo de Ícone</Form.Label>
-                        <Dropdown>
-                            <Dropdown.Toggle
-                                variant="success"
-                                id="dropdown-basic"
-                            >
-                                {selectedMarker
-                                    ? selectedMarker
-                                    : "Selecione o tipo de marcador"}
-                            </Dropdown.Toggle>
-
-                            <Dropdown.Menu>
-                                <Dropdown.Item
-                                    onClick={() =>
-                                        setSelectedMarker("google-marker")
-                                    }
-                                >
-                                    Marcador do Google
-                                </Dropdown.Item>
-                                <Dropdown.Item
-                                    onClick={() =>
-                                        setSelectedMarker("custom-marker")
-                                    }
-                                >
-                                    Carregar Ícone Personalizado
-                                </Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
+                    <Form.Group controlId="formActivity">
+                        <Form.Label>Quantidade (Prevista)</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="previouscount"
+                            placeholder="Quantidade (Prevista)"
+                            value={previouscount}
+                            onChange={(e) => setPreviouscount(e.target.value)}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.previouscount !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
+                        />
+                        {errors &&
+                        errors.error &&
+                        errors.error.previouscount !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.previouscount}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                     </Form.Group>
 
-                    {selectedMarker === "custom-marker" && (
-                        <Form.Group controlId="formCustomIcon">
-                            <Form.Label>Ícone Personalizado</Form.Label>
-                            <Form.Control
-                                type="file"
-                                name="icone"
-                                accept=".png, .jpg, .jpeg, .gif"
-                                onChange={(e) => setIcone(e.target.files[0])}
-                            />
-                        </Form.Group>
-                    )}
+                    <Form.Group controlId="formActivity">
+                        <Form.Label>%Avanço da Atividade</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="lenPercent"
+                            placeholder="%Avanço da Atividade"
+                            value={lenPercent}
+                            onChange={(e) => setLenPercent(e.target.value)}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.lenPercent !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
+                        />
+                        {errors &&
+                        errors.error &&
+                        errors.error.lenPercent !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.lenPercent}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
+                    </Form.Group>
 
-                    {selectedMarker === "google-marker" && (
-                        <Form.Group controlId="formGoogleIcons">
-                            <Form.Label>
-                                Selecione um ícone do Google
-                            </Form.Label>
-                            <Dropdown>
-                                <Dropdown.Toggle
-                                    variant="success"
-                                    id="dropdown-google-icons"
-                                >
-                                    {icone ? icone : "Selecione um ícone"}
-                                </Dropdown.Toggle>
-
-                                <Dropdown.Menu>
-                                    {googleIcons.map((googleIcon, index) => (
-                                        <Dropdown.Item
-                                            key={index}
-                                            onClick={() => setIcone(googleIcon)}
-                                        >
-                                            {googleIcon.name}
-                                        </Dropdown.Item>
-                                    ))}
-                                </Dropdown.Menu>
-                            </Dropdown>
-                        </Form.Group>
-                    )}
+                    <Form.Group controlId="formCustomIcon">
+                        <Form.Label>Ícone Personalizado</Form.Label>
+                        <Form.Control
+                            type="file"
+                            name="icon"
+                            accept=".png, .jpg, .jpeg, .gif"
+                            onChange={(e) => setIcon(e.target.files[0])}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.icon !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
+                        />
+                        {errors &&
+                        errors.error &&
+                        errors.error.icon !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.icon}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
+                    </Form.Group>
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={onHide}>
-                    Fechar
-                </Button>
+                {/* <Button variant="secondary" onClick={onHide}>
+                    Close
+                </Button> */}
                 <Button variant="primary" onClick={handleSave}>
                     Salvar
                 </Button>
@@ -173,4 +253,4 @@ const MarkerConfigModalSub = ({
     );
 };
 
-export default MarkerConfigModalSub;
+export default MarkerConfigModalPersonal;

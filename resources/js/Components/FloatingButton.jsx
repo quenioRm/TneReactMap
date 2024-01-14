@@ -17,7 +17,14 @@ import AddMarkerModal from "./MapsComponents/PersonalMarker/AddMarkerModal";
 import PersonalMarkerManager from "./MapsComponents/PersonalMarker/PersonalMarkerManager";
 import MarkerManagerPersonal from "../Components/MapsComponents/Activitie/Personal/MarkerManagerPersonal";
 
-const FloatingButton = ({ map, setMarkerData, currentCalledLatLng, fetchNewMarkerData, allPointsLoaded, setActualCoordinate }) => {
+const FloatingButton = ({
+    map,
+    setMarkerData,
+    currentCalledLatLng,
+    fetchNewMarkerData,
+    allPointsLoaded,
+    setActualCoordinate,
+}) => {
     const [showTowerModal, setShowTowerModal] = useState(false);
     const [showMarkerConfigModal, setShowMarkerConfigModal] = useState(false);
     const [showManager, setShowManager] = useState(false);
@@ -26,7 +33,8 @@ const FloatingButton = ({ map, setMarkerData, currentCalledLatLng, fetchNewMarke
         useState(false);
     const [showManagerImpediment, setShowManagerImpediment] = useState(false);
     const [showAddMarkerModal, setShowAddMarkerModal] = useState(false);
-    const [showAddPersonalActivity, setShowAddPersonalActivity] = useState(false);
+    const [showAddPersonalActivity, setShowAddPersonalActivity] =
+        useState(false);
 
     const handleShowTowerModal = () => {
         setShowTowerModal(true);

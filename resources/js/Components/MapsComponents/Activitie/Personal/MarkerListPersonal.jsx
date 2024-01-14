@@ -33,7 +33,7 @@ const MarkerListPersonal = ({ markers, onEdit, onDelete }) => {
                 <tbody>
                     {currentMarkers.map((marker) => (
                         <tr key={marker.id}>
-                            <td>{marker.personalMarkerId}</td>
+                            <td>{marker.activity}</td>
                             <td>{marker.unity}</td>
                             <td>
                                 <img

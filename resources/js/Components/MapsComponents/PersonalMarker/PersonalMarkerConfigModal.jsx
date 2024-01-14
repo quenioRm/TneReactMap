@@ -7,7 +7,7 @@ const PersonalMarkerConfigModal = ({
     onSave,
     onUpdate,
     editedMarker,
-    errors
+    errors,
 }) => {
     const [id, setId] = useState("");
     const [name, setName] = useState("");
@@ -18,8 +18,8 @@ const PersonalMarkerConfigModal = ({
     const [icon, setIcon] = useState("");
 
     useEffect(() => {
-        console.log(errors)
-    },[errors])
+        console.log(errors);
+    }, [errors]);
 
     useEffect(() => {
         if (editedMarker) {
@@ -47,9 +47,8 @@ const PersonalMarkerConfigModal = ({
         } else {
             onSave({ name, coordinateX, coordinateY, zone, type, icon });
         }
-        console.log(errors)
-        if(Object.keys(errors).length === 0)
-            onHide();
+        console.log(errors);
+        if (Object.keys(errors).length === 0) onHide();
     };
 
     return (
@@ -69,7 +68,6 @@ const PersonalMarkerConfigModal = ({
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
-
                     </Form.Group>
 
                     <Form.Group controlId="formCoordinateX">

@@ -5,7 +5,7 @@ import MarkerListImpediment from "./MarkerListImpediment";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import axios from "axios";
-import axios from '../../../Components/axiosInstance';
+import axios from "../../../Components/axiosInstance";
 
 const MarkerManagerImpediment = ({ show, onHide }) => {
     const [editedMarker, setEditedMarker] = useState(null);

@@ -13,7 +13,7 @@ import {
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 // import axios from "axios";
-import axios from '../Components/axiosInstance';
+import axios from "../Components/axiosInstance";
 import ImageUploadButton from "./ImageUploadButton";
 import "../Components/css/uploadImages.css";
 import Swal from "sweetalert2";
@@ -75,13 +75,10 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
         thumbnail: image,
     }));
 
-    const formattedPercentage = towerAVC.toLocaleString(
-        undefined,
-        {
-            style: "percent",
-            minimumFractionDigits: 2,
-        },
-    );
+    const formattedPercentage = towerAVC.toLocaleString(undefined, {
+        style: "percent",
+        minimumFractionDigits: 2,
+    });
 
     const handleTabSelect = (tab) => {
         setActiveTab(tab);
@@ -180,7 +177,6 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                 {markerInfo ? (
                     <div>
                         <Tabs activeKey={activeTab} onSelect={handleTabSelect}>
-
                             <Tab eventKey="info" title="Info">
                                 <br />
                                 <h5>Dados da Estrutura</h5>
@@ -272,14 +268,16 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
 
                             <Tab eventKey="production" title="Produção">
                                 <div>
-                                <Table striped bordered hover>
+                                    <Table striped bordered hover>
                                         <thead>
                                             <tr>
-                                                <th>%Avanço na estrutura : {formattedPercentage}</th>
+                                                <th>
+                                                    %Avanço na estrutura :{" "}
+                                                    {formattedPercentage}
+                                                </th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                        </tbody>
+                                        <tbody></tbody>
                                     </Table>
                                     <Table striped bordered hover>
                                         <thead>

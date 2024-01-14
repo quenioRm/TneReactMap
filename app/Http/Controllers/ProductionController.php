@@ -40,12 +40,16 @@ class ProductionController extends Controller
     public function getperiodProductionChartCompare(Request $request)
     {
         // $request['project'] = json_decode($request->project, true);
-
         $validator = Validator::make($request->all(), [
             'activitie' => 'required|string',
             'startDate' => 'required|date',
             'finishDate' => 'required|date',
             'project' => 'required|array',
+        ], [], [
+            'activitie' =>  'atividade',
+            'startDate' => 'data inicio',
+            'finishDate' => 'data fim',
+            'project' => 'projeto/trecho',
         ]);
 
         if ($validator->fails()) {

@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Container, Row, Col } from "react-bootstrap";
-import MarkerConfigModal from "./MarkerConfigModalPersonal";
+import MarkerConfigModalPersonal from "./MarkerConfigModalPersonal";
 import MarkerList from "./MarkerListPersonal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import axios from "axios";
-import axios from '../../../axiosInstance';
-
+import axios from "../../../axiosInstance";
+import getFirstErrorMessage from "../../../processLaravelErrors";
+import Swal from "sweetalert2";
 
 const MarkerManagerPersonal = ({ show, onHide }) => {
     const [editedMarker, setEditedMarker] = useState(null);
     const [markers, setMarkers] = useState([]);
     const [configModalShow, setConfigModalShow] = useState(false);
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         // Fetch markers when the component mounts
@@ -39,51 +41,83 @@ const MarkerManagerPersonal = ({ show, onHide }) => {
         }
     };
 
-    const handleSaveMarker = async ({ atividade, icone, unidade }) => {
+    const handleSaveMarker = async ({
+        activity,
+        unity,
+        previouscount,
+        lenPercent,
+        icon,
+    }) => {
         try {
             const formData = new FormData();
-            formData.append("atividade", atividade);
-            formData.append("unidade", unidade);
-            formData.append("icone", icone);
+            formData.append("activity", activity);
+            formData.append("unity", unity);
+            formData.append("previouscount", previouscount);
+            formData.append("lenPercent", lenPercent);
+            formData.append("icon", icon);
 
-            const response = await axios.post("/api/personalmarkersactivity", formData);
+            const response = await axios.post(
+                "/api/personalmarkersactivity",
+                formData,
+            );
 
-            if (response.status === 200) {
+            if (response.status === 200 || response.status === 201) {
                 const data = response.data;
                 updateMarkersList(data);
                 toast.success("Marcador salvo com sucesso");
-            } else {
-                handleSuccessMessage();
-                throw new Error("Erro ao salvar o marcador");
-            }
-        } catch (error) {
-            toast.error(error.message);
-        }
-    };
-
-    const handleUpdateMarker = async ({ id, atividade, icone, unidade }) => {
-        try {
-            const formData = new FormData();
-            formData.append("_method", "PUT");
-            formData.append("atividade", atividade);
-            formData.append("unidade", unidade);
-
-            if (icone instanceof File) {
-                formData.append("icone", icone);
-            }
-
-            const response = await axios.post(`/api/personalmarkersactivity/${id}`, formData);
-
-            if (response.status === 200) {
-                const data = response.data;
-                updateMarkersList(data);
-                toast.success("Marcador atualizado com sucesso!");
+                setErrors({});
+                setConfigModalShow(false);
             } else {
                 toast.error(response.statusText);
                 throw new Error("Erro ao atualizar o marcador");
             }
         } catch (error) {
-            toast.error(error.message);
+            const message = getFirstErrorMessage(error.response.data);
+            // console.log(message)
+            setErrors(error.response.data);
+            // toast.error(message);
+        }
+    };
+
+    const handleUpdateMarker = async ({
+        id,
+        activity,
+        unity,
+        previouscount,
+        lenPercent,
+        icon,
+    }) => {
+        try {
+            const formData = new FormData();
+            formData.append("_method", "PUT");
+            formData.append("activity", activity);
+            formData.append("unity", unity);
+            formData.append("previouscount", previouscount);
+            formData.append("lenPercent", lenPercent);
+
+            if (icon instanceof File) {
+                formData.append("icon", icon);
+            }
+
+            const response = await axios.post(
+                `/api/personalmarkersactivity/${id}`,
+                formData,
+            );
+
+            if (response.status === 200 || response.status === 201) {
+                const data = response.data;
+                updateMarkersList(data);
+                toast.success("Atualizado com sucesso!");
+                setConfigModalShow(false);
+            } else {
+                toast.error(response.statusText);
+                throw new Error("Erro ao atualizar");
+            }
+        } catch (error) {
+            const message = getFirstErrorMessage(error.response.data);
+            // console.log(message)
+            setErrors(error.response.data);
+            // toast.error(message);
         }
     };
 
@@ -108,19 +142,39 @@ const MarkerManagerPersonal = ({ show, onHide }) => {
 
     const handleDeleteMarker = async (id) => {
         try {
-            const response = await axios.delete(`/api/personalmarkersactivity/${id}`);
+            Swal.fire({
+                title: "Tem certeza?",
+                text: "Você não poderá reverter isso!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sim, exclua!",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const response = await axios.delete(
+                        `/api/personalmarkersactivity/${id}`,
+                    );
 
-            if (response.status === 200) {
-                setMarkers((prevMarkers) =>
-                    prevMarkers.filter((m) => m.id !== id),
-                );
-                toast.success("Deletado com sucesso!");
-                handleCloseModal();
-            } else {
-                throw new Error("Failed to delete marker");
-            }
+                    if (response.status === 200 || response.status === 204) {
+                        setMarkers((prevMarkers) =>
+                            prevMarkers.filter((m) => m.id !== id),
+                        );
+                        toast.success("Excluído com sucesso!");
+
+                        Swal.fire({
+                            title: "Excluído!",
+                            text: "Seu registro foi excluído.",
+                            icon: "success",
+                        });
+                        handleCloseModal();
+                    } else {
+                        throw new Error("Falha ao excluir");
+                    }
+                }
+            });
         } catch (error) {
-            toast.error("Error deleting marker: " + error.message);
+            toast.error(error.message);
         }
     };
 
@@ -128,7 +182,9 @@ const MarkerManagerPersonal = ({ show, onHide }) => {
         <>
             <Modal show={show} onHide={onHide} size="lg">
                 <Modal.Header closeButton>
-                    <Modal.Title>Gerenciar Marcadores Personalizados - Atividades</Modal.Title>
+                    <Modal.Title>
+                        Gerenciar Marcadores Personalizados - Atividades
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Container>
@@ -152,12 +208,13 @@ const MarkerManagerPersonal = ({ show, onHide }) => {
                             </Col>
                         </Row>
                     </Container>
-                    <MarkerConfigModal
+                    <MarkerConfigModalPersonal
                         show={configModalShow}
                         onHide={handleCloseModal}
                         onSave={handleSaveMarker}
                         onUpdate={handleUpdateMarker}
                         editedMarker={editedMarker}
+                        errors={errors}
                     />
                 </Modal.Body>
                 <ToastContainer />

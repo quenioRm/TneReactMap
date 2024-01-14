@@ -8,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import UtmConverter from "./Converters/UtmConverter";
 import "./css/Spinner.css";
 import "../Components/css/GoogleMaps.css";
-import axios from '../Components/axiosInstance';
+import axios from "../Components/axiosInstance";
 
 const GoogleMap = () => {
     const [markerData, setMarkerData] = useState(null);
@@ -72,14 +72,11 @@ const GoogleMap = () => {
         fetchFirstMarkerData(0, 0, radius, false).then(() => {
             setIsFetchingData(false);
         });
-
     }, []);
-
 
     useEffect(() => {
         if (markerData) {
             initMap();
-
         }
     }, [markerData]);
 
@@ -91,19 +88,23 @@ const GoogleMap = () => {
 
     // update Map Coordinates
 
-    useEffect(() =>{
+    useEffect(() => {
         setTimeout(async () => {
-            if(!allPointsLoaded && !isFetchingGeneralData){
+            if (!allPointsLoaded && !isFetchingGeneralData) {
                 setIsFetchingGeneralData(true);
                 await fetchAllMarkerData().then(() => {
                     setAllPointsLoaded(true);
                 });
             }
-        },100)
-    },[map, markerData])
+        }, 100);
+    }, [map, markerData]);
 
     useEffect(() => {
-        if (radius - updDistance >= 25000 && updDistance > 0 && allPointsLoaded === false) {
+        if (
+            radius - updDistance >= 25000 &&
+            updDistance > 0 &&
+            allPointsLoaded === false
+        ) {
             if (!isFetchingData) {
                 // Defina isFetchingData como true para indicar que a solicitação está em andamento
                 setIsFetchingData(true);
@@ -248,7 +249,10 @@ const GoogleMap = () => {
                     markerInfo.config_icon && markerInfo.config_icon.icon
                         ? markerInfo.config_icon.icon
                         : defaultIcon,
-                scaledSize: (markerInfo.type === 0) ? new google.maps.Size(40, 40) : new google.maps.Size(80, 80),
+                scaledSize:
+                    markerInfo.type === 0
+                        ? new google.maps.Size(40, 40)
+                        : new google.maps.Size(80, 80),
                 labelOrigin: new google.maps.Point(100, 20),
                 labelAnchor: new google.maps.Point(100, 20),
             };
@@ -364,18 +368,15 @@ const GoogleMap = () => {
                 receiveStatusInfo += `<br>- Status: ${markerInfo.ReceiveStatus}`;
 
                 // Atualiza o conteúdo do InfoWindow com as informações formatadas
-                if(markerInfo.type === 0){
+                if (markerInfo.type === 0) {
                     infowindow.setContent(
                         `<b>Torre:</b> ${markerInfo.label.text}${lastActivity}${impedimentosInfo}${receiveStatusInfo}`,
                     );
                 }
 
-                if(markerInfo.type === 1){
-                    infowindow.setContent(
-                        `<b>${markerInfo.name}</b>`,
-                    );
+                if (markerInfo.type === 1) {
+                    infowindow.setContent(`<b>${markerInfo.name}</b>`);
                 }
-
 
                 // Abre o InfoWindow
                 infowindow.open(map, marker);
@@ -485,15 +486,14 @@ const GoogleMap = () => {
                 },
             );
 
-            map.addListener('zoom_changed', () => {
+            map.addListener("zoom_changed", () => {
                 setCurrentZoom(map.getZoom());
-                if(map.getZoom() <= 11){
+                if (map.getZoom() <= 11) {
                     // setAllPointsLoaded(true);
-                }else{
+                } else {
                     // setAllPointsLoaded(false);
                 }
             });
-
         });
     };
 
@@ -541,14 +541,18 @@ const GoogleMap = () => {
                 });
 
                 setMarkerData(response.data);
-
             })
             .catch((error) => {
                 console.error("Error fetching marker data:", error);
-        });
+            });
     };
 
-    const fetchFirstMarkerData = async (coordinateX, coordinateY, radius, getAllPoints) => {
+    const fetchFirstMarkerData = async (
+        coordinateX,
+        coordinateY,
+        radius,
+        getAllPoints,
+    ) => {
         const payload = {
             inputX: coordinateX,
             inputY: coordinateY,
@@ -557,36 +561,36 @@ const GoogleMap = () => {
         };
 
         await axios
-        .post("/api/get-coordinatesbyrange", payload)
-        .then((response) => {
-            const latestItem = response.data[response.data.length - 1];
+            .post("/api/get-coordinatesbyrange", payload)
+            .then((response) => {
+                const latestItem = response.data[response.data.length - 1];
 
-            setLastestCalledCoordinate({
-                x: parseFloat(latestItem.position.utmx),
-                y: parseFloat(latestItem.position.utmy),
-                zone: latestItem.position.zone,
+                setLastestCalledCoordinate({
+                    x: parseFloat(latestItem.position.utmx),
+                    y: parseFloat(latestItem.position.utmy),
+                    zone: latestItem.position.zone,
+                });
+
+                setCurrentCalledLatLng({
+                    lat: response.data[0].position.lat,
+                    lng: response.data[0].position.lng,
+                });
+
+                setFirstCalledLatLng({
+                    lat: response.data[0].position.lat,
+                    lng: response.data[0].position.lng,
+                });
+
+                setLastestCalledLatLng({
+                    lat: latestItem.position.lat,
+                    lng: latestItem.position.lng,
+                });
+
+                setMarkerData(response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching marker data:", error);
             });
-
-            setCurrentCalledLatLng({
-                lat: response.data[0].position.lat,
-                lng: response.data[0].position.lng,
-            });
-
-            setFirstCalledLatLng({
-                lat: response.data[0].position.lat,
-                lng: response.data[0].position.lng,
-            });
-
-            setLastestCalledLatLng({
-                lat: latestItem.position.lat,
-                lng: latestItem.position.lng,
-            });
-
-            setMarkerData(response.data);
-        })
-        .catch((error) => {
-            console.error("Error fetching marker data:", error);
-        });
     };
 
     const fetchNewMarkerData = async (
@@ -595,7 +599,6 @@ const GoogleMap = () => {
         radius,
         getAllPoints,
     ) => {
-
         const adjustedRadius = radius * Math.pow(2, 15 - currentZoom);
 
         const payload = {
@@ -609,7 +612,6 @@ const GoogleMap = () => {
             .post("/api/get-coordinatesbyrange", payload)
             .then((response) => {
                 const latestItem = response.data[response.data.length - 1];
-
 
                 setLastestCalledCoordinate({
                     x: parseFloat(latestItem.position.utmx),
@@ -641,7 +643,6 @@ const GoogleMap = () => {
                 console.error("Error fetching marker data:", error);
             });
     };
-
 
     function getUtmZone(latitude, longitude) {
         // Calculate the standard UTM zone
@@ -721,7 +722,14 @@ const GoogleMap = () => {
             {/* Display progress bar while loading */}
             {isFetchingData && (
                 <div className="centered-spinner">
-                    {allPointsLoaded ? <strong>Hummm... sua internet não está muito boa, acessando servidor de suporte, aguarde...</strong> : <></>}
+                    {allPointsLoaded ? (
+                        <strong>
+                            Hummm... sua internet não está muito boa, acessando
+                            servidor de suporte, aguarde...
+                        </strong>
+                    ) : (
+                        <></>
+                    )}
                     <Spinner animation="border" variant="primary" />
                 </div>
             )}
@@ -743,17 +751,17 @@ const GoogleMap = () => {
                     Coordenadas: {actualCoordinate.x}, {actualCoordinate.y}
                 </div>
             )}
-            {selectedMarker && selectedMarker.type === 0 ?
-            <MarkerModal
-                markerInfo={selectedMarker}
-                onClose={handleCloseModal}
-            />
-            :
-            <GoogleMapMarkerAnotherModal
-                markerInfo={selectedMarker}
-                onClose={handleCloseModal}
-            />
-            }
+            {selectedMarker && selectedMarker.type === 0 ? (
+                <MarkerModal
+                    markerInfo={selectedMarker}
+                    onClose={handleCloseModal}
+                />
+            ) : (
+                <GoogleMapMarkerAnotherModal
+                    markerInfo={selectedMarker}
+                    onClose={handleCloseModal}
+                />
+            )}
             <FloatingButton
                 map={map}
                 setMarkerData={setMarkerData}

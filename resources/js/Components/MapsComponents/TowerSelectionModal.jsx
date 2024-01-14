@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { Typeahead } from "react-bootstrap-typeahead";
-import axios from '../../Components/axiosInstance';
+import axios from "../../Components/axiosInstance";
 
-
-const TowerSelectionModal = ({ rMap, show, onClose, fetchNewMarkerData, allPointsLoaded, setActualCoordinate }) => {
+const TowerSelectionModal = ({
+    rMap,
+    show,
+    onClose,
+    fetchNewMarkerData,
+    allPointsLoaded,
+    setActualCoordinate,
+}) => {
     const [towers, setTowers] = useState([]);
     const [selectedTower, setSelectedTower] = useState([]);
 
@@ -24,7 +30,6 @@ const TowerSelectionModal = ({ rMap, show, onClose, fetchNewMarkerData, allPoint
 
     const handleTowerSelect = () => {
         if (selectedTower.length > 0) {
-
             let utmx = selectedTower[0].tower.CoordinateX;
             let utmy = selectedTower[0].tower.CoordinateY;
             let zone = selectedTower[0].tower.Zone;
@@ -32,8 +37,8 @@ const TowerSelectionModal = ({ rMap, show, onClose, fetchNewMarkerData, allPoint
             setActualCoordinate({
                 x: parseFloat(utmx),
                 y: parseFloat(utmy),
-                zone: parseFloat(zone)
-            })
+                zone: parseFloat(zone),
+            });
 
             goToCoordinate(
                 selectedTower[0].position.lat,

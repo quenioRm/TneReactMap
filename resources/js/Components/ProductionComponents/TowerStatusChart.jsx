@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from '../../Components/axiosInstance';
+import axios from "../../Components/axiosInstance";
 
 import {
     LineChart,
@@ -38,7 +38,8 @@ const TowerStatusChart = () => {
 
     useEffect(() => {
         // Make the API request to get the list of projects
-        axios.get("/api/towers/getuniqueprojects")
+        axios
+            .get("/api/towers/getuniqueprojects")
             .then((response) => {
                 // Extract the data from the response
                 const data = response.data;
@@ -53,7 +54,12 @@ const TowerStatusChart = () => {
     useEffect(() => {
         // Make the API request to get chart data when selectedProject changes or when the component mounts
         if (selectedProject || selectedProject === "") {
-            axios.get(`/api/towers/gettowerssolicitations/${selectedProject || ""}`)
+            axios
+                .get(
+                    `/api/towers/gettowerssolicitations/${
+                        selectedProject || ""
+                    }`,
+                )
                 .then((response) => {
                     // Extract the data from the response
                     const data = response.data;
@@ -61,7 +67,10 @@ const TowerStatusChart = () => {
                     setChartData(data);
                 })
                 .catch((error) => {
-                    console.error("Error fetching chart data from the API:", error);
+                    console.error(
+                        "Error fetching chart data from the API:",
+                        error,
+                    );
                 });
         }
     }, [selectedProject]);

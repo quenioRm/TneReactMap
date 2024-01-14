@@ -6,7 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 // import TowerImportModal from "../../../TowersComponents/TowerImportModal";
 import "react-toastify/dist/ReactToastify.css";
 // import axios from "axios";
-import axios from '../../../Components/axiosInstance';
+import axios from "../../../Components/axiosInstance";
 import getFirstErrorMessage from "../../processLaravelErrors";
 
 const PersonalMarkerManager = ({ show, onHide }) => {
@@ -70,7 +70,7 @@ const PersonalMarkerManager = ({ show, onHide }) => {
             toast.success("Marcador salvo com sucesso");
         } catch (error) {
             const message = getFirstErrorMessage(error.response.data);
-            console.log(message)
+            console.log(message);
             setErrors(error.response.data);
             toast.error(message);
         }
@@ -111,7 +111,10 @@ const PersonalMarkerManager = ({ show, onHide }) => {
             updateMarkersList(response.data);
             toast.success("Marcador atualizado com sucesso!");
         } catch (error) {
-            toast.error(error.message);
+            const message = getFirstErrorMessage(error.response.data);
+            console.log(message);
+            setErrors(error.response.data);
+            toast.error(message);
         }
     };
 

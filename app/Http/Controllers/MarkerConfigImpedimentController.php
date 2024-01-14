@@ -20,13 +20,6 @@ class MarkerConfigImpedimentController extends Controller
     {
         try {
             // Validation of fields
-            $request->validate([
-                'ImpedimentType' => 'required|string|max:255',
-                'Status' => 'required|string|max:255',
-                'Icon' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'IsBlocked' => 'required',
-            ]);
-
             $validator = Validator::make($request->all(), [
                 'ImpedimentType' => [
                     'required',
@@ -37,10 +30,10 @@ class MarkerConfigImpedimentController extends Controller
                 'Icon' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'IsBlocked' =>'required|string|max:255',
             ], [], [
-                'ImpedimentType' =>  'ImpedimentType',
-                'Status' => 'Status',
-                'Icon' => 'Icon',
-                'IsBlocked' => 'IsBlocked'
+                'ImpedimentType' =>  'tipo de impedimento',
+                'Status' => 'status',
+                'Icon' => 'icone',
+                'IsBlocked' => 'paralisa atividades?'
             ]);
 
             // Get the icon file from the request
@@ -84,10 +77,10 @@ class MarkerConfigImpedimentController extends Controller
                 'Icon' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'IsBlocked' =>'required|string|max:255',
             ], [], [
-                'ImpedimentType' =>  'ImpedimentType',
-                'Status' => 'Status',
-                'Icon' => 'Icon',
-                'IsBlocked' => 'IsBlocked'
+                'ImpedimentType' =>  'tipo de impedimento',
+                'Status' => 'status',
+                'Icon' => 'icone',
+                'IsBlocked' => 'paralisa atividades?'
             ]);
 
             if(!$validator->passes()){

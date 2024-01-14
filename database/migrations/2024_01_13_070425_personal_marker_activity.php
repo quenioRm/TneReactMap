@@ -13,8 +13,8 @@ return new class extends Migration
      {
          Schema::create('personal_marker_activity', function (Blueprint $table) {
              $table->id();
-             $table->integer('personalMarkerId');
-             $table->string('unity')->nullable();
+             $table->string('activity');
+             $table->string('unity');
              $table->decimal('previouscount', 5, 2)->default(0);
              $table->decimal('lenPercent', 5, 2)->default(0);
              $table->string('icon');

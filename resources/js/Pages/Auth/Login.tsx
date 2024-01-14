@@ -6,7 +6,7 @@ import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
 import { Head, Link, useForm } from "@inertiajs/react";
-import axios from 'axios';
+import axios from "axios";
 
 export default function Login({
     status,
@@ -31,14 +31,13 @@ export default function Login({
         e.preventDefault();
 
         try {
-            const response = await axios.post('/api/login', data);
+            const response = await axios.post("/api/login", data);
 
             const { user, token } = response.data;
 
-            localStorage.setItem('authToken', token);
-
+            localStorage.setItem("authToken", token);
         } catch (error) {
-            console.error('Login error:', error);
+            console.error("Login error:", error);
         }
 
         post(route("login"));

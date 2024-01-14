@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 // import axios from "axios";
-import axios from '../../Components/axiosInstance';
+import axios from "../../Components/axiosInstance";
 
 import {
     Container,
@@ -118,7 +118,9 @@ const ProductionTableDailyTable = () => {
         setIsLoading(true);
         const fetchProjects = async () => {
             try {
-                const response = await axios.get("/api/towers/getuniqueprojects");
+                const response = await axios.get(
+                    "/api/towers/getuniqueprojects",
+                );
                 setUniqueProjects(response.data);
             } catch (error) {
                 console.error("Error fetching unique projects:", error);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import axios from "axios";
-import axios from '../../Components/axiosInstance';
+import axios from "../../Components/axiosInstance";
 
 import {
     Button,
@@ -37,7 +37,9 @@ const ProductionTable = () => {
         setIsLoading(true); // Ativa o estado de carregamento
         const fetchProjects = async () => {
             try {
-                const response = await axios.get("/api/towers/getuniqueprojects");
+                const response = await axios.get(
+                    "/api/towers/getuniqueprojects",
+                );
                 setUniqueProjects(response.data);
                 console.log(response.data);
             } catch (error) {

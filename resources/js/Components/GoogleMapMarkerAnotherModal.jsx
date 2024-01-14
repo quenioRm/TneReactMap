@@ -13,7 +13,7 @@ import {
 import Gallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 // import axios from "axios";
-import axios from '../Components/axiosInstance';
+import axios from "../Components/axiosInstance";
 import ImageUploadButton from "./ImageUploadButton";
 import "../Components/css/uploadImages.css";
 import Swal from "sweetalert2";
@@ -136,16 +136,13 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
         <Modal show={markerInfo !== null} onHide={onClose} size="lg">
             <Modal.Header closeButton>
                 <Modal.Title>
-                    {markerInfo
-                        ? markerInfo.label.text
-                        : ""}
+                    {markerInfo ? markerInfo.label.text : ""}
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {markerInfo ? (
                     <div>
                         <Tabs activeKey={activeTab} onSelect={handleTabSelect}>
-
                             <Tab eventKey="info" title="Info">
                                 <br />
                                 <h5>Dados da Básicos</h5>
@@ -157,9 +154,7 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td>
-                                                {markerInfo.name}
-                                            </td>
+                                            <td>{markerInfo.name}</td>
                                         </tr>
                                     </tbody>
                                 </Table>
@@ -182,9 +177,7 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
                             </Tab>
 
                             <Tab eventKey="production" title="Produção">
-                                <div>
-
-                                </div>
+                                <div></div>
                             </Tab>
 
                             <Tab eventKey="gallery" title="Galeria">
