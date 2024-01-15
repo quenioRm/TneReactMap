@@ -14,6 +14,8 @@ import {
 } from "react-bootstrap";
 import moment from "moment";
 import ProductionModalCompare from "../ProductionComponents/CompareProduction/ProductionModalCompare";
+import getFirstErrorMessage from "../processLaravelErrors";
+import Swal from "sweetalert2";
 
 const ProductionTableDailyTable = () => {
     const today = new Date().toISOString().split("T")[0];
@@ -36,6 +38,7 @@ const ProductionTableDailyTable = () => {
     const [uniqueProjects, setUniqueProjects] = useState([]);
     const [visibleTables, setVisibleTables] = useState({});
     const [showModal, setShowModal] = useState(false);
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         localStorage.setItem("selectedProject", selectedProject);
@@ -66,8 +69,12 @@ const ProductionTableDailyTable = () => {
                     : `/api/production/getperiodProduction/${startDate}/${finishDate}/`;
                 const response = await axios.get(endpoint);
                 setProductionData(response.data);
+                setErrors({});
             } catch (error) {
-                console.error("Error fetching production data:", error);
+                const message = getFirstErrorMessage(error.response.data);
+                // console.log(message)
+                setErrors(error.response.data);
+                // toast.error(message);
             }
             setIsLoading(false);
         }
@@ -167,6 +174,13 @@ const ProductionTableDailyTable = () => {
                             as="select"
                             onChange={handleProjectChange}
                             value={selectedProject}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.project !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
                         >
                             <option value="">Todos os Projetos</option>
                             {uniqueProjects.map((project) => (
@@ -175,6 +189,15 @@ const ProductionTableDailyTable = () => {
                                 </option>
                             ))}
                         </Form.Control>
+                        {errors &&
+                        errors.error &&
+                        errors.error.project !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.project}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                     </Form.Group>
                 </Col>
                 {/* Start Date Input */}
@@ -186,7 +209,23 @@ const ProductionTableDailyTable = () => {
                             required
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.startDate !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
                         />
+                        {errors &&
+                        errors.error &&
+                        errors.error.startDate !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.startDate}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                     </Form.Group>
                 </Col>
                 {/* Finish Date Input */}
@@ -198,7 +237,23 @@ const ProductionTableDailyTable = () => {
                             required
                             value={finishDate}
                             onChange={(e) => setFinishDate(e.target.value)}
+                            className={
+                                errors &&
+                                errors.error &&
+                                errors.error.finishDate !== undefined
+                                    ? "is-invalid"
+                                    : "is-valid"
+                            }
                         />
+                        {errors &&
+                        errors.error &&
+                        errors.error.finishDate !== undefined ? (
+                            <div className="invalid-feedback">
+                                {errors.error.finishDate}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                     </Form.Group>
                 </Col>
                 {/* Generate Report Button */}
