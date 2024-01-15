@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use DateTimeImmutable;
 use App\Helpers\CoordinateHelper;
 use App\Models\PersonalMarker;
+use App\Models\MarkerConfigImpediment;
 
 class TowerController extends Controller
 {
@@ -216,4 +217,51 @@ class TowerController extends Controller
 
         return $returnTowers;
     }
+
+    public function countIsBlockedByType($projectName = null)
+    {
+        $impedimentTypes = MarkerConfigImpediment::orderBy('ImpedimentType')
+            ->orderBy('Status')
+            ->distinct('Status')
+            ->get();
+
+        $return = [];
+
+        $projectNames = TowerImpediment::select('ProjectName')
+            ->distinct()
+            ->orderBy('ProjectName') // Ordenar por nome de projeto
+            ->pluck('ProjectName');
+
+        foreach ($projectNames as $name) {
+            $return[$name] = [];
+
+            foreach ($impedimentTypes as $impedimentType) {
+
+                $count = TowerImpediment::where('ImpedimentType', $impedimentType->ImpedimentType)
+                    ->where('Status', $impedimentType->Status)
+                    ->where('ProjectName', $name)
+                    ->count();
+
+                $type = $impedimentType->ImpedimentType;
+
+                if (!isset($return[$name][$type])) {
+                    $return[$name][$type] = [
+                        'Liberado' => 0,
+                        'Não Liberado' => 0,
+                    ];
+                }
+
+                if ($impedimentType->IsBlocked == 'Não') {
+                    $return[$name][$type]['Liberado'] += $count;
+                } else {
+                    $return[$name][$type]['Não Liberado'] += $count;
+                }
+            }
+        }
+
+        return $return;
+    }
+
+
+
 }

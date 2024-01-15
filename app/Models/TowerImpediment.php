@@ -30,4 +30,9 @@ class TowerImpediment extends Model
         return $this->hasOne(MarkerConfigImpediment::class, 'ImpedimentType', 'ImpedimentType');
     }
 
+    public function markerConfigImpediments()
+    {
+        return $this->hasMany(MarkerConfigImpediment::class, 'ImpedimentType', 'ImpedimentType');
+    }
+
 }
