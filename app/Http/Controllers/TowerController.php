@@ -14,6 +14,7 @@ use App\Models\TowerImpediment;
 use Carbon\Carbon;
 use DateTimeImmutable;
 use App\Helpers\CoordinateHelper;
+use App\Models\PersonalMarker;
 
 class TowerController extends Controller
 {
@@ -173,6 +174,46 @@ class TowerController extends Controller
             ];
         }
 
-        return response()->json($returnTowers);
+        $anotherMarkers = $this->GetPersonalMarkers();
+        $mergedArray = array_merge($anotherMarkers, $returnTowers);
+
+        return response()->json($mergedArray);
+    }
+
+    public function GetPersonalMarkers()
+    {
+        $towers = PersonalMarker::get();
+
+        $returnTowers = [];
+
+        foreach ($towers as $tower) {
+
+            $x = (float)$tower->coordinateX;
+            $y = (float)$tower->coordinateY;
+            $zone = (float)$tower->zone;
+
+            $latlng = null;
+
+            if ($zone < 0) {
+                $latlng = CoordinateHelper::utm2ll($x, $y, $zone * -1, false);
+            }
+
+            if ($zone > 0) {
+                $latlng = CoordinateHelper::utm2ll($x, $y, $zone * 1, true);
+            }
+
+            $newCoordinates = json_decode($latlng, true);
+
+            $returnTowers[] = [
+                'tower' => $tower,
+                'name' => $tower->name,
+                'position' => [
+                    'lat' => $newCoordinates['attr']['lat'],
+                    'lng' => $newCoordinates['attr']['lon'],
+                ]
+            ];
+        }
+
+        return $returnTowers;
     }
 }
