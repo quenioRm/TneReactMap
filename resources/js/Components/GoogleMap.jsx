@@ -214,16 +214,16 @@ const GoogleMap = () => {
         setMap(map);
 
         // Create a polyline based on marker positions
-        const polylinePath = markerData.map(
-            (markerInfo) => markerInfo.position,
-        );
+        const filteredMarkerData = markerData.filter((markerInfo) => markerInfo.type === 0);
+
+        const polylinePath = filteredMarkerData.map((markerInfo) => markerInfo.position);
 
         const polyline = new window.google.maps.Polyline({
-            path: polylinePath,
-            geodesic: true,
-            strokeColor: "#FF0000",
-            strokeOpacity: 1.0,
-            strokeWeight: 2,
+          path: polylinePath,
+          geodesic: true,
+          strokeColor: "#FF0000",
+          strokeOpacity: 1.0,
+          strokeWeight: 2,
         });
 
         // Set the polyline on the map
