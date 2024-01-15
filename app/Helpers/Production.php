@@ -133,20 +133,22 @@ class Production{
                 ->where('Activitie', $activity->atividade)
                 ->first();
 
-            if($latestActivity->ConclusionDate != null){
+            if(isset($latestActivity->ConclusionDate)){
+                if($latestActivity->ConclusionDate != null){
 
-                $icon = $activity->icone;
+                    $icon = $activity->icone;
 
-                $carbonDate = Carbon::parse($latestActivity->ConclusionDate)->format('d/m/y');
+                    $carbonDate = Carbon::parse($latestActivity->ConclusionDate)->format('d/m/y');
 
-                $iconUrl = ($icon !== null) ? asset(Storage::url($icon)) : asset('assets/images/marcador-de-localizacao.png');
+                    $iconUrl = ($icon !== null) ? asset(Storage::url($icon)) : asset('assets/images/marcador-de-localizacao.png');
 
-                $returnItem[] = [
-                    'activitie' => $activity->atividade,
-                    'date' => $carbonDate,
-                    'icon' =>  $iconUrl
-                ];
+                    $returnItem[] = [
+                        'activitie' => $activity->atividade,
+                        'date' => $carbonDate,
+                        'icon' =>  $iconUrl
+                    ];
 
+                }
             }
         }
 
