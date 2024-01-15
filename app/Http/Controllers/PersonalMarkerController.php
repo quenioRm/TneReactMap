@@ -10,6 +10,11 @@ use App\Models\PersonalMarker;
 
 class PersonalMarkerController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('role:isWriter')->except('index');
+    }
+
     public function index()
     {
         $markers = PersonalMarker::all();

@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Validator;
 
 class MarkerConfigImpedimentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('role:isWriter')->except('index');
+    }
+
     public function index()
     {
         $markers = MarkerConfigImpediment::all();

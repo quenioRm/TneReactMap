@@ -10,6 +10,11 @@ use App\Models\PersonalMarkerActivity;
 
 class PersonalMarkerActivityController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('role:isWriter')->except('index');
+    }
+
     public function index()
     {
         $activities = PersonalMarkerActivity::all();
