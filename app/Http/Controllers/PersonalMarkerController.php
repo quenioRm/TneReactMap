@@ -123,7 +123,7 @@ class PersonalMarkerController extends Controller
                 $iconePath = $icone->storeAs('personalicons', uniqid('icone_', true) . '.' . $icone->getClientOriginalExtension(), 'public');
 
                 // Atualize o caminho do ícone
-                $marker->icone = $iconePath;
+                $marker->icon = $iconePath;
             }
 
             // Salve as alterações
