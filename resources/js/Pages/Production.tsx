@@ -53,7 +53,7 @@ export default function Production({ auth }: PageProps) {
                     <TowerStatusChart />
                 </Tab>
                 <Tab eventKey="towerimpediments" title="Impedimentos">
-                    <ImpedimentsGraph title={'Ola mundo'} />
+                    <ImpedimentsGraph/>
                 </Tab>
             </Tabs>
         </AuthenticatedLayout>

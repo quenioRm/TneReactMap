@@ -111,7 +111,7 @@ const FloatingButton = ({
                     id="dropdown-menu"
                 >
                     <Dropdown.Item onClick={handleShowTowerModal}>
-                        Selecionar Ponto
+                        Selecionar Torre / Subestação / Outro Ponto
                     </Dropdown.Item>
                     <Dropdown.Divider />
                     <Dropdown.Item onClick={handleShowManager}>
@@ -132,9 +132,9 @@ const FloatingButton = ({
                     <Dropdown.Item onClick={handleShowAddMarkerModal}>
                         Adicionar Marcador Personalizado
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={handleShowAddPersonalActivity}>
+                    {/* <Dropdown.Item onClick={handleShowAddPersonalActivity}>
                         Configurar Marcador - Atividade [Personalizados]
-                    </Dropdown.Item>
+                    </Dropdown.Item> */}
                 </DropdownButton>
             </OverlayTrigger>
 

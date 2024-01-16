@@ -26,8 +26,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('towers/getImpedimentsbytype/{project?}', [TowerController::class, 'countIsBlockedByType']);
-
 Route::post('/login', [AuthenticatedSessionController::class, 'apiLogin']);
 
 Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
@@ -49,7 +47,7 @@ Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
 
     Route::get('towers/gettowerssolicitations/{project?}', [TowerController::class, 'GetTowersSolicitations']);
 
-
+    Route::get('towers/getImpedimentsbytype/{project?}', [TowerController::class, 'countIsBlockedByType']);
 
     Route::get('production/getLatestProduction/{project?}', [ProductionController::class, 'getLatestProduction']);
 
