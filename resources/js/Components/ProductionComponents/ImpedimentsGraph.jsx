@@ -30,12 +30,7 @@ const ImpedimentsGraph = () => {
       const categories = data[lt];
       chartData.push({
         name: lt,
-        Arqueologia_Liberado: categories["Arqueologia"]["Liberado"],
-        Arqueologia_Não_Liberado: categories["Arqueologia"]["Não Liberado"],
-        Fundiário_Liberado: categories["Fundiário"]["Liberado"],
-        Fundiário_Não_Liberado: categories["Fundiário"]["Não Liberado"],
-        Projeto_Liberado: categories["Projeto"]["Liberado"],
-        Projeto_Não_Liberado: categories["Projeto"]["Não Liberado"],
+        categories: categories,
       });
     }
 
@@ -47,6 +42,42 @@ const ImpedimentsGraph = () => {
     const total = liberado + nãoLiberado;
     return ((liberado / total) * 100).toFixed(2);
   }
+
+  // Componente para renderizar um gráfico de pizza para uma categoria específica
+  const CategoryPieChart = ({ categoryName, data }) => {
+    return (
+      <Col sm={12} md={4}>
+        <div className="d-inline-block">
+          <h5>{categoryName}</h5>
+          <PieChart width={300} height={300}>
+            <Pie
+              data={[
+                { name: `Liberado (${calculatePercentage(data.Liberado, data["Não Liberado"])}%)`, value: data.Liberado },
+                { name: `Não Liberado (${calculatePercentage(data["Não Liberado"], data.Liberado)}%)`, value: data["Não Liberado"] },
+              ]}
+              nameKey="name"
+              dataKey="value"
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={80}
+              fill={COLORS[0]}
+              label
+            >
+              {[
+                { name: `Liberado (${calculatePercentage(data.Liberado, data["Não Liberado"])}%)`, value: data.Liberado },
+                { name: `Não Liberado (${calculatePercentage(data["Não Liberado"], data.Liberado)}%)`, value: data["Não Liberado"] },
+              ].map((item, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index]} />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend verticalAlign="bottom" height={36} />
+          </PieChart>
+        </div>
+      </Col>
+    );
+  };
 
   // Verifique se os dados estão disponíveis antes de renderizar o componente
   if (data.length === 0) {
@@ -67,96 +98,13 @@ const ImpedimentsGraph = () => {
               </Card.Header>
               <Card.Body>
                 <Row className="text-center">
-                  <Col sm={12} md={4}>
-                    <div className="d-inline-block">
-                      <h5>Arqueologia</h5>
-                      <PieChart width={300} height={300}>
-                        <Pie
-                          data={[
-                            { name: `Liberado (${calculatePercentage(entry.Arqueologia_Liberado, entry.Arqueologia_Não_Liberado)}%)`, value: entry.Arqueologia_Liberado },
-                            { name: `Não Liberado (${calculatePercentage(entry.Arqueologia_Não_Liberado, entry.Arqueologia_Liberado)}%)`, value: entry.Arqueologia_Não_Liberado },
-                          ]}
-                          nameKey="name"
-                          dataKey="value"
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={60}
-                          outerRadius={80}
-                          fill={COLORS[0]}
-                          label
-                        >
-                          {[
-                            { name: `Liberado (${calculatePercentage(entry.Arqueologia_Liberado, entry.Arqueologia_Não_Liberado)}%)`, value: entry.Arqueologia_Liberado },
-                            { name: `Não Liberado (${calculatePercentage(entry.Arqueologia_Não_Liberado, entry.Arqueologia_Liberado)}%)`, value: entry.Arqueologia_Não_Liberado },
-                          ].map((item, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index]} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                        <Legend verticalAlign="bottom" height={36} />
-                      </PieChart>
-                    </div>
-                  </Col>
-                  <Col sm={12} md={4}>
-                    <div className="d-inline-block">
-                      <h5>Fundiário</h5>
-                      <PieChart width={300} height={300}>
-                        <Pie
-                          data={[
-                            { name: `Liberado (${calculatePercentage(entry.Fundiário_Liberado, entry.Fundiário_Não_Liberado)}%)`, value: entry.Fundiário_Liberado },
-                            { name: `Não Liberado (${calculatePercentage(entry.Fundiário_Não_Liberado, entry.Fundiário_Liberado)}%)`, value: entry.Fundiário_Não_Liberado },
-                          ]}
-                          nameKey="name"
-                          dataKey="value"
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={60}
-                          outerRadius={80}
-                          fill={COLORS[0]}
-                          label
-                        >
-                          {[
-                            { name: `Liberado (${calculatePercentage(entry.Fundiário_Liberado, entry.Fundiário_Não_Liberado)}%)`, value: entry.Fundiário_Liberado },
-                            { name: `Não Liberado (${calculatePercentage(entry.Fundiário_Não_Liberado, entry.Fundiário_Liberado)}%)`, value: entry.Fundiário_Não_Liberado },
-                          ].map((item, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index]} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                        <Legend verticalAlign="bottom" height={36} />
-                      </PieChart>
-                    </div>
-                  </Col>
-                  <Col sm={12} md={4}>
-                    <div className="d-inline-block">
-                      <h5>Projeto</h5>
-                      <PieChart width={300} height={300}>
-                        <Pie
-                          data={[
-                            { name: `Liberado (${calculatePercentage(entry.Projeto_Liberado, entry.Projeto_Não_Liberado)}%)`, value: entry.Projeto_Liberado },
-                            { name: `Não Liberado (${calculatePercentage(entry.Projeto_Não_Liberado, entry.Projeto_Liberado)}%)`, value: entry.Projeto_Não_Liberado },
-                          ]}
-                          nameKey="name"
-                          dataKey="value"
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={60}
-                          outerRadius={80}
-                          fill={COLORS[0]}
-                          label
-                        >
-                          {[
-                            { name: `Liberado (${calculatePercentage(entry.Projeto_Liberado, entry.Projeto_Não_Liberado)}%)`, value: entry.Projeto_Liberado },
-                            { name: `Não Liberado (${calculatePercentage(entry.Projeto_Não_Liberado, entry.Projeto_Liberado)}%)`, value: entry.Projeto_Não_Liberado },
-                          ].map((item, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index]} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                        <Legend verticalAlign="bottom" height={36} />
-                      </PieChart>
-                    </div>
-                  </Col>
+                  {Object.keys(entry.categories).map((category, idx) => (
+                    <CategoryPieChart
+                      key={`category-pie-${idx}`}
+                      categoryName={category}
+                      data={entry.categories[category]}
+                    />
+                  ))}
                 </Row>
               </Card.Body>
             </Card>
