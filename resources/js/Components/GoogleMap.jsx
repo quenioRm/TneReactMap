@@ -64,11 +64,13 @@ const GoogleMap = () => {
 
     const [reloadMap, setReloadMap] = useState("");
 
+
     let mouseLatLng = null;
+    let googleMapsLoaded = false;
     const radius = 30000;
 
     useEffect(() => {
-        loadGoogleMapScript();
+        // loadGoogleMapScript();
 
         setIsFetchingData(true);
 
@@ -86,8 +88,13 @@ const GoogleMap = () => {
     },[reloadMap])
 
     useEffect(() => {
-        if (markerData) {
-            initMap();
+        if (!googleMapsLoaded && markerData) {
+          // Only load the Google Maps script once
+          loadGoogleMapScript("initMap");
+          googleMapsLoaded = true;
+        } else if (markerData) {
+          // If the script is already loaded, initialize the map
+          initMap();
         }
     }, [markerData]);
 
