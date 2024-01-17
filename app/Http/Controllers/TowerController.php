@@ -282,7 +282,7 @@ class TowerController extends Controller
             }
         }
 
-        $return['Resumo - Projetos'] = $allProjectsSummary;
+        $return['Resumo - Geral'] = $allProjectsSummary;
         // $return['Total'] = ['Resumo' => $totalSummary];
 
         return $return;
