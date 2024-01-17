@@ -50,16 +50,19 @@ const GoogleMap = () => {
 
     const [isDebugMode, setIsDebugMode] = useState(false);
 
-    const mapType = localStorage.getItem("mapType")
-        ? localStorage.getItem("mapType")
-        : "hybrid";
     const labelColor = localStorage.getItem("currentLabelMapColor")
         ? localStorage.getItem("currentLabelMapColor")
         : "white";
 
+    const mapType = localStorage.getItem("mapType")
+        ? localStorage.getItem("mapType")
+        : "hybrid";
+
     const [currentZoom, setCurrentZoom] = useState(15); // Define o nível de zoom inicial
 
     const [allPointsLoaded, setAllPointsLoaded] = useState(false);
+
+    const [reloadMap, setReloadMap] = useState("");
 
     let mouseLatLng = null;
     const radius = 30000;
@@ -73,6 +76,14 @@ const GoogleMap = () => {
             setIsFetchingData(false);
         });
     }, []);
+
+    useEffect(() => {
+        // console.log(reloadMap);
+        if(reloadMap == "reloadPage"){
+            setReloadMap("");
+            window.location.reload();
+        }
+    },[reloadMap])
 
     useEffect(() => {
         if (markerData) {
@@ -163,41 +174,45 @@ const GoogleMap = () => {
 
         class CustomOverlay extends google.maps.OverlayView {
             constructor(marker, icons, map) {
-                super();
-                this.marker = marker;
-                this.icons = icons;
-                this.map = map;
-                this.div = null;
-                this.setMap(map);
+              super();
+              this.marker = marker;
+              this.icons = icons;
+              this.map = map;
+              this.div = null;
+              this.setMap(map);
             }
-
+          
             onAdd() {
+              if (window.google) {
                 this.div = document.createElement("div");
                 this.div.style.position = "absolute";
                 this.div.style.display = "none";
                 this.div.innerHTML = this.icons;
-
+          
                 const panes = this.getPanes();
                 panes.overlayMouseTarget.appendChild(this.div);
+              }
             }
-
+          
             draw() {
+              if (window.google) {
                 const overlayProjection = this.getProjection();
                 const markerPosition = this.marker.getPosition();
-                const point =
-                    overlayProjection.fromLatLngToDivPixel(markerPosition);
-
+                const point = overlayProjection.fromLatLngToDivPixel(markerPosition);
+          
                 this.div.style.left = point.x + "px";
                 this.div.style.top = point.y + 40 + "px"; // Adjust the value to position the overlay below the marker
+              }
             }
-
+          
             onRemove() {
-                if (this.div) {
-                    this.div.parentNode.removeChild(this.div);
-                    this.div = null;
-                }
+              if (window.google && this.div) {
+                this.div.parentNode.removeChild(this.div);
+                this.div = null;
+              }
             }
         }
+          
 
         // Map initialization logic
         const map = new window.google.maps.Map(document.getElementById("map"), {
@@ -501,7 +516,8 @@ const GoogleMap = () => {
                         localStorage.setItem("currentLabelMapColor", "black");
                         localStorage.setItem("mapType", currentMapType);
                     }
-                    window.location.reload();
+
+                    setReloadMap("reloadPage");
                 },
             );
 
@@ -712,27 +728,31 @@ const GoogleMap = () => {
         return Math.sqrt(dx * dx + dy * dy);
     };
 
-    const loadGoogleMapScript = async () => {
-        setTimeout(() => {
+    // AIzaSyC3to6HjzBwPXLDL7VyOD_uLj9_TQTyGAg
+    const loadGoogleMapScript = () => {
+        // Check if the 'google' object is already defined
+        try {
             if (window.google && window.google.maps) {
                 initMap();
-                return;
+            } else {
+                const apiKey = "AIzaSyC3to6HjzBwPXLDL7VyOD_uLj9_TQTyGAg";
+                const script = document.createElement("script");
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+                script.async = true;
+                script.defer = true;
+        
+                window.initMap = initMap; // Assign the callback function
+        
+                script.onload = () => {
+                    // The script has loaded
+                    initMap();
+                };
+        
+                document.head.appendChild(script);
             }
-
-            const apiKey = "AIzaSyC3to6HjzBwPXLDL7VyOD_uLj9_TQTyGAg";
-            const script = document.createElement("script");
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
-            script.async = true;
-            script.defer = true;
-
-            window.initMap = initMap;
-
-            document.head.appendChild(script);
-
-            return () => {
-                document.head.removeChild(script);
-            };
-        },1000)
+        } catch (error) {
+            window.location.reload()
+        }
     };
 
     return (
@@ -783,7 +803,6 @@ const GoogleMap = () => {
                     onClose={handleCloseModal}
                 />
             )}
-            {map !== null && (
             <FloatingButton
                 map={map}
                 setMarkerData={setMarkerData}
@@ -796,7 +815,6 @@ const GoogleMap = () => {
                 allPointsLoaded={allPointsLoaded}
                 setActualCoordinate={setActualCoordinate}
             />
-            )}
         </div>
     );
 };
