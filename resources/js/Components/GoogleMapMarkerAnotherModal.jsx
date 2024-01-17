@@ -31,8 +31,10 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
     const [permission, setPermission] = useState(false)
 
     useEffect(() => {
-        setPermission(getPermissionsFromLocalStorage('isWriter'));
-    },[])
+        if (markerInfo) {
+            setPermission(getPermissionsFromLocalStorage('isWriter'));
+        }
+    }, [markerInfo]);
 
     useEffect(() => {
         if (markerInfo) {

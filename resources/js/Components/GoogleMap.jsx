@@ -713,24 +713,26 @@ const GoogleMap = () => {
     };
 
     const loadGoogleMapScript = async () => {
-        if (window.google && window.google.maps) {
-            initMap();
-            return;
-        }
+        setTimeout(() => {
+            if (window.google && window.google.maps) {
+                initMap();
+                return;
+            }
 
-        const apiKey = "AIzaSyC3to6HjzBwPXLDL7VyOD_uLj9_TQTyGAg";
-        const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
-        script.async = true;
-        script.defer = true;
+            const apiKey = "AIzaSyC3to6HjzBwPXLDL7VyOD_uLj9_TQTyGAg";
+            const script = document.createElement("script");
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+            script.async = true;
+            script.defer = true;
 
-        window.initMap = initMap;
+            window.initMap = initMap;
 
-        document.head.appendChild(script);
+            document.head.appendChild(script);
 
-        return () => {
-            document.head.removeChild(script);
-        };
+            return () => {
+                document.head.removeChild(script);
+            };
+        },1000)
     };
 
     return (
@@ -770,7 +772,7 @@ const GoogleMap = () => {
                     Coordenadas: {actualCoordinate.x}, {actualCoordinate.y}
                 </div>
             )}
-            {selectedMarker && selectedMarker.type === 0 ? (
+            {selectedMarker && selectedMarker.type === 0 && map ? (
                 <MarkerModal
                     markerInfo={selectedMarker}
                     onClose={handleCloseModal}
@@ -781,7 +783,7 @@ const GoogleMap = () => {
                     onClose={handleCloseModal}
                 />
             )}
-            {map && (
+            {map !== null && (
             <FloatingButton
                 map={map}
                 setMarkerData={setMarkerData}
