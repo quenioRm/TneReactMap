@@ -150,7 +150,16 @@ export default function Authenticated({
                             href={route("dashboard")}
                             active={route().current("dashboard")}
                         >
-                            Dashboard
+                            Mapa de Acompanhamento
+                        </ResponsiveNavLink>
+                    </div>
+
+                    <div className="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink
+                            href={route("production")}
+                            active={route().current("production")}
+                        >
+                            Produção
                         </ResponsiveNavLink>
                     </div>
 
