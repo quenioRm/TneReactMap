@@ -226,6 +226,10 @@ class TowerController extends Controller
             ->get();
 
         $return = [];
+        $totalSummary = [
+            'Liberado' => 0,
+            'Não Liberado' => 0,
+        ];
 
         $projectNames = TowerImpediment::select('ProjectName')
             ->distinct()
@@ -256,11 +260,34 @@ class TowerController extends Controller
                 } else {
                     $return[$name][$type]['Não Liberado'] += $count;
                 }
+
+                // Atualizar o resumo total por tipo de impedimento
+                $totalSummary['Liberado'] += $return[$name][$type]['Liberado'];
+                $totalSummary['Não Liberado'] += $return[$name][$type]['Não Liberado'];
             }
         }
 
+        // Adicionar resumo total para todos os projetos
+        $allProjectsSummary = [];
+        foreach ($impedimentTypes as $impedimentType) {
+            $type = $impedimentType->ImpedimentType;
+            $allProjectsSummary[$type] = [
+                'Liberado' => 0,
+                'Não Liberado' => 0,
+            ];
+
+            foreach ($projectNames as $name) {
+                $allProjectsSummary[$type]['Liberado'] += $return[$name][$type]['Liberado'];
+                $allProjectsSummary[$type]['Não Liberado'] += $return[$name][$type]['Não Liberado'];
+            }
+        }
+
+        $return['Resumo - Projetos'] = $allProjectsSummary;
+        // $return['Total'] = ['Resumo' => $totalSummary];
+
         return $return;
     }
+
 
 
 
