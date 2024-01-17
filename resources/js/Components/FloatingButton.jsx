@@ -169,10 +169,10 @@ const FloatingButton = ({
                 show={showAddMarkerModal}
                 onHide={handleCloseAddMarkerModal}
             />
-            <MarkerManagerPersonal
+            {/* <MarkerManagerPersonal
                 show={showAddPersonalActivity}
                 onHide={handleClosePersonalActivity}
-            />
+            /> */}
         </div>
     );
 };

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Container, Row, Col } from "react-bootstrap";
 import MarkerConfigModalPersonal from "./MarkerConfigModalPersonal";
 import MarkerList from "./MarkerListPersonal";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import axios from "axios";
 import axios from "../../../axiosInstance";
