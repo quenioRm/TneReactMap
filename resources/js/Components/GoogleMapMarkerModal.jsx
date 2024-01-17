@@ -91,6 +91,12 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
         indexOfLastItem,
     );
 
+    const toTitleCase = (str) => {
+        return str.replace(/\w\S*/g, function (txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+    }
+
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const handleImageUpload = async (files) => {
@@ -292,7 +298,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                                 (tower, index) => (
                                                     <tr key={index}>
                                                         <td>
-                                                            {tower.activitie}
+                                                            {toTitleCase(tower.activitie)}
                                                         </td>
                                                         <td>
                                                             <img

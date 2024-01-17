@@ -7,6 +7,9 @@ use App\Models\Marker;
 use App\Models\TowerActivity;
 use Illuminate\Support\Facades\Storage;
 use App\Models\MarkerConfigImpediment;
+use App\Models\PersonalMarkerActivity;
+use App\Models\PersonalMarkerProduction;
+use App\Models\PersonalMarker;
 
 class Production{
 
@@ -70,7 +73,8 @@ class Production{
                     $returnItem = [
                         'activitie' => $activity->atividade,
                         'date' => $carbonDate,
-                        'icon' =>  $iconUrl
+                        'icon' =>  $iconUrl,
+                        'type' => 0
                     ];
 
                 }
@@ -110,7 +114,8 @@ class Production{
                 return $returnItem = [
                     'impedimentType' => $impedimentType->ImpedimentType,
                     'status' => $impedimentType->Status,
-                    'icon' =>  trim($iconUrl)
+                    'icon' =>  trim($iconUrl),
+                    'type' => 0
                 ];
             }
         }
@@ -145,7 +150,8 @@ class Production{
                     $returnItem[] = [
                         'activitie' => $activity->atividade,
                         'date' => $carbonDate,
-                        'icon' =>  $iconUrl
+                        'icon' =>  $iconUrl,
+                        'type' => 0
                     ];
 
                 }
@@ -177,13 +183,58 @@ class Production{
             if($impedimentType->IsBlocked == "Sim"){
                 $returnItem[] = [
                     'impedimentType' => $impedimentType->ImpedimentType,
-                    'icon' =>  trim($iconUrl)
+                    'icon' =>  trim($iconUrl),
+                    'type' => 0
                 ];
             }
         }
 
         if(empty($returnItem)){
             $returnItem = null;
+        }
+
+        return $returnItem;
+    }
+
+    public static function GetLatestIconsFromPersonalMarkers($id)
+    {
+        $returnItem = null;
+
+        $marker = PersonalMarker::find($id);
+
+        if($marker){
+
+            $activities = PersonalMarkerActivity::where('personalMarkerId', $id)->get();
+
+            foreach ($activities as $activity) {
+
+                $previousCount = $activity->previouscount;
+
+                $production = PersonalMarkerProduction::where('name', $marker->name)
+                ->where('activity', $activity->activity)
+                ->sum('count');
+
+                $icon = $activity->icon;
+
+                $latestDate = PersonalMarkerProduction::where('name', $marker->name)
+                    ->where('activity', $activity->activity)
+                    ->latest('conclusionDate')
+                    ->value('conclusionDate');
+
+                $carbonDate = ($latestDate == null) ? '' : Carbon::parse($latestDate)->format('d/m/y');
+
+                $iconUrl = ($icon !== null) ? asset(Storage::url($icon)) : '';
+
+                $returnItem[] = [
+                    'name' => $activity->activity,
+                    'previouscount' => $previousCount,
+                    'executed' => $production,
+                    'avc' => floatval($production) / floatval($previousCount),
+                    'icon' =>  trim($iconUrl),
+                    'type' => 1,
+                    'date' => $carbonDate
+                ];
+            }
         }
 
         return $returnItem;

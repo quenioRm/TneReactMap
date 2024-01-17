@@ -13,6 +13,7 @@ class PersonalMarkerActivity extends Model
     protected $primaryKey = 'id';
     protected $dates = ['created_at','updated_at'];
     protected $fillable = [
+        'personalMarkerId',
         'activity',
         'unity',
         'previouscount',

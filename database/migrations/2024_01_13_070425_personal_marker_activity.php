@@ -15,8 +15,8 @@ return new class extends Migration
              $table->id();
              $table->string('activity');
              $table->string('unity');
-             $table->decimal('previouscount', 5, 2)->default(0);
-             $table->decimal('lenPercent', 5, 2)->default(0);
+             $table->decimal('previouscount', 15, 2)->default(0);
+             $table->decimal('lenPercent', 15, 2)->default(0);
              $table->string('icon');
              $table->timestamps();
 

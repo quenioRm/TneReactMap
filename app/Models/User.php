@@ -60,4 +60,9 @@ class User extends Authenticatable
         return $this->roles()->where('name', $role)->exists();
     }
 
+    public function rolesuser()
+    {
+    	return $this->hasMany(RoleUser::class, 'user_id');
+    }
+
 }

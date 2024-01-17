@@ -309,10 +309,28 @@ const GoogleMap = () => {
                     iconsHTML = '<div class="icons-bar">';
 
                     markerInfo.iconsbarActivity.forEach((activity) => {
-                        iconsHTML += `<div class="icon-box">
+                        console.log(activity)
+                        if(activity.type === 0){
+                            iconsHTML += `<div class="icon-box">
                                 <img src="${activity.icon}" />
                                 <div class="icon-date">${activity.date}</div>
                             </div>`;
+                        }
+
+                        if(activity.type === 1){
+
+                            const personalAvc = activity.avc.toLocaleString(
+                                undefined,
+                                {
+                                    style: "percent",
+                                    minimumFractionDigits: 2,
+                                },
+                            );
+                            iconsHTML += `<div class="icon-box">
+                                <img src="${activity.icon}" />
+                                <div class="icon-date">${personalAvc}<br>${activity.date}</div>
+                            </div>`;
+                        }
                     });
 
                     iconsHTML += "</div>";

@@ -24,7 +24,7 @@ export default function Dashboard({ auth }: PageProps) {
                 </div>
             }
         >
-            <Head title="Dashboard" />
+            <Head title="Mapa de Acompanhamento" />
 
             <GoogleMap />
         </AuthenticatedLayout>

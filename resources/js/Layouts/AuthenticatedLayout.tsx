@@ -1,4 +1,4 @@
-import { useState, PropsWithChildren, ReactNode } from "react";
+import { useState, PropsWithChildren, ReactNode, useEffect } from "react";
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import Dropdown from "@/Components/Dropdown";
 import NavLink from "@/Components/NavLink";
@@ -13,6 +13,12 @@ export default function Authenticated({
 }: PropsWithChildren<{ user: User; header?: ReactNode }>) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+
+    useEffect(() => {
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('roles', JSON.stringify(user.rolesuser));
+        // localStorage.setItem('authToken', JSON.stringify(user.api_token));
+    },[user])
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -31,7 +37,7 @@ export default function Authenticated({
                                     href={route("dashboard")}
                                     active={route().current("dashboard")}
                                 >
-                                    Dashboard
+                                    Mapa de Acompanhamento
                                 </NavLink>
                             </div>
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">

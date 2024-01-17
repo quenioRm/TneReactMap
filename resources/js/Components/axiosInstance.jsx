@@ -7,10 +7,10 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem("authToken");
+        const account = JSON.parse(localStorage.getItem("user"));
 
-        if (token) {
-            config.headers["Authorization"] = `Bearer ${token}`;
+        if (account) {
+            config.headers["Authorization"] = `Bearer ${account.api_token}`;
         }
 
         return config;
@@ -40,7 +40,8 @@ axiosInstance.interceptors.response.use(
             });
 
             setTimeout(() => {
-                // window.location.href = "/";
+                localStorage.clear();
+                window.location.href = "/";
             }, 10000);
         }
 

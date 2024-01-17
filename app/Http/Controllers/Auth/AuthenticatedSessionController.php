@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\RoleUser;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -32,9 +33,13 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
-        $request->session()->regenerate();
+        $user = Auth::user();
+        $token = $user->createToken('authToken')->plainTextToken;
 
-        $this->apiLogin($request);
+        $user->api_token = $token;
+        $user->save();
+
+        $request->session()->regenerate();
 
         return redirect()->intended(RouteServiceProvider::HOME);
     }
@@ -44,6 +49,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $user = Auth::user();
+        $user->api_token = null;
+        $user->save();
+
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
@@ -65,8 +75,11 @@ class AuthenticatedSessionController extends Controller
             $user->api_token = $token;
             $user->save();
 
+            $roles = RoleUser::where('user_id', $user->id)->with('role')->get();
+
             return response()->json([
                 'user' => $user,
+                'roles' => $roles,
                 'token' => $token,
             ]);
         }

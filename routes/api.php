@@ -28,6 +28,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/login', [AuthenticatedSessionController::class, 'apiLogin']);
 
+Route::get('/test/{id}', [MapsController::class, 'Test']);
+
 Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
 
     Route::get('/get-coordinates', [MapsController::class, 'getCoordinates']);
@@ -61,6 +63,9 @@ Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
 
     Route::resource('personalmarkers', PersonalMarkerController::class);
     Route::resource('personalmarkersactivity', PersonalMarkerActivityController::class);
+    Route::get('personalmarkersactivity/getallbymarker/{id}', [PersonalMarkerActivityController::class, 'getAllByMarker']);
+    Route::get('personalmarkersactivity/getAllproductionsbymarker/{name}', [PersonalMarkerActivityController::class, 'getAllProductionsByMarker']);
+    Route::post('personalmarkersactivity/import', [PersonalMarkerActivityController::class, 'importPersonalProductionFromExcelFile']);
     Route::resource('markers', MarkerConfigController::class);
     Route::resource('markersimpediments', MarkerConfigImpedimentController::class);
     ////////////////////////////////////////////

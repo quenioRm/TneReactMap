@@ -17,6 +17,8 @@ import axios from "../Components/axiosInstance";
 import ImageUploadButton from "./ImageUploadButton";
 import "../Components/css/uploadImages.css";
 import Swal from "sweetalert2";
+import getPermissionsFromLocalStorage from '../Components/Functions/getPermissionsFromLocalStorage';
+import MarkerManagerPersonal from '../Components/MapsComponents/Activitie/Personal/MarkerManagerPersonal';
 
 const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
     const [towerImages, setTowerImages] = useState([]);
@@ -26,6 +28,11 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [permission, setPermission] = useState(false)
+
+    useEffect(() => {
+        setPermission(getPermissionsFromLocalStorage('isWriter'));
+    },[])
 
     useEffect(() => {
         if (markerInfo) {
@@ -132,8 +139,9 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
         });
     };
 
+
     return (
-        <Modal show={markerInfo !== null} onHide={onClose} size="lg">
+        <Modal show={markerInfo !== null} onHide={onClose} size="xl">
             <Modal.Header closeButton>
                 <Modal.Title>
                     {markerInfo ? markerInfo.label.text : ""}
@@ -177,7 +185,7 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
                             </Tab>
 
                             <Tab eventKey="production" title="Produção">
-                                <div></div>
+                                <MarkerManagerPersonal show={true} onHide={() => {}} permission={permission} markerInfo={markerInfo} />
                             </Tab>
 
                             <Tab eventKey="gallery" title="Galeria">

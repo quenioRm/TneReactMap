@@ -30,15 +30,17 @@ export default function Login({
     const submit: FormEventHandler = async (e) => {
         e.preventDefault();
 
-        try {
-            const response = await axios.post("/api/login", data);
+        // try {
+        //     const response = await axios.post("/api/login", data);
 
-            const { user, token } = response.data;
+        //     const { user, roles, token } = response.data;
 
-            localStorage.setItem("authToken", token);
-        } catch (error) {
-            console.error("Login error:", error);
-        }
+        //     localStorage.setItem("user", JSON.stringify(user));
+        //     localStorage.setItem("roles", JSON.stringify(roles));
+        //     localStorage.setItem("authToken", token);
+        // } catch (error) {
+        //     console.error("Login error:", error);
+        // }
 
         post(route("login"));
     };

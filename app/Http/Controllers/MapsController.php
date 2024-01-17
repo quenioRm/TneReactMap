@@ -249,7 +249,8 @@ class MapsController extends Controller
                         'towerId' => $changedTowerId,
                         'project' => $markerData['ProjectName'],
                         'oringalNumber' => $markerData['Number'],
-                        'originalName' => $markerData['Name']
+                        'originalName' => $markerData['Name'],
+                        'id' => $markerData['id']
                     ],
                     'avc' => 0,
                     'draggable' => false,
@@ -324,14 +325,15 @@ class MapsController extends Controller
                         'towerId' => '',
                         'project' => '',
                         'oringalNumber' => '',
-                        'originalName' => ''
+                        'originalName' => '',
+                        'id' => $markerData['id']
                     ],
                     'avc' => 0,
                     'draggable' => false,
                     'config_icon' => [
                         'activitie' => null,
                         'date' => null,
-                        'icon' =>  asset('assets/images/SE.png')
+                        'icon' =>  Storage::url($markerData['icon'])
                     ],
                     'impediment_icon' => '',
                     'Impediments' => null,
@@ -339,7 +341,7 @@ class MapsController extends Controller
                     'ReceiveDate' => null,
                     'PreviousReceiveDate' => null,
                     'ReceiveStatus' => null,
-                    'iconsbarActivity' => null,
+                    'iconsbarActivity' => Production::GetLatestIconsFromPersonalMarkers($markerData['id']),
                     'iconsbarImpediment' => null
                 ];
             }
@@ -505,5 +507,10 @@ class MapsController extends Controller
         }
 
         return response()->json($avc);
+    }
+
+    public function Test($id)
+    {
+        return Production::GetLatestIconsFromPersonalMarkers($id);
     }
 }

@@ -5,25 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Role extends Model
+class PersonalMarkerProduction extends Model
 {
     use HasFactory;
 
-    protected $table = 'roles';
+    protected $table = 'personal_markers_production';
     protected $primaryKey = 'id';
     protected $dates = ['created_at','updated_at'];
     protected $fillable = [
         'name',
-        'description',
+        'activity',
+        'conclusionDate',
+        'count'
     ];
-
-    public function users()
-    {
-        return $this->belongsToMany(User::class);
-    }
-
-    public function roleusers()
-    {
-    	return $this->hasMany(RoleUser::class, 'role_id');
-    }
 }
