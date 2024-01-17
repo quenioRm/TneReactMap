@@ -16,7 +16,7 @@ class PersonalMarkerActivityController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role:isWriter')->except('index');
+        $this->middleware('role:isWriter')->except(['index', 'getAllProductionsByMarker', 'getAllByMarker']);
     }
 
     public function index()
