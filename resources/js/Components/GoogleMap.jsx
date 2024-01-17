@@ -81,16 +81,18 @@ const GoogleMap = () => {
     }, [markerData]);
 
     useEffect(() => {
-        setTimeout(() => {
-            setLoading(false);
-        }, 5000);
+        if(map != null){
+            setTimeout(() => {
+                setLoading(false);
+            }, 5000);
+        }
     }, [map, markerData]);
 
     // update Map Coordinates
 
     useEffect(() => {
         setTimeout(async () => {
-            if (!allPointsLoaded && !isFetchingGeneralData) {
+            if (!allPointsLoaded && !isFetchingGeneralData && map != null) {
                 setIsFetchingGeneralData(true);
                 await fetchAllMarkerData().then(() => {
                     setAllPointsLoaded(true);
@@ -779,6 +781,7 @@ const GoogleMap = () => {
                     onClose={handleCloseModal}
                 />
             )}
+            {map && (
             <FloatingButton
                 map={map}
                 setMarkerData={setMarkerData}
@@ -791,6 +794,7 @@ const GoogleMap = () => {
                 allPointsLoaded={allPointsLoaded}
                 setActualCoordinate={setActualCoordinate}
             />
+            )}
         </div>
     );
 };
