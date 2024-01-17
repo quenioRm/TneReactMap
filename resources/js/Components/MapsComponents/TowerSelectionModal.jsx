@@ -81,7 +81,7 @@ const TowerSelectionModal = ({
           Fechar
         </Button> */}
                 <Button variant="primary" onClick={handleTowerSelect}>
-                    Ir para a Torre
+                    Ir
                 </Button>
             </Modal.Footer>
         </Modal>

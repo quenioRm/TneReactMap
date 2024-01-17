@@ -20,8 +20,9 @@ const MarkerListPersonal = ({ markers, onEdit, onDelete, permission, production 
 
     const [loading, setLoading] = useState(true);
 
-    const findProductionItem = (id) => { // Define findProductionItem as a function
-        const foundItem = production.find((item) => item.id === id);
+    const findProductionItem = (activity) => { // Define findProductionItem as a function
+        // console.log(production)
+        const foundItem = production.find((item) => item.activity === activity);
         if (foundItem) {
           return foundItem;
         } else {
@@ -88,9 +89,9 @@ const MarkerListPersonal = ({ markers, onEdit, onDelete, permission, production 
                                         />
                                     </td>
                                     <td>{marker.previouscount}</td>
-                                    <td>{findProductionItem(marker.id)?.count ?? 0}</td>
-                                    <td>{calcDiferente(marker.previouscount, findProductionItem(marker.id)?.count ?? 0)}</td>
-                                    <td>{calcPercentage(findProductionItem(marker.id)?.count ?? 0, marker.previouscount)}</td>
+                                    <td>{findProductionItem(marker.activity)?.count ?? 0}</td>
+                                    <td>{calcDiferente(marker.previouscount, findProductionItem(marker.activity)?.count ?? 0)}</td>
+                                    <td>{calcPercentage(findProductionItem(marker.activity)?.count ?? 0, marker.previouscount)}</td>
                                     {permission && (
                                         <td>
                                             <Button

@@ -309,7 +309,6 @@ const GoogleMap = () => {
                     iconsHTML = '<div class="icons-bar">';
 
                     markerInfo.iconsbarActivity.forEach((activity) => {
-                        console.log(activity)
                         if(activity.type === 0){
                             iconsHTML += `<div class="icon-box">
                                 <img src="${activity.icon}" />

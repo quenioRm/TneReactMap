@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('personal_markers_production', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 150)->unique();
+            $table->string('name', 150);
             $table->string('activity');
             $table->date('conclusionDate');
             $table->decimal('count', 15, 2)->nullable()->default(0);
