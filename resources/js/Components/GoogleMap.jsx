@@ -172,7 +172,7 @@ const GoogleMap = () => {
             return;
         }
 
-        class CustomOverlay extends google.maps.OverlayView {
+        class CustomOverlay extends window.google.maps.OverlayView {
             constructor(marker, icons, map) {
               super();
               this.marker = marker;
