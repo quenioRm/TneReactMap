@@ -61,6 +61,7 @@ class TowerController extends Controller
 
         $worksheet2Data = (new FastExcel)->sheet(2)->import($file->getRealPath());
 
+        DB::table('cache')->truncate();
         DB::table('towers')->truncate();
 
         // Perform necessary processing with the data from the second worksheet
