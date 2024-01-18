@@ -64,11 +64,13 @@ const GoogleMap = () => {
 
     const [reloadMap, setReloadMap] = useState("");
 
+
     let mouseLatLng = null;
+    let googleMapsLoaded = false;
     const radius = 30000;
 
     useEffect(() => {
-        loadGoogleMapScript();
+        // loadGoogleMapScript();
 
         setIsFetchingData(true);
 
@@ -86,8 +88,13 @@ const GoogleMap = () => {
     },[reloadMap])
 
     useEffect(() => {
-        if (markerData) {
-            initMap();
+        if (!googleMapsLoaded && markerData) {
+          // Only load the Google Maps script once
+          loadGoogleMapScript("initMap");
+          googleMapsLoaded = true;
+        } else if (markerData) {
+          // If the script is already loaded, initialize the map
+          initMap();
         }
     }, [markerData]);
 
@@ -181,30 +188,30 @@ const GoogleMap = () => {
               this.div = null;
               this.setMap(map);
             }
-          
+
             onAdd() {
               if (window.google) {
                 this.div = document.createElement("div");
                 this.div.style.position = "absolute";
                 this.div.style.display = "none";
                 this.div.innerHTML = this.icons;
-          
+
                 const panes = this.getPanes();
                 panes.overlayMouseTarget.appendChild(this.div);
               }
             }
-          
+
             draw() {
               if (window.google) {
                 const overlayProjection = this.getProjection();
                 const markerPosition = this.marker.getPosition();
                 const point = overlayProjection.fromLatLngToDivPixel(markerPosition);
-          
+
                 this.div.style.left = point.x + "px";
                 this.div.style.top = point.y + 40 + "px"; // Adjust the value to position the overlay below the marker
               }
             }
-          
+
             onRemove() {
               if (window.google && this.div) {
                 this.div.parentNode.removeChild(this.div);
@@ -212,7 +219,7 @@ const GoogleMap = () => {
               }
             }
         }
-          
+
 
         // Map initialization logic
         const map = new window.google.maps.Map(document.getElementById("map"), {
@@ -740,14 +747,14 @@ const GoogleMap = () => {
                 script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
                 script.async = true;
                 script.defer = true;
-        
+
                 window.initMap = initMap; // Assign the callback function
-        
+
                 script.onload = () => {
                     // The script has loaded
                     initMap();
                 };
-        
+
                 document.head.appendChild(script);
             }
         } catch (error) {

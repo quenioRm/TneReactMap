@@ -27,7 +27,7 @@ export default function Login({
         };
     }, []);
 
-    const submit: FormEventHandler = async (e) => {
+    const submit: FormEventHandler = (e) => {
         e.preventDefault();
 
         // try {
