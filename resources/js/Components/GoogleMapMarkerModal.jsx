@@ -17,6 +17,8 @@ import axios from "../Components/axiosInstance";
 import ImageUploadButton from "./ImageUploadButton";
 import "../Components/css/uploadImages.css";
 import Swal from "sweetalert2";
+import GaleryImagesFromTower from '../Components/GaleryImagesFromTower';
+import toTitleCase from './Functions/toTitle';
 
 const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     const [towerImages, setTowerImages] = useState([]);
@@ -27,6 +29,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         if (markerInfo) {
@@ -91,10 +94,12 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
         indexOfLastItem,
     );
 
-    const toTitleCase = (str) => {
-        return str.replace(/\w\S*/g, function (txt) {
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-        });
+    const handleShowModal = () => {
+        setShowModal(true);
+    }
+
+    const handleCloseModal = () => {
+        setShowModal(false);
     }
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -291,6 +296,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                                 <th>Atividade</th>
                                                 <th>Icone</th>
                                                 <th>Data de execução</th>
+                                                <th>Ações</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -311,6 +317,11 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                                             />
                                                         </td>
                                                         <td>{tower.date}</td>
+                                                        <td>
+                                                        <Button variant="primary" onClick={handleShowModal} >
+                                                            Ver / Anexar Imagem
+                                                        </Button>
+                                                        </td>
                                                     </tr>
                                                 ),
                                             )}
@@ -355,7 +366,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                                     }
                                                 />
                                                 <div>
-                                                    <button
+                                                    {/* <button
                                                         onClick={
                                                             handleImageDelete
                                                         }
@@ -365,14 +376,14 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                                         }}
                                                     >
                                                         Deletar imagem
-                                                    </button>
+                                                    </button> */}
                                                 </div>
-                                                <hr />
+                                                {/* <hr /> */}
                                             </div>
                                         )}
-                                        <hr />
+                                        {/* <hr /> */}
                                         {/* Botão de upload */}
-                                        <Container>
+                                        {/* <Container>
                                             <Row>
                                                 <Col className="text-right">
                                                     <ImageUploadButton
@@ -382,7 +393,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                                     />
                                                 </Col>
                                             </Row>
-                                        </Container>
+                                        </Container> */}
                                     </>
                                 )}
                             </Tab>
@@ -390,6 +401,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                     </div>
                 ) : null}
             </Modal.Body>
+            <GaleryImagesFromTower markerInfo={markerInfo} towerProduction={towerProduction} show={showModal} onClose={handleCloseModal}/>
             <Modal.Footer>{/* ... (Footer content) */}</Modal.Footer>
         </Modal>
     );

@@ -352,8 +352,10 @@ class MapsController extends Controller
 
     public function getImagesFromTower($tower)
     {
+        $replaced_tower = str_replace(' ', '_', $tower);
+
         // Specify the folder path within the storage directory
-        $folderPath = storage_path('app' . DIRECTORY_SEPARATOR . $tower);
+        $folderPath = storage_path('app' . DIRECTORY_SEPARATOR . $replaced_tower);
 
         if (!File::isDirectory($folderPath)) {
             return response()->json(['files' => []], 200, [], JSON_UNESCAPED_SLASHES);
@@ -368,18 +370,18 @@ class MapsController extends Controller
             $fileName = pathinfo($file, PATHINFO_BASENAME);
 
             // Specify the destination path within the public directory
-            $destinationPath = public_path('storage' . DIRECTORY_SEPARATOR . $tower);
+            $destinationPath = public_path('storage' . DIRECTORY_SEPARATOR . $replaced_tower);
 
             // Create a symbolic link
-            Storage::disk('public')->putFileAs($tower, $file, $fileName);
+            Storage::disk('public')->putFileAs($replaced_tower, $file, $fileName);
         }
 
         // Get the list of files in the public directory
-        $publicFiles = Storage::disk('public')->files($tower);
+        $publicFiles = Storage::disk('public')->files($replaced_tower);
 
         // Generate full URLs for the files
-        $fullUrls = array_map(function ($file) use ($tower) {
-            return url("storage/{$tower}/" . pathinfo($file, PATHINFO_BASENAME));
+        $fullUrls = array_map(function ($file) use ($replaced_tower) {
+            return url("storage/{$replaced_tower}/" . pathinfo($file, PATHINFO_BASENAME));
         }, $publicFiles);
 
         return response()->json(['files' => $fullUrls], 200, [], JSON_UNESCAPED_SLASHES);
@@ -427,6 +429,8 @@ class MapsController extends Controller
 
         $imageUrls = [];
 
+        $replaced_tower = str_replace(' ', '_', $request->towerId);
+
         foreach ($request->file('images') as $file) {
             // Generate a unique ID for each image using timestamp and random string
             $uniqueId = time() . '_' . Str::random(10); // You may need to import Str class
@@ -438,10 +442,10 @@ class MapsController extends Controller
             $fileName = $uniqueId . '.' . $extension;
 
             // Save the image to the storage/app/public directory with the generated filename
-            $imagePath = $file->storeAs($request->towerId, $fileName);
+            $imagePath = $file->storeAs($replaced_tower, $fileName);
 
             // Generate the image URL
-            $imageUrl = url('storage/' . $request->towerId . '/' . $fileName);
+            $imageUrl = url('storage/' . $replaced_tower . '/' . $fileName);
 
             $imageUrls[] = $imageUrl;
         }
@@ -465,14 +469,16 @@ class MapsController extends Controller
 
         $folder = explode('/', $imagePath);
 
-        $filePath = $folder[2] . '/' . $folder[3];
+        $replaced_tower = str_replace(' ', '_', $folder[2]);
+
+        $filePath = $replaced_tower . '/' . $folder[3];
 
         if (Storage::disk('public')->exists($filePath)) {
             // Exclua o arquivo físico da pasta public
             Storage::disk('public')->delete($filePath);
 
             // Exclua o arquivo físico da pasta app
-            $appFilePath = storage_path('app/' . $folder[2] . '/' . $folder[3]);
+            $appFilePath = storage_path('app/' . $replaced_tower . '/' . $folder[3]);
             if (file_exists($appFilePath)) {
                 unlink($appFilePath);
             }

@@ -38,9 +38,11 @@ const ImageUploadButton = ({ onUpload }) => {
                 onChange={handleFileChange}
                 multiple
             />
+
             <Button variant="primary" onClick={handleUploadClick}>
-                Upload Image
+                Enviar Imagens
             </Button>
+            
             {uploadProgress > 0 && (
                 <div className="mt-2">
                     <ProgressBar
