@@ -362,30 +362,57 @@ class MapsController extends Controller
         }
 
         // Get all files in the folder
-        $files = File::files($folderPath);
+        // $files = File::files($folderPath);
+        $fullUrls = [];
+
+        $allFiles = $this->getAllFilesInFolder($folderPath);
 
         // Create storage links for the files
-        foreach ($files as $file) {
+        foreach ($allFiles as $file) {
             // Get the file name
             $fileName = pathinfo($file, PATHINFO_BASENAME);
+
+            // Get the relative path within the storage directory
+            $relativePath = str_replace(storage_path('app'), 'storage', $file);
+
+            // Convert backslashes to forward slashes for URLs
+            $relativePath = str_replace('\\', '/', $relativePath);
+
+            // Generate the public URL link
+            $fileUrl = url($relativePath);
+
+            $fullUrls[] = $fileUrl;
+
+            // Generate the public path equivalent
+            $publicPath = public_path($relativePath);
 
             // Specify the destination path within the public directory
             $destinationPath = public_path('storage' . DIRECTORY_SEPARATOR . $replaced_tower);
 
             // Create a symbolic link
             Storage::disk('public')->putFileAs($replaced_tower, $file, $fileName);
+
         }
-
-        // Get the list of files in the public directory
-        $publicFiles = Storage::disk('public')->files($replaced_tower);
-
-        // Generate full URLs for the files
-        $fullUrls = array_map(function ($file) use ($replaced_tower) {
-            return url("storage/{$replaced_tower}/" . pathinfo($file, PATHINFO_BASENAME));
-        }, $publicFiles);
 
         return response()->json(['files' => $fullUrls], 200, [], JSON_UNESCAPED_SLASHES);
     }
+
+    public function getAllFilesInFolder($folderPath)
+    {
+        $files = [];
+
+        $directoryIterator = new \RecursiveDirectoryIterator($folderPath);
+        $iterator = new \RecursiveIteratorIterator($directoryIterator);
+
+        foreach ($iterator as $file) {
+            if ($file->isFile()) {
+                $files[] = $file->getPathname();
+            }
+        }
+
+        return $files;
+    }
+
 
     public function getTowerProduction($tower, $project)
     {
@@ -413,7 +440,8 @@ class MapsController extends Controller
             $returnItem[$key] = [
                 'activitie' => $item->Activitie,
                 'date' => $carbonDate,
-                'icon' => $iconUrl
+                'icon' => $iconUrl,
+                'id' => $item->id
             ];
         }
 
@@ -424,7 +452,7 @@ class MapsController extends Controller
     {
         // Validação dos dados da requisição
         $request->validate([
-            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:10048',
         ]);
 
         $imageUrls = [];
@@ -454,8 +482,6 @@ class MapsController extends Controller
         return response()->json(['imageUrls' => $imageUrls]);
     }
 
-
-
     public function deleteGalleryImage(Request $request)
     {
         // Validação dos dados da requisição
@@ -479,14 +505,21 @@ class MapsController extends Controller
 
             // Exclua o arquivo físico da pasta app
             $appFilePath = storage_path('app/' . $replaced_tower . '/' . $folder[3]);
-            if (file_exists($appFilePath)) {
+
+            if (is_file($appFilePath)) {
                 unlink($appFilePath);
             }
 
-            return response()->json(['message' => 'Imagem excluída com sucesso']);
+            return [
+                'message' => 'Imagem excluída com sucesso',
+                'status' => 200
+            ];
         } else {
             // A imagem não foi encontrada
-            return response()->json(['message' => 'Imagem não encontrada'], 404);
+            return [
+                'message' => 'Imagem não encontrada',
+                'status' => 404
+            ];
         }
     }
 
@@ -519,4 +552,142 @@ class MapsController extends Controller
     {
         return Production::GetLatestIconsFromPersonalMarkers($id);
     }
+
+    public function getImagesFromMarkerWithActivity($tower, $activityId)
+    {
+        $replaced_tower = str_replace(' ', '_', $tower);
+
+        // Specify the folder path within the storage directory
+        $folderPath = storage_path('app' . DIRECTORY_SEPARATOR . $replaced_tower . DIRECTORY_SEPARATOR . $activityId);
+
+        if (!File::isDirectory($folderPath)) {
+            return response()->json(['files' => []], 200, [], JSON_UNESCAPED_SLASHES);
+        }
+
+        // Get all files in the folder
+        $files = File::files($folderPath);
+
+        // Create storage links for the files
+        foreach ($files as $file) {
+            // Get the file name
+            $fileName = pathinfo($file, PATHINFO_BASENAME);
+
+            // Specify the destination path within the public directory
+            $destinationPath = public_path('storage' . DIRECTORY_SEPARATOR . $replaced_tower . DIRECTORY_SEPARATOR . $activityId);
+
+            // Create a symbolic link
+            Storage::disk('public')->putFileAs($replaced_tower . DIRECTORY_SEPARATOR . $activityId, $file, $fileName);
+        }
+
+        // Get the list of files in the public directory
+        $publicFiles = Storage::disk('public')->files($replaced_tower . DIRECTORY_SEPARATOR . $activityId);
+
+        // Generate full URLs for the files
+        $fullUrls = array_map(function ($file) use ($replaced_tower,  $activityId) {
+            return url("storage/{$replaced_tower}/{$activityId}/" . pathinfo($file, PATHINFO_BASENAME));
+        }, $publicFiles);
+
+        return response()->json(['files' => $fullUrls], 200, [], JSON_UNESCAPED_SLASHES);
+    }
+
+    public function uploadGaleryImagesWithActivity(Request $request)
+    {
+        // Validação dos dados da requisição
+        $request->validate([
+            'activityId' => 'required',
+            'towerId' => 'required',
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:10048',
+        ]);
+
+        $imageUrls = [];
+
+        $replaced_tower = str_replace(' ', '_', $request->towerId);
+
+        foreach ($request->file('images') as $file) {
+            // Generate a unique ID for each image using timestamp and random string
+            $uniqueId = time() . '_' . Str::random(10); // You may need to import Str class
+
+            // Determine the file extension (e.g., jpg, png)
+            $extension = $file->getClientOriginalExtension();
+
+            // Generate the file name with the unique ID and extension
+            $fileName = $uniqueId . '.' . $extension;
+
+            // Save the image to the storage/app/public directory with the generated filename
+            $imagePath = $file->storeAs($replaced_tower . '/' . $request->activityId, $fileName);
+
+            // Generate the image URL
+            $imageUrl = url('storage/' . $replaced_tower . '/' . $request->activityId . '/' . $fileName);
+
+            $imageUrls[] = $imageUrl;
+        }
+
+        // Retorna as URLs das imagens
+        return response()->json(['imageUrls' => $imageUrls]);
+    }
+
+    public function deleteGalleryImageWithActivity(Request $request)
+    {
+        // Validação dos dados da requisição
+        $request->validate([
+            'image_url' => 'required|url',
+        ]);
+
+        $imageUrl = $request->input('image_url');
+
+        $imagePath = parse_url($imageUrl, PHP_URL_PATH);
+
+        $folder = explode('/', $imagePath);
+
+        $replaced_tower = str_replace(' ', '_', $folder[2]);
+
+        $filePath = $replaced_tower . '/' . $folder[3] . '/' . $folder[4];
+
+        if (Storage::disk('public')->exists($filePath)) {
+            // Exclua o arquivo físico da pasta public
+            Storage::disk('public')->delete($filePath);
+
+            // Verifique se $appFilePath é um arquivo antes de tentar excluí-lo
+            $appFilePath = storage_path('app/' . $replaced_tower . '/' . $folder[3] . '/' . $folder[4]);
+            if (is_file($appFilePath)) {
+                unlink($appFilePath);
+            }
+
+            return [
+                'message' => 'Imagem excluída com sucesso',
+                'status' => 200
+            ];
+        } else {
+            // A imagem não foi encontrada
+            return [
+                'message' => 'Imagem não encontrada',
+                'status' => 404
+            ];
+        }
+    }
+
+    public function deleteFromSpecificGallery(Request $request)
+    {
+        $request->validate([
+            'image_url' => 'required|url',
+        ]);
+
+        $imageUrl = $request->input('image_url');
+
+        $imagePath = parse_url($imageUrl, PHP_URL_PATH);
+
+        $folder = explode('/', $imagePath);
+
+        if(count($folder) == 4){
+            $return = $this->deleteGalleryImage($request);
+            return response()->json(['message' => $return['message']], $return['status']);
+        }
+
+        if(count($folder) == 5){
+            $return = $this->deleteGalleryImageWithActivity($request);
+            return response()->json(['message' => $return['message']], $return['status']);
+        }
+    }
+
+
 }

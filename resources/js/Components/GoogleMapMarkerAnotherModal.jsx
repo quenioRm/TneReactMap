@@ -61,6 +61,7 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
 
     const handleTabSelect = (tab) => {
         setActiveTab(tab);
+        fetchTowerImages();
     };
 
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -103,16 +104,15 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
             confirmButtonText: "Sim, exclua-o!",
         }).then((result) => {
             if (result.isConfirmed) {
-                // Fazer a requisição HTTP para deletar a imagem
+                // Obtenha a imagem atual que está sendo visualizada
                 const imageUrlToDelete = updatedImages[currentImageIndex];
-
                 axios
-                    .post("/api/delete-gallery-image", {
+                    .post("/api/delete-gallery-image-all", {
                         image_url: imageUrlToDelete,
                     })
                     .then((response) => {
                         if (response.status === 200) {
-                            // Remover a imagem da lista após a exclusão bem-sucedida
+                            // Remova a imagem excluída da lista
                             updatedImages.splice(currentImageIndex, 1);
                             setTowerImages(updatedImages);
 
@@ -121,6 +121,13 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
                                 text: response.data.message,
                                 icon: "success",
                             });
+
+                            // Verifique se a imagem atual não existe mais na lista
+                            if (currentImageIndex >= updatedImages.length) {
+                                setCurrentImageIndex(
+                                    Math.max(updatedImages.length - 1, 0)
+                                );
+                            }
                         } else {
                             Swal.fire({
                                 title: "Erro!",
@@ -223,7 +230,7 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
                                         )}
                                         <hr />
                                         {/* Botão de upload */}
-                                        <Container>
+                                        {/* <Container>
                                             <Row>
                                                 <Col className="text-right">
                                                     <ImageUploadButton
@@ -233,7 +240,7 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
                                                     />
                                                 </Col>
                                             </Row>
-                                        </Container>
+                                        </Container> */}
                                     </>
                                 )}
                             </Tab>

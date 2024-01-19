@@ -1,9 +1,10 @@
 // Import React, useState, and the required Bootstrap components
 import React, { useState } from "react";
 import { Table, Button, Pagination, Spinner } from "react-bootstrap";
+import GaleryImagesFromPersonal from '../../../../Components/GaleryImagesFromPersonal';
 
 // Define the MarkerListPersonal component
-const MarkerListPersonal = ({ markers, onEdit, onDelete, permission, production }) => {
+const MarkerListPersonal = ({ markers, onEdit, onDelete, permission, production, markerInfo }) => {
     // Set the number of items per page
     const itemsPerPage = 5;
     // Initialize the currentPage state
@@ -49,6 +50,19 @@ const MarkerListPersonal = ({ markers, onEdit, onDelete, permission, production 
         return 0;
     }
 
+    const [showUploadModal, setShowUploadModal] = useState(false);
+    const [selectedAcitivity, setSelectedAcitivity] = useState({});
+
+    const handleShowModalUpload = (activity) => {
+        setSelectedAcitivity(activity)
+        setShowUploadModal(true);
+    };
+
+    const handleCloseModalUpload = () => {
+        setShowUploadModal(false);
+    };
+
+
     // Return the JSX for the MarkerListPersonal component
     return (
         <>
@@ -70,9 +84,7 @@ const MarkerListPersonal = ({ markers, onEdit, onDelete, permission, production 
                                 <th>Realizado</th>
                                 <th>Falta</th>
                                 <th>% Avanço</th>
-                                {permission && (
-                                    <th>Ações</th>
-                                )}
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -92,9 +104,14 @@ const MarkerListPersonal = ({ markers, onEdit, onDelete, permission, production 
                                     <td>{findProductionItem(marker.activity)?.count ?? 0}</td>
                                     <td>{calcDiferente(marker.previouscount, findProductionItem(marker.activity)?.count ?? 0)}</td>
                                     <td>{calcPercentage(findProductionItem(marker.activity)?.count ?? 0, marker.previouscount)}</td>
+                                    <td>
+                                    <Button variant="primary" onClick={() => handleShowModalUpload(marker)} >
+                                               Ver / Anexar Imagem
+                                            </Button>
                                     {permission && (
-                                        <td>
-                                            <Button
+
+                                        <>
+                                                                                    <Button
                                                 variant="info"
                                                 className="mr-2"
                                                 onClick={() => onEdit(marker)}
@@ -107,8 +124,11 @@ const MarkerListPersonal = ({ markers, onEdit, onDelete, permission, production 
                                             >
                                                 Deletar
                                             </Button>
-                                        </td>
+                                        </>
+
+
                                     )}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -128,6 +148,8 @@ const MarkerListPersonal = ({ markers, onEdit, onDelete, permission, production 
                     </Pagination>
                 </>
             )}
+            <GaleryImagesFromPersonal markerInfo={markerInfo} towerProduction={selectedAcitivity} show={showUploadModal}
+             onClose={handleCloseModalUpload}/>
         </>
     );
 

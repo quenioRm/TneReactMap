@@ -36,8 +36,21 @@ Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
     Route::post('/get-coordinatesbyrange', [MapsController::class, 'getCoordinatesByRange']);
     Route::post('/get-coordinatesbyrange-from-personal', [MapsController::class, 'getCoordinatesByAnotherMarkers']);
     Route::get('/get-towerimages/{tower}', [MapsController::class, 'getImagesFromTower']);
+
+    Route::get('/get-towerimages-with-activity/{tower}/{activity}', [MapsController::class, 'getImagesFromMarkerWithActivity']);
+
+    Route::post('/upload-images-with-activity', [MapsController::class, 'uploadGaleryImagesWithActivity']);
+
     Route::get('/get-towerproduction/{tower}/{project}', [MapsController::class, 'getTowerProduction']);
+
+    Route::post('/delete-gallery-image-with-activity', [MapsController::class, 'deleteGalleryImageWithActivity']);
+
+    Route::post('/delete-gallery-image-all', [MapsController::class, 'deleteFromSpecificGallery']);
+
     Route::post('/upload-images', [MapsController::class, 'uploadGaleryImages']);
+
+
+
     Route::post('/delete-gallery-image', [MapsController::class, 'deleteGalleryImage']);
     Route::get('/get-avc/{tower}/{project}', [MapsController::class, 'GetTowerAvc']);
 

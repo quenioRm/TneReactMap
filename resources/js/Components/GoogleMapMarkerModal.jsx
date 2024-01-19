@@ -30,6 +30,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     const [itemsPerPage] = useState(5);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [showModal, setShowModal] = useState(false);
+    const [selectedAcitivity, setSelectedAcitivity] = useState({});
 
     useEffect(() => {
         if (markerInfo) {
@@ -94,7 +95,8 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
         indexOfLastItem,
     );
 
-    const handleShowModal = () => {
+    const handleShowModal = (activity) => {
+        setSelectedAcitivity(activity)
         setShowModal(true);
     }
 
@@ -135,16 +137,15 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
             confirmButtonText: "Sim, exclua-o!",
         }).then((result) => {
             if (result.isConfirmed) {
-                // Fazer a requisição HTTP para deletar a imagem
+                // Obtenha a imagem atual que está sendo visualizada
                 const imageUrlToDelete = updatedImages[currentImageIndex];
-
                 axios
-                    .post("/api/delete-gallery-image", {
+                    .post("/api/delete-gallery-image-all", {
                         image_url: imageUrlToDelete,
                     })
                     .then((response) => {
                         if (response.status === 200) {
-                            // Remover a imagem da lista após a exclusão bem-sucedida
+                            // Remova a imagem excluída da lista
                             updatedImages.splice(currentImageIndex, 1);
                             setTowerImages(updatedImages);
 
@@ -153,6 +154,13 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                 text: response.data.message,
                                 icon: "success",
                             });
+
+                            // Verifique se a imagem atual não existe mais na lista
+                            if (currentImageIndex >= updatedImages.length) {
+                                setCurrentImageIndex(
+                                    Math.max(updatedImages.length - 1, 0)
+                                );
+                            }
                         } else {
                             Swal.fire({
                                 title: "Erro!",
@@ -318,7 +326,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                                         </td>
                                                         <td>{tower.date}</td>
                                                         <td>
-                                                        <Button variant="primary" onClick={handleShowModal} >
+                                                        <Button variant="primary" onClick={() => handleShowModal(tower)} >
                                                             Ver / Anexar Imagem
                                                         </Button>
                                                         </td>
@@ -366,7 +374,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                                     }
                                                 />
                                                 <div>
-                                                    {/* <button
+                                                    <button
                                                         onClick={
                                                             handleImageDelete
                                                         }
@@ -376,7 +384,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                                         }}
                                                     >
                                                         Deletar imagem
-                                                    </button> */}
+                                                    </button>
                                                 </div>
                                                 {/* <hr /> */}
                                             </div>
@@ -401,7 +409,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                     </div>
                 ) : null}
             </Modal.Body>
-            <GaleryImagesFromTower markerInfo={markerInfo} towerProduction={towerProduction} show={showModal} onClose={handleCloseModal}/>
+            <GaleryImagesFromTower markerInfo={markerInfo} towerProduction={selectedAcitivity} show={showModal} onClose={handleCloseModal}/>
             <Modal.Footer>{/* ... (Footer content) */}</Modal.Footer>
         </Modal>
     );

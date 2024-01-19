@@ -66,7 +66,6 @@ const MarkerManagerPersonal = ({ show, onHide , permission, markerInfo }) => {
         setImportgModalShow(false);
     };
 
-
     const handleSaveMarker = async ({
         activity,
         unity,
@@ -246,6 +245,7 @@ const MarkerManagerPersonal = ({ show, onHide , permission, markerInfo }) => {
                                     onDelete={handleDeleteMarker}
                                     permission={permission}
                                     production={markersProduction}
+                                    markerInfo={markerInfo}
                                 />
                             </Col>
                         </Row>

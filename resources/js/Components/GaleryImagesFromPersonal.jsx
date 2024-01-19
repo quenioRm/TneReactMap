@@ -19,7 +19,7 @@ import "../Components/css/uploadImages.css";
 import Swal from "sweetalert2";
 import toTitleCase from './Functions/toTitle';
 
-const GaleryImagesFromTower = ({ markerInfo, towerProduction, show, onClose }) => {
+const GaleryImagesFromPersonal = ({ markerInfo, towerProduction, show, onClose }) => {
     const [towerImages, setTowerImages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -33,7 +33,7 @@ const GaleryImagesFromTower = ({ markerInfo, towerProduction, show, onClose }) =
     const fetchTowerImages = async () => {
         try {
             const response = await axios.get(
-                `/api/get-towerimages-with-activity/${markerInfo.label.towerId}/${towerProduction.id}`,
+                `/api/get-towerimages-with-activity/${markerInfo.name}/${towerProduction.id}`,
             );
             setTowerImages(response.data.files);
             setLoading(false);
@@ -51,7 +51,7 @@ const GaleryImagesFromTower = ({ markerInfo, towerProduction, show, onClose }) =
     const handleImageUpload = async (files) => {
         try {
             const formData = new FormData();
-            formData.append("towerId", markerInfo.label.towerId);
+            formData.append("towerId", markerInfo.name);
             formData.append("activityId", towerProduction.id);
 
             for (const file of files) {
@@ -131,7 +131,7 @@ const GaleryImagesFromTower = ({ markerInfo, towerProduction, show, onClose }) =
                     {markerInfo
                         ? markerInfo.label.text +
                           " - " +
-                          toTitleCase(towerProduction.activitie)
+                          toTitleCase(towerProduction.activity)
                         : ""}
                 </Modal.Title>
             </Modal.Header>
@@ -189,4 +189,4 @@ const GaleryImagesFromTower = ({ markerInfo, towerProduction, show, onClose }) =
     );
 };
 
-export default GaleryImagesFromTower;
+export default GaleryImagesFromPersonal;
