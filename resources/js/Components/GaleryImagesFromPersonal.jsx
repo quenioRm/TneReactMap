@@ -17,7 +17,6 @@ import axios from "./axiosInstance";
 import ImageUploadButton from "./ImageUploadButton";
 import "../Components/css/uploadImages.css";
 import Swal from "sweetalert2";
-import toTitleCase from './Functions/toTitle';
 
 const GaleryImagesFromPersonal = ({ markerInfo, towerProduction, show, onClose }) => {
     const [towerImages, setTowerImages] = useState([]);

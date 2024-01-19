@@ -18,7 +18,6 @@ import ImageUploadButton from "./ImageUploadButton";
 import "../Components/css/uploadImages.css";
 import Swal from "sweetalert2";
 import GaleryImagesFromTower from '../Components/GaleryImagesFromTower';
-import toTitleCase from './Functions/toTitle';
 
 const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     const [towerImages, setTowerImages] = useState([]);
@@ -312,7 +311,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                                 (tower, index) => (
                                                     <tr key={index}>
                                                         <td>
-                                                            {toTitleCase(tower.activitie)}
+                                                            {tower.activitie}
                                                         </td>
                                                         <td>
                                                             <img
