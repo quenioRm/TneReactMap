@@ -130,7 +130,7 @@ const GaleryImagesFromPersonal = ({ markerInfo, towerProduction, show, onClose }
                     {markerInfo
                         ? markerInfo.label.text +
                           " - " +
-                          toTitleCase(towerProduction.activity)
+                          towerProduction.activity
                         : ""}
                 </Modal.Title>
             </Modal.Header>
