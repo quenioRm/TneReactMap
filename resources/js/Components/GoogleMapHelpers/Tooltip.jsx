@@ -1,32 +1,53 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect } from 'react';
 import '../css/Tooltip.css'; // Import your custom CSS for styling
+import { CSSTransition } from 'react-transition-group';
 
-/**
- * Tooltip component to display additional information.
- * @param {Object} props Component props
- * @param {Object} props.position Position of the tooltip { x, y }
- * @param {string} props.content Content to be displayed in the tooltip
- */
-const Tooltip = ({ position, content }) => {
-    const style = {
-        left: `${position.x}px`,
-        top: `${position.y}px`,
+const Tooltip = ({ mouseEventData }) => {
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    let timeout;
+
+    if (isVisible) {
+      timeout = setTimeout(() => {
+        setIsVisible(false);
+      }, 5000); // Especifique o tempo em milissegundos (5 segundos no exemplo)
+    }
+
+    return () => {
+      clearTimeout(timeout);
     };
+  }, [isVisible]);
 
-    return (
-        <div className="tooltip" style={style}>
-            {content}
+  useEffect(()=>{
+    setIsVisible(true)
+  },[mouseEventData])
+
+  return (
+    <div>
+      <CSSTransition
+        in={isVisible}
+        timeout={300}
+        classNames={{
+          enter: 'tooltip-enter',
+          enterActive: 'tooltip-enter-active',
+          exit: 'tooltip-exit',
+          exitActive: 'tooltip-exit-active',
+        }}
+        unmountOnExit
+      >
+        <div
+          className={`tooltip-content${isVisible ? '' : ' tooltip-explode'}`}
+          style={{
+            left: `${mouseEventData.tooltipPosition.x}px`,
+            top: `${mouseEventData.tooltipPosition.y}px`,
+          }}
+        >
+          Coordenadas: {mouseEventData.actualCoordinate.x}, {mouseEventData.actualCoordinate.y}
         </div>
-    );
-};
-
-Tooltip.propTypes = {
-    position: PropTypes.shape({
-        x: PropTypes.number.isRequired,
-        y: PropTypes.number.isRequired,
-    }).isRequired,
-    content: PropTypes.string.isRequired,
+      </CSSTransition>
+    </div>
+  );
 };
 
 export default Tooltip;

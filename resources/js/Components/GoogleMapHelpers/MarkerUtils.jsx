@@ -1,4 +1,8 @@
 import '../css/GoogleMap.css'
+import UtmConverter from "../Converters/UtmConverter";
+import getUtmZone from '../Functions/getUtmZone';
+import calculateUtmDistance from '../Functions/calculateUtmDistance';
+
 /**
  * Creates a Google Maps Marker icon.
  * @param {Object} markerInfo Information about the marker.
@@ -35,10 +39,14 @@ export const createMarkerIcon = (markerInfo) => {
  * @returns {Object} Google Maps Marker Label object.
  */
 export const createMarkerLabel = (markerInfo) => {
-    // Example label configuration - modify as needed
+
+    const labelColor = localStorage.getItem("currentLabelMapColor")
+        ? localStorage.getItem("currentLabelMapColor")
+        : "white";
+
     return {
         text: markerInfo.label.text,
-        color: 'black', // can be dynamic based on markerInfo
+        color: labelColor, // can be dynamic based on markerInfo
         fontSize: '12px',
         fontWeight: 'bold',
     };
@@ -106,18 +114,22 @@ const prepareInfoWindowContent = (markerInfo) => {
         });
     }
 
-    // adding solicitation and receive status
-    let receiveStatusInfo = '<br><b>Solicitação de Compra Estrutura:</b>';
-    if (markerInfo.SolicitationDate !== '')
-        receiveStatusInfo += `<br>- Solicitado em: ${markerInfo.SolicitationDate}`;
-    if (markerInfo.ReceiveDate !== '')
-        receiveStatusInfo += `<br>- Recebida em: ${markerInfo.ReceiveDate}`;
-    if (markerInfo.PreviousReceiveDate !== '')
-        receiveStatusInfo += `<br>- Previsão de entrega: ${markerInfo.PreviousReceiveDate}`;
-    receiveStatusInfo += `<br>- Status: ${markerInfo.ReceiveStatus}`;
+    let receiveStatusInfo = '';
+
+    if(markerInfo.type == 0){
+        // adding solicitation and receive status
+        receiveStatusInfo = '<br><b>Solicitação de Compra Estrutura:</b>';
+        if (markerInfo.SolicitationDate !== '')
+            receiveStatusInfo += `<br>- Solicitado em: ${markerInfo.SolicitationDate}`;
+        if (markerInfo.ReceiveDate !== '')
+            receiveStatusInfo += `<br>- Recebida em: ${markerInfo.ReceiveDate}`;
+        if (markerInfo.PreviousReceiveDate !== '')
+            receiveStatusInfo += `<br>- Previsão de entrega: ${markerInfo.PreviousReceiveDate}`;
+        receiveStatusInfo += `<br>- Status: ${markerInfo.ReceiveStatus}`;
+    }
 
     // Combine all pieces of information
-    infoWindowContent = `<b>Torre:</b> ${markerInfo.label.text}${lastActivity}${impedimentosInfo}${receiveStatusInfo}`;
+    infoWindowContent = `<b>${markerInfo.label.text}</b><br/> ${lastActivity}${impedimentosInfo}${receiveStatusInfo}`;
 
     return infoWindowContent;
 };
@@ -135,6 +147,8 @@ const setupMarkerEventListeners = (marker, customOverlay, infowindow, map, marke
         infowindow.close();
         customOverlay.div.style.display = "none";
     });
+
+
 };
 
 /**
@@ -184,3 +198,86 @@ export const createPolyline = (markerData, map) => {
     polyline.setMap(map);
     return polyline;
 };
+
+export const createMapChange = (map) => {
+    map.addListener(
+        "maptypeid_changed",
+        function () {
+            var currentMapType = map.getMapTypeId();
+
+            if (currentMapType === "hybrid") {
+                localStorage.setItem("currentLabelMapColor", "white");
+                localStorage.setItem("mapType", currentMapType);
+            } else if (currentMapType === "satellite") {
+                localStorage.setItem("currentLabelMapColor", "white");
+                localStorage.setItem("mapType", currentMapType);
+            } else {
+                localStorage.setItem("currentLabelMapColor", "black");
+                localStorage.setItem("mapType", currentMapType);
+            }
+
+            window.location.reload();
+        }
+    );
+}
+
+export const createMouseMoveEvent = (map, callback) => {
+    map.addListener("mousemove", (event) => {
+        const mouseX = event.pixel.x;
+        const mouseY = event.pixel.y;
+
+        const resultLatLng = UtmConverter.convertLatLngToUtm(
+            parseFloat(event.latLng.lat()),
+            parseFloat(event.latLng.lng()),
+        );
+
+        const currentCalledLatLng = {
+            lat: parseFloat(event.latLng.lat()),
+            lng: parseFloat(event.latLng.lng()),
+        };
+
+        const actualCoordinate = {
+            x: parseFloat(resultLatLng.easting.toFixed(2)),
+            y: parseFloat(resultLatLng.northing.toFixed(2)),
+            zone: getUtmZone(
+                parseFloat(event.latLng.lat()),
+                parseFloat(event.latLng.lng()),
+            ),
+        };
+
+        const tooltipPosition = { x: mouseX + 180, y: mouseY - 30 };
+
+        const latestCoordinateSaved = {
+            easting: 0,
+            northing: 0,
+            zone: 0,
+        };
+
+        const currentCoordinateSaved = {
+            easting: parseFloat(resultLatLng.easting),
+            northing: parseFloat(resultLatLng.northing),
+            zone: getUtmZone(
+                parseFloat(event.latLng.lat()),
+                parseFloat(event.latLng.lng()),
+            ),
+        };
+
+        const distance = calculateUtmDistance(
+            latestCoordinateSaved,
+            currentCoordinateSaved,
+        );
+
+        const eventData = {
+            resultLatLng,
+            currentCalledLatLng,
+            actualCoordinate,
+            tooltipPosition,
+            latestCoordinateSaved,
+            currentCoordinateSaved,
+            distance
+        };
+
+        callback(eventData); // Call the provided callback function with the data
+    });
+}
+

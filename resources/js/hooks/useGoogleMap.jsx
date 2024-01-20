@@ -3,42 +3,33 @@ import { useState, useEffect } from 'react';
 export const useGoogleMap = (mapConfig, apiKey) => {
     const [map, setMap] = useState(null);
     const [CustomOverlay, setCustomOverlay] = useState(null);
+    const [isApiLoaded, setIsApiLoaded] = useState(false);
 
-    // Function to load the Google Maps API
-    const loadGoogleMapsAPI = () => {
-        return new Promise((resolve, reject) => {
+    // Callback function for API loading
+    window.initMap = () => setIsApiLoaded(true);
+
+    useEffect(() => {
+        const loadGoogleMapsAPI = () => {
             if (window.google && window.google.maps) {
-                resolve();
+                setIsApiLoaded(true);
             } else {
                 const script = document.createElement('script');
-                script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
                 script.async = true;
-                script.defer = true;
                 document.head.appendChild(script);
 
-                script.onload = () => resolve();
-                script.onerror = () => reject(new Error('Google Maps API failed to load.'));
+                script.onerror = () => console.error('Google Maps API failed to load.');
             }
-        });
-    };
+        };
+
+        loadGoogleMapsAPI();
+    }, [apiKey]);
 
     useEffect(() => {
         let isMounted = true;
 
-        const initializeMap = async () => {
-            try {
-                await loadGoogleMapsAPI();
-                if (isMounted) {
-                    const newMap = new window.google.maps.Map(document.getElementById('map'), mapConfig);
-                    setMap(newMap);
-                }
-            } catch (error) {
-                console.error("Error loading Google Maps: ", error);
-            }
-        };
-
-        if (isMounted && !CustomOverlay && window.google && window.google.maps) {
-            // Define CustomOverlay here
+        if (isMounted && isApiLoaded && !CustomOverlay) {
+            // Define CustomOverlay class here
             class CustomOverlayClass extends window.google.maps.OverlayView {
                 constructor(marker, icons, map) {
                   super();
@@ -83,12 +74,15 @@ export const useGoogleMap = (mapConfig, apiKey) => {
             setCustomOverlay(() => CustomOverlayClass);
         }
 
-        initializeMap();
+        if (isMounted && isApiLoaded) {
+            const newMap = new window.google.maps.Map(document.getElementById('map'), mapConfig);
+            setMap(newMap);
+        }
 
         return () => {
             isMounted = false;
         };
-    }, [mapConfig, apiKey, CustomOverlay]);
+    }, [isApiLoaded, mapConfig]);
 
     return { map, CustomOverlay };
 };
