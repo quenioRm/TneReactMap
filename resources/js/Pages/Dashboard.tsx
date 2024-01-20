@@ -2,8 +2,12 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { PageProps } from "@/types";
 import GoogleMap from "../Components/GoogleMap";
+import useFetchMarkerData from '../hooks/useFetchMarkerData';
 
 export default function Dashboard({ auth }: PageProps) {
+    const {
+        markerData, latestCalledCoordinate, currentCalledLatLng, firstCalledLatLng, latestCalledLatLng, mapConfig, error
+    } = useFetchMarkerData();
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -26,7 +30,15 @@ export default function Dashboard({ auth }: PageProps) {
         >
             <Head title="Mapa de Acompanhamento" />
 
-            <GoogleMap />
+            <GoogleMap
+                 mapConfig={mapConfig}
+                 latestCalledCoordinate={latestCalledCoordinate}
+                 currentCalledLatLng={currentCalledLatLng}
+                 firstCalledLatLng={firstCalledLatLng}
+                 latestCalledLatLng={latestCalledLatLng}
+                 markersData={markerData}
+                 error={error}
+            />
         </AuthenticatedLayout>
     );
 }

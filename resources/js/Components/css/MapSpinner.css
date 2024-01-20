@@ -1,0 +1,16 @@
+.loading-spinner-container {
+    position: fixed; /* Fixed position to cover the whole screen */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+    z-index: 1000; /* Ensure it's on top of other elements */
+}
+
+.loading-spinner-container .spinner-border {
+    margin-right: 10px;
+}
