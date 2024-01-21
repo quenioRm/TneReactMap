@@ -13,21 +13,26 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
-
-        // Exec Maps
         $schedule->call(function () {
-            // Verifique se a chave do cache existe
-            if (!Cache::has('coordinates_data_general')) {
-                // A chave do cache não existe ou expirou, então execute a função do controller
+            // Retrieve the cache value
+            $cacheValue = Cache::get('coordinates_data_general');
+
+            // Check if the cache value exists
+            if ($cacheValue === null) {
+                // The cache key doesn't exist, so execute the function from the controller
                 app()->call([MapsController::class, 'getCoordinates']);
             } else {
-                // A chave do cache existe, verifique o tempo restante de vida
-                $ttl = Cache::getTtl('coordinates_data_general');
+                // Calculate the remaining time until expiration
+                $now = now()->timestamp;
+                $expirationTimestamp = $cacheValue['expires_at'];
+                $ttl = $expirationTimestamp - $now;
 
-                // Se o tempo restante de vida for menor ou igual a zero, execute a função do controller
+                // If the remaining time is less than or equal to zero, execute the function from the controller
                 if ($ttl <= 0) {
                     app()->call([MapsController::class, 'getCoordinates']);
+                } else {
+                    // Log a message indicating that the function wasn't executed due to valid cache
+                    Log::info('The MapsController::getCoordinates function was not executed due to a valid cache.');
                 }
             }
         })->twiceDaily(0, 12);
