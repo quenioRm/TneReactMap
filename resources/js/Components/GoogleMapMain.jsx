@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useGoogleMap } from "../hooks/useGoogleMap";
 import LoadingSpinner from "./GoogleMapHelpers/LoadingSpinner";
 import Tooltip from "./GoogleMapHelpers/Tooltip";
@@ -75,29 +75,10 @@ const GoogleMapMain = ({
         }
     }, [map, markersData, loadingMarkers]);
 
-    useEffect(() => {
-        const isMapConfigInitialized = mapConfig.center.lat !== 0 && mapConfig.center.lng !== 0;
-        setLoadingMap(!isMapConfigInitialized);
-    }, [mapConfig]);
-
-    useLayoutEffect(() => {
-        function handleVisibilityChange() {
-            if (document.hidden) {
-                // Handle the case when the page becomes hidden (e.g., in the background)
-            } else {
-                // Handle the case when the page becomes visible again
-                console.log(mapConfig);
-                const isMapConfigInitialized = mapConfig.center.lat !== 0 && mapConfig.center.lng !== 0;
-                setLoadingMap(!isMapConfigInitialized);
-            }
-        }
-    
-        document.addEventListener("visibilitychange", handleVisibilityChange);
-    
-        return () => {
-            document.removeEventListener("visibilitychange", handleVisibilityChange);
-        };
-    }, [mapConfig]);
+useEffect(() => {
+    const isMapConfigInitialized = mapConfig.center.lat !== 0 && mapConfig.center.lng !== 0;
+    setLoadingMap(!isMapConfigInitialized);
+}, [mapConfig]);
 
     useEffect(() => {
         if (mouseEventData) {
