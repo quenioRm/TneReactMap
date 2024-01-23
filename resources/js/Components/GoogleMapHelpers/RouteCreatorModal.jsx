@@ -109,6 +109,7 @@ const RouteCreatorModal = ({
                                               }
                                             : null
                                     }
+                                    placeholder={"Origem"}
                                 />
                             </Form.Group>
                         </Col>
@@ -130,6 +131,7 @@ const RouteCreatorModal = ({
                                               }
                                             : null
                                     }
+                                    placeholder={"Destino"}
                                 />
                             </Form.Group>
                         </Col>
