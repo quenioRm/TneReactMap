@@ -88,10 +88,16 @@ const GoogleMapMain = ({
     }, [mouseEventData]);
 
     useEffect(() => {
-        if (directionsResponse && directionsRenderer) {
-            directionsRenderer.setDirections(directionsResponse);
+        if (directionsRenderer) {
+            if (directionsResponse) {
+                directionsRenderer.setDirections(directionsResponse);
+            } else {
+                // Limpa a rota do mapa
+                directionsRenderer.setDirections({ routes: [] });
+            }
         }
     }, [directionsResponse, directionsRenderer]);
+
 
     return (
         <div className="google-map-container">
