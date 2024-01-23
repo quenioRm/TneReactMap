@@ -1,14 +1,14 @@
 function getPermissionsFromLocalStorage(name) {
     try {
-        const parsedArray = JSON.parse(localStorage.getItem('roles'));
+        const parsedArray = JSON.parse(localStorage.getItem("roles"));
         let result = false;
         parsedArray.map((item, index) => {
-            if(name === item.role.name){
-                result = true
+            if (name === item.role.name) {
+                result = true;
             }
-        })
+        });
 
-        return result
+        return result;
     } catch (error) {
         return false;
     }

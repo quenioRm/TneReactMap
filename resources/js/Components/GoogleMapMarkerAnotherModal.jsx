@@ -17,8 +17,8 @@ import axios from "../Components/axiosInstance";
 import ImageUploadButton from "./ImageUploadButton";
 import "../Components/css/uploadImages.css";
 import Swal from "sweetalert2";
-import getPermissionsFromLocalStorage from '../Components/Functions/getPermissionsFromLocalStorage';
-import MarkerManagerPersonal from '../Components/MapsComponents/Activitie/Personal/MarkerManagerPersonal';
+import getPermissionsFromLocalStorage from "../Components/Functions/getPermissionsFromLocalStorage";
+import MarkerManagerPersonal from "../Components/MapsComponents/Activitie/Personal/MarkerManagerPersonal";
 
 const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
     const [towerImages, setTowerImages] = useState([]);
@@ -28,11 +28,11 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [permission, setPermission] = useState(false)
+    const [permission, setPermission] = useState(false);
 
     useEffect(() => {
         if (markerInfo) {
-            setPermission(getPermissionsFromLocalStorage('isWriter'));
+            setPermission(getPermissionsFromLocalStorage("isWriter"));
         }
     }, [markerInfo]);
 
@@ -125,7 +125,7 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
                             // Verifique se a imagem atual não existe mais na lista
                             if (currentImageIndex >= updatedImages.length) {
                                 setCurrentImageIndex(
-                                    Math.max(updatedImages.length - 1, 0)
+                                    Math.max(updatedImages.length - 1, 0),
                                 );
                             }
                         } else {
@@ -147,7 +147,6 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
             }
         });
     };
-
 
     return (
         <Modal show={markerInfo !== null} onHide={onClose} size="xl">
@@ -194,7 +193,12 @@ const GoogleMapMarkerAnotherModal = ({ markerInfo, onClose }) => {
                             </Tab>
 
                             <Tab eventKey="production" title="Produção">
-                                <MarkerManagerPersonal show={true} onHide={() => {}} permission={permission} markerInfo={markerInfo} />
+                                <MarkerManagerPersonal
+                                    show={true}
+                                    onHide={() => {}}
+                                    permission={permission}
+                                    markerInfo={markerInfo}
+                                />
                             </Tab>
 
                             <Tab eventKey="gallery" title="Galeria">

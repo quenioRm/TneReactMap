@@ -1,7 +1,7 @@
-import '../css/GoogleMap.css'
+import "../css/GoogleMap.css";
 import UtmConverter from "../Converters/UtmConverter";
-import getUtmZone from '../Functions/getUtmZone';
-import calculateUtmDistance from '../Functions/calculateUtmDistance';
+import getUtmZone from "../Functions/getUtmZone";
+import calculateUtmDistance from "../Functions/calculateUtmDistance";
 
 /**
  * Creates a Google Maps Marker icon.
@@ -9,28 +9,33 @@ import calculateUtmDistance from '../Functions/calculateUtmDistance';
  * @returns {Object} Google Maps Icon object.
  */
 export const createMarkerIcon = (markerInfo) => {
-    const defaultIcon = ''; // Default icon URL
+    const defaultIcon = ""; // Default icon URL
 
     // Construct the impedimentIcon
     const impedimentIcon = {
-        url: markerInfo.impediment_icon && markerInfo.impediment_icon.icon
-             ? markerInfo.impediment_icon.icon
-             : defaultIcon,
+        url:
+            markerInfo.impediment_icon && markerInfo.impediment_icon.icon
+                ? markerInfo.impediment_icon.icon
+                : defaultIcon,
         scaledSize: new window.google.maps.Size(40, 40),
         labelOrigin: new window.google.maps.Point(100, 20),
         labelAnchor: new window.google.maps.Point(100, 20),
     };
 
     // Use the impedimentIcon if it has a valid URL, otherwise fallback to config_icon or default
-    return impedimentIcon.url !== defaultIcon ? impedimentIcon : {
-        url: markerInfo.config_icon && markerInfo.config_icon.icon
-             ? markerInfo.config_icon.icon
-             : defaultIcon,
-        scaledSize: markerInfo.type === 0
-            ? new google.maps.Size(40, 40)
-            : new google.maps.Size(80, 80), // Can be dynamic based on markerInfo
-        labelOrigin: new window.google.maps.Point(100, 20),
-    };
+    return impedimentIcon.url !== defaultIcon
+        ? impedimentIcon
+        : {
+              url:
+                  markerInfo.config_icon && markerInfo.config_icon.icon
+                      ? markerInfo.config_icon.icon
+                      : defaultIcon,
+              scaledSize:
+                  markerInfo.type === 0
+                      ? new google.maps.Size(40, 40)
+                      : new google.maps.Size(80, 80), // Can be dynamic based on markerInfo
+              labelOrigin: new window.google.maps.Point(100, 20),
+          };
 };
 
 /**
@@ -39,7 +44,6 @@ export const createMarkerIcon = (markerInfo) => {
  * @returns {Object} Google Maps Marker Label object.
  */
 export const createMarkerLabel = (markerInfo) => {
-
     const labelColor = localStorage.getItem("currentLabelMapColor")
         ? localStorage.getItem("currentLabelMapColor")
         : "white";
@@ -47,8 +51,8 @@ export const createMarkerLabel = (markerInfo) => {
     return {
         text: markerInfo.label.text,
         color: labelColor, // can be dynamic based on markerInfo
-        fontSize: '12px',
-        fontWeight: 'bold',
+        fontSize: "12px",
+        fontWeight: "bold",
     };
 };
 
@@ -58,7 +62,7 @@ export const createMarkerLabel = (markerInfo) => {
  * @returns {string} HTML content for the CustomOverlay.
  */
 const prepareOverlayContent = (markerInfo) => {
-    let iconsHTML = '';
+    let iconsHTML = "";
 
     if (markerInfo.iconsbarImpediment) {
         iconsHTML = '<div class="icons-bar">';
@@ -68,14 +72,14 @@ const prepareOverlayContent = (markerInfo) => {
                 <div class="icon-date">${impediment.impedimentType}</div>
             </div>`;
         });
-        iconsHTML += '</div>';
+        iconsHTML += "</div>";
     } else if (markerInfo.iconsbarActivity) {
         iconsHTML = '<div class="icons-bar">';
         markerInfo.iconsbarActivity.forEach((activity) => {
-            let additionalInfo = '';
+            let additionalInfo = "";
             if (activity.type === 1) {
                 const personalAvc = activity.avc.toLocaleString(undefined, {
-                    style: 'percent',
+                    style: "percent",
                     minimumFractionDigits: 2,
                 });
                 additionalInfo = `<br>${personalAvc}`;
@@ -85,12 +89,11 @@ const prepareOverlayContent = (markerInfo) => {
                 <div class="icon-date">${activity.date}${additionalInfo}</div>
             </div>`;
         });
-        iconsHTML += '</div>';
+        iconsHTML += "</div>";
     }
 
     return iconsHTML;
 };
-
 
 /**
  * Prepares the content for the InfoWindow.
@@ -98,32 +101,33 @@ const prepareOverlayContent = (markerInfo) => {
  * @returns {string} HTML content for the InfoWindow.
  */
 const prepareInfoWindowContent = (markerInfo) => {
-    let infoWindowContent = '';
+    let infoWindowContent = "";
 
     // adding last activity information
-    const lastActivity = markerInfo.config_icon && markerInfo.config_icon.activitie
-        ? `<br><b>Última Atividade:</b> ${markerInfo.config_icon.activitie}`
-        : '';
+    const lastActivity =
+        markerInfo.config_icon && markerInfo.config_icon.activitie
+            ? `<br><b>Última Atividade:</b> ${markerInfo.config_icon.activitie}`
+            : "";
 
     // adding impediment information
-    let impedimentosInfo = '';
+    let impedimentosInfo = "";
     if (markerInfo.Impediments && markerInfo.Impediments.length > 0) {
-        impedimentosInfo = '<br><b>Impedimentos:</b>';
+        impedimentosInfo = "<br><b>Impedimentos:</b>";
         markerInfo.Impediments.forEach((impedimento) => {
             impedimentosInfo += `<br>- ${impedimento.ImpedimentType}: ${impedimento.Status}`;
         });
     }
 
-    let receiveStatusInfo = '';
+    let receiveStatusInfo = "";
 
-    if(markerInfo.type == 0){
+    if (markerInfo.type == 0) {
         // adding solicitation and receive status
-        receiveStatusInfo = '<br><b>Solicitação de Compra Estrutura:</b>';
-        if (markerInfo.SolicitationDate !== '')
+        receiveStatusInfo = "<br><b>Solicitação de Compra Estrutura:</b>";
+        if (markerInfo.SolicitationDate !== "")
             receiveStatusInfo += `<br>- Solicitado em: ${markerInfo.SolicitationDate}`;
-        if (markerInfo.ReceiveDate !== '')
+        if (markerInfo.ReceiveDate !== "")
             receiveStatusInfo += `<br>- Recebida em: ${markerInfo.ReceiveDate}`;
-        if (markerInfo.PreviousReceiveDate !== '')
+        if (markerInfo.PreviousReceiveDate !== "")
             receiveStatusInfo += `<br>- Previsão de entrega: ${markerInfo.PreviousReceiveDate}`;
         receiveStatusInfo += `<br>- Status: ${markerInfo.ReceiveStatus}`;
     }
@@ -136,7 +140,13 @@ const prepareInfoWindowContent = (markerInfo) => {
 /**
  * Sets up event listeners for the marker.
  */
-const setupMarkerEventListeners = (marker, customOverlay, infowindow, map, markerInfo) => {
+const setupMarkerEventListeners = (
+    marker,
+    customOverlay,
+    infowindow,
+    map,
+    markerInfo,
+) => {
     marker.addListener("mouseover", function () {
         customOverlay.div.style.display = "block";
         infowindow.setContent(prepareInfoWindowContent(markerInfo));
@@ -147,8 +157,6 @@ const setupMarkerEventListeners = (marker, customOverlay, infowindow, map, marke
         infowindow.close();
         customOverlay.div.style.display = "none";
     });
-
-
 };
 
 /**
@@ -166,14 +174,22 @@ export const createMarker = (map, markerInfo, CustomOverlay) => {
         icon: icon,
         label: label,
         draggable: markerInfo.draggable || false,
-        title: markerInfo.title || '',
+        title: markerInfo.title || "",
     });
 
     const iconsHTML = prepareOverlayContent(markerInfo);
     const customOverlay = new CustomOverlay(marker, iconsHTML, map);
-    const infowindow = new window.google.maps.InfoWindow({ disableAutoPan: true });
+    const infowindow = new window.google.maps.InfoWindow({
+        disableAutoPan: true,
+    });
 
-    setupMarkerEventListeners(marker, customOverlay, infowindow, map, markerInfo);
+    setupMarkerEventListeners(
+        marker,
+        customOverlay,
+        infowindow,
+        map,
+        markerInfo,
+    );
     return marker;
 };
 
@@ -184,8 +200,12 @@ export const createMarker = (map, markerInfo, CustomOverlay) => {
  * @returns {Object} The created Google Maps Polyline object.
  */
 export const createPolyline = (markerData, map) => {
-    const filteredMarkerData = markerData.filter(markerInfo => markerInfo.type === 0);
-    const polylinePath = filteredMarkerData.map(markerInfo => markerInfo.position);
+    const filteredMarkerData = markerData.filter(
+        (markerInfo) => markerInfo.type === 0,
+    );
+    const polylinePath = filteredMarkerData.map(
+        (markerInfo) => markerInfo.position,
+    );
 
     const polyline = new window.google.maps.Polyline({
         path: polylinePath,
@@ -200,26 +220,23 @@ export const createPolyline = (markerData, map) => {
 };
 
 export const createMapChange = (map) => {
-    map.addListener(
-        "maptypeid_changed",
-        function () {
-            var currentMapType = map.getMapTypeId();
+    map.addListener("maptypeid_changed", function () {
+        var currentMapType = map.getMapTypeId();
 
-            if (currentMapType === "hybrid") {
-                localStorage.setItem("currentLabelMapColor", "white");
-                localStorage.setItem("mapType", currentMapType);
-            } else if (currentMapType === "satellite") {
-                localStorage.setItem("currentLabelMapColor", "white");
-                localStorage.setItem("mapType", currentMapType);
-            } else {
-                localStorage.setItem("currentLabelMapColor", "black");
-                localStorage.setItem("mapType", currentMapType);
-            }
-
-            window.location.reload();
+        if (currentMapType === "hybrid") {
+            localStorage.setItem("currentLabelMapColor", "white");
+            localStorage.setItem("mapType", currentMapType);
+        } else if (currentMapType === "satellite") {
+            localStorage.setItem("currentLabelMapColor", "white");
+            localStorage.setItem("mapType", currentMapType);
+        } else {
+            localStorage.setItem("currentLabelMapColor", "black");
+            localStorage.setItem("mapType", currentMapType);
         }
-    );
-}
+
+        window.location.reload();
+    });
+};
 
 export const createMouseMoveEvent = (map, callback) => {
     map.addListener("mousemove", (event) => {
@@ -274,10 +291,9 @@ export const createMouseMoveEvent = (map, callback) => {
             tooltipPosition,
             latestCoordinateSaved,
             currentCoordinateSaved,
-            distance
+            distance,
         };
 
         callback(eventData); // Call the provided callback function with the data
     });
-}
-
+};

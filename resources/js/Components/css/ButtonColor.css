@@ -1,0 +1,12 @@
+/* App.css ou outro arquivo de estilo */
+.pink-button {
+    background-color: #d63384; /* Um rosa mais escuro */
+    border-color: #d63384;
+    color: white;
+}
+
+.pink-button:hover,
+.pink-button:focus {
+    background-color: #c71585; /* Um tom um pouco mais claro para o hover */
+    border-color: #c71585;
+}

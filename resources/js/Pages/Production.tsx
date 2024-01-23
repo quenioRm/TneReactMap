@@ -16,7 +16,7 @@ import {
 import ProductionTable from "../Components/ProductionComponents/ProductionTable";
 import ProductionTableDailyTable from "../Components/ProductionComponents/ProductionTableDailyTable";
 import TowerStatusChart from "../Components/ProductionComponents/TowerStatusChart";
-import ImpedimentsGraph from '../Components/ProductionComponents/ImpedimentsGraph';
+import ImpedimentsGraph from "../Components/ProductionComponents/ImpedimentsGraph";
 
 export default function Production({ auth }: PageProps) {
     const [activeTab, setActiveTab] = useState("info");
@@ -53,7 +53,7 @@ export default function Production({ auth }: PageProps) {
                     <TowerStatusChart />
                 </Tab>
                 <Tab eventKey="towerimpediments" title="Impedimentos">
-                    <ImpedimentsGraph/>
+                    <ImpedimentsGraph />
                 </Tab>
             </Tabs>
         </AuthenticatedLayout>

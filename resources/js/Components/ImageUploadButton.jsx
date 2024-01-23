@@ -42,7 +42,7 @@ const ImageUploadButton = ({ onUpload }) => {
             <Button variant="primary" onClick={handleUploadClick}>
                 Enviar Imagens
             </Button>
-            
+
             {uploadProgress > 0 && (
                 <div className="mt-2">
                     <ProgressBar

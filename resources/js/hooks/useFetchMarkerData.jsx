@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 // import axios from 'axios';
-import axios from '../Components/axiosInstance';
+import axios from "../Components/axiosInstance";
 
 /**
  * Custom hook to fetch marker data from an API.
@@ -12,7 +12,10 @@ const useFetchMarkerData = () => {
     const [firstCalledLatLng, setFirstCalledLatLng] = useState({});
     const [latestCalledLatLng, setLastestCalledLatLng] = useState({});
     const [error, setError] = useState(null);
-    const [mapConfig, setMapConfig] = useState({center: { lat: 0, lng: 0 }, zoom: 15,});
+    const [mapConfig, setMapConfig] = useState({
+        center: { lat: 0, lng: 0 },
+        zoom: 15,
+    });
 
     const mapType = localStorage.getItem("mapType")
         ? localStorage.getItem("mapType")
@@ -65,15 +68,18 @@ const useFetchMarkerData = () => {
                 lng: latestItem.position.lng,
             });
 
-            setMapConfig(
-                    {center: { lat: response.data[0].position.lat, lng: response.data[0].position.lng },
-                     zoom: 15,
-                     gestureHandling: "greedy",
-                     mapTypeId:
-                     mapType === "hybrid"
-                         ? google.maps.MapTypeId.SATELLITE
-                         : google.maps.MapTypeId.ROADMAP,
-                    })
+            setMapConfig({
+                center: {
+                    lat: response.data[0].position.lat,
+                    lng: response.data[0].position.lng,
+                },
+                zoom: 15,
+                gestureHandling: "greedy",
+                mapTypeId:
+                    mapType === "hybrid"
+                        ? google.maps.MapTypeId.SATELLITE
+                        : google.maps.MapTypeId.ROADMAP,
+            });
 
             setMarkerData(response.data);
         } catch (err) {
@@ -86,7 +92,15 @@ const useFetchMarkerData = () => {
         fetchAllMarkerData();
     }, []);
 
-    return { markerData, latestCalledCoordinate, currentCalledLatLng, firstCalledLatLng, latestCalledLatLng, mapConfig, error };
+    return {
+        markerData,
+        latestCalledCoordinate,
+        currentCalledLatLng,
+        firstCalledLatLng,
+        latestCalledLatLng,
+        mapConfig,
+        error,
+    };
 };
 
 export default useFetchMarkerData;

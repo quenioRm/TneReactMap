@@ -16,11 +16,15 @@ const MarkerImportPersonalProduction = ({ show, onHide }) => {
     const handleImportTowers = async (formData) => {
         setImporting(true); // Set the importing state to true when starting the import
         try {
-            const response = await axios.post("/api/personalmarkersactivity/import", formData, {
-                headers: {
-                    // Add necessary headers, such as authorization headers
+            const response = await axios.post(
+                "/api/personalmarkersactivity/import",
+                formData,
+                {
+                    headers: {
+                        // Add necessary headers, such as authorization headers
+                    },
                 },
-            });
+            );
 
             if (response.status === 200) {
                 toast.success("Produções importadas com sucesso!");
@@ -88,9 +92,7 @@ const MarkerImportPersonalProduction = ({ show, onHide }) => {
                         controlId="formFile"
                         style={{ marginBottom: "15px" }}
                     >
-                        <Form.Label>
-                            Selecione o arquivo de produção
-                        </Form.Label>
+                        <Form.Label>Selecione o arquivo de produção</Form.Label>
                         <Form.Control type="file" onChange={handleFileChange} />
                     </Form.Group>
                 </Form>

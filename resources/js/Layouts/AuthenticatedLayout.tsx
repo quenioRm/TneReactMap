@@ -15,10 +15,10 @@ export default function Authenticated({
         useState(false);
 
     useEffect(() => {
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('roles', JSON.stringify(user.rolesuser));
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("roles", JSON.stringify(user.rolesuser));
         // localStorage.setItem('authToken', JSON.stringify(user.api_token));
-    },[user])
+    }, [user]);
 
     return (
         <div className="min-h-screen bg-gray-100">

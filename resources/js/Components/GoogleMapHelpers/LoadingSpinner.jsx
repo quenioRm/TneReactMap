@@ -1,6 +1,6 @@
-import React from 'react';
-import { Spinner } from 'react-bootstrap';
-import '../css/MapSpinner.css';
+import React from "react";
+import { Spinner } from "react-bootstrap";
+import "../css/MapSpinner.css";
 
 const LoadingSpinner = () => {
     return (

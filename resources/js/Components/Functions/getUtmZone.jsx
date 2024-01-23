@@ -3,12 +3,7 @@ function getUtmZone(latitude, longitude) {
     let zone = Math.floor((longitude + 180) / 6) + 1;
 
     // Special zones for Svalbard and Norway
-    if (
-        latitude >= 56 &&
-        latitude < 64 &&
-        longitude >= 3 &&
-        longitude < 12
-    ) {
+    if (latitude >= 56 && latitude < 64 && longitude >= 3 && longitude < 12) {
         zone = 32; // Special zone for Norway
     } else if (latitude >= 72 && latitude < 84) {
         if (longitude >= 0 && longitude < 9) {

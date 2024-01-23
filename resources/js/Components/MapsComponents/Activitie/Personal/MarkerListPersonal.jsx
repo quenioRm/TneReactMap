@@ -1,10 +1,17 @@
 // Import React, useState, and the required Bootstrap components
 import React, { useState } from "react";
 import { Table, Button, Pagination, Spinner } from "react-bootstrap";
-import GaleryImagesFromPersonal from '../../../../Components/GaleryImagesFromPersonal';
+import GaleryImagesFromPersonal from "../../../../Components/GaleryImagesFromPersonal";
 
 // Define the MarkerListPersonal component
-const MarkerListPersonal = ({ markers, onEdit, onDelete, permission, production, markerInfo }) => {
+const MarkerListPersonal = ({
+    markers,
+    onEdit,
+    onDelete,
+    permission,
+    production,
+    markerInfo,
+}) => {
     // Set the number of items per page
     const itemsPerPage = 5;
     // Initialize the currentPage state
@@ -21,47 +28,47 @@ const MarkerListPersonal = ({ markers, onEdit, onDelete, permission, production,
 
     const [loading, setLoading] = useState(true);
 
-    const findProductionItem = (activity) => { // Define findProductionItem as a function
+    const findProductionItem = (activity) => {
+        // Define findProductionItem as a function
         // console.log(production)
         const foundItem = production.find((item) => item.activity === activity);
         if (foundItem) {
-          return foundItem;
+            return foundItem;
         } else {
-          return null;
+            return null;
         }
     };
 
-    const  calcPercentage = (a,b) => {
+    const calcPercentage = (a, b) => {
         const percentage = a / b;
         return percentage.toLocaleString(undefined, {
             style: "percent",
             minimumFractionDigits: 2,
         });
-    }
+    };
 
     setTimeout(() => {
         setLoading(false);
     }, 2000);
 
     const calcDiferente = (a, b) => {
-        if(a>b){
+        if (a > b) {
             return a - b;
         }
         return 0;
-    }
+    };
 
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [selectedAcitivity, setSelectedAcitivity] = useState({});
 
     const handleShowModalUpload = (activity) => {
-        setSelectedAcitivity(activity)
+        setSelectedAcitivity(activity);
         setShowUploadModal(true);
     };
 
     const handleCloseModalUpload = () => {
         setShowUploadModal(false);
     };
-
 
     // Return the JSX for the MarkerListPersonal component
     return (
@@ -101,33 +108,54 @@ const MarkerListPersonal = ({ markers, onEdit, onDelete, permission, production,
                                         />
                                     </td>
                                     <td>{marker.previouscount}</td>
-                                    <td>{findProductionItem(marker.activity)?.count ?? 0}</td>
-                                    <td>{calcDiferente(marker.previouscount, findProductionItem(marker.activity)?.count ?? 0)}</td>
-                                    <td>{calcPercentage(findProductionItem(marker.activity)?.count ?? 0, marker.previouscount)}</td>
                                     <td>
-                                    <Button variant="primary" onClick={() => handleShowModalUpload(marker)} >
-                                               Ver / Anexar Imagem
-                                            </Button>
-                                    {permission && (
-
-                                        <>
-                                                                                    <Button
-                                                variant="info"
-                                                className="mr-2"
-                                                onClick={() => onEdit(marker)}
-                                            >
-                                                Editar
-                                            </Button>
-                                            <Button
-                                                variant="danger"
-                                                onClick={() => onDelete(marker.id)}
-                                            >
-                                                Deletar
-                                            </Button>
-                                        </>
-
-
-                                    )}
+                                        {findProductionItem(marker.activity)
+                                            ?.count ?? 0}
+                                    </td>
+                                    <td>
+                                        {calcDiferente(
+                                            marker.previouscount,
+                                            findProductionItem(marker.activity)
+                                                ?.count ?? 0,
+                                        )}
+                                    </td>
+                                    <td>
+                                        {calcPercentage(
+                                            findProductionItem(marker.activity)
+                                                ?.count ?? 0,
+                                            marker.previouscount,
+                                        )}
+                                    </td>
+                                    <td>
+                                        <Button
+                                            variant="primary"
+                                            onClick={() =>
+                                                handleShowModalUpload(marker)
+                                            }
+                                        >
+                                            Ver / Anexar Imagem
+                                        </Button>
+                                        {permission && (
+                                            <>
+                                                <Button
+                                                    variant="info"
+                                                    className="mr-2"
+                                                    onClick={() =>
+                                                        onEdit(marker)
+                                                    }
+                                                >
+                                                    Editar
+                                                </Button>
+                                                <Button
+                                                    variant="danger"
+                                                    onClick={() =>
+                                                        onDelete(marker.id)
+                                                    }
+                                                >
+                                                    Deletar
+                                                </Button>
+                                            </>
+                                        )}
                                     </td>
                                 </tr>
                             ))}
@@ -148,11 +176,14 @@ const MarkerListPersonal = ({ markers, onEdit, onDelete, permission, production,
                     </Pagination>
                 </>
             )}
-            <GaleryImagesFromPersonal markerInfo={markerInfo} towerProduction={selectedAcitivity} show={showUploadModal}
-             onClose={handleCloseModalUpload}/>
+            <GaleryImagesFromPersonal
+                markerInfo={markerInfo}
+                towerProduction={selectedAcitivity}
+                show={showUploadModal}
+                onClose={handleCloseModalUpload}
+            />
         </>
     );
-
 };
 
 // Export the MarkerListPersonal component

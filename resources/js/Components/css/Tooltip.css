@@ -2,25 +2,29 @@
 .tooltip-enter {
     opacity: 0;
     transform: translateY(-10px);
-  }
-  .tooltip-enter-active {
+}
+.tooltip-enter-active {
     opacity: 1;
     transform: translateY(0);
-    transition: opacity 300ms, transform 300ms;
-  }
-  /* Classes para a animação de saída */
-  .tooltip-exit {
+    transition:
+        opacity 300ms,
+        transform 300ms;
+}
+/* Classes para a animação de saída */
+.tooltip-exit {
     opacity: 1;
     transform: translateY(0);
-  }
-  .tooltip-exit-active {
+}
+.tooltip-exit-active {
     opacity: 0;
     transform: translateY(-10px);
-    transition: opacity 300ms, transform 300ms;
-  }
+    transition:
+        opacity 300ms,
+        transform 300ms;
+}
 
-  /* Estilos para o conteúdo do tooltip */
-  .tooltip-content {
+/* Estilos para o conteúdo do tooltip */
+.tooltip-content {
     position: absolute;
     background: rgba(0, 0, 0, 0.8);
     color: white;
@@ -28,19 +32,19 @@
     border-radius: 4px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
     z-index: 1000;
-  }
+}
 
-  .tooltip-explode {
+.tooltip-explode {
     animation: explode 0.5s ease-out;
-  }
+}
 
-  @keyframes explode {
+@keyframes explode {
     0% {
-      transform: scale(1);
-      opacity: 1;
+        transform: scale(1);
+        opacity: 1;
     }
     100% {
-      transform: scale(2);
-      opacity: 0;
+        transform: scale(2);
+        opacity: 0;
     }
-  }
+}

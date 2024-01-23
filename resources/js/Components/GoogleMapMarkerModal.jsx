@@ -17,7 +17,7 @@ import axios from "../Components/axiosInstance";
 import ImageUploadButton from "./ImageUploadButton";
 import "../Components/css/uploadImages.css";
 import Swal from "sweetalert2";
-import GaleryImagesFromTower from '../Components/GaleryImagesFromTower';
+import GaleryImagesFromTower from "../Components/GaleryImagesFromTower";
 
 const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     const [towerImages, setTowerImages] = useState([]);
@@ -95,13 +95,13 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     );
 
     const handleShowModal = (activity) => {
-        setSelectedAcitivity(activity)
+        setSelectedAcitivity(activity);
         setShowModal(true);
-    }
+    };
 
     const handleCloseModal = () => {
         setShowModal(false);
-    }
+    };
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -157,7 +157,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                             // Verifique se a imagem atual não existe mais na lista
                             if (currentImageIndex >= updatedImages.length) {
                                 setCurrentImageIndex(
-                                    Math.max(updatedImages.length - 1, 0)
+                                    Math.max(updatedImages.length - 1, 0),
                                 );
                             }
                         } else {
@@ -325,9 +325,17 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                                         </td>
                                                         <td>{tower.date}</td>
                                                         <td>
-                                                        <Button variant="primary" onClick={() => handleShowModal(tower)} >
-                                                            Ver / Anexar Imagem
-                                                        </Button>
+                                                            <Button
+                                                                variant="primary"
+                                                                onClick={() =>
+                                                                    handleShowModal(
+                                                                        tower,
+                                                                    )
+                                                                }
+                                                            >
+                                                                Ver / Anexar
+                                                                Imagem
+                                                            </Button>
                                                         </td>
                                                     </tr>
                                                 ),
@@ -408,7 +416,12 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                     </div>
                 ) : null}
             </Modal.Body>
-            <GaleryImagesFromTower markerInfo={markerInfo} towerProduction={selectedAcitivity} show={showModal} onClose={handleCloseModal}/>
+            <GaleryImagesFromTower
+                markerInfo={markerInfo}
+                towerProduction={selectedAcitivity}
+                show={showModal}
+                onClose={handleCloseModal}
+            />
             <Modal.Footer>{/* ... (Footer content) */}</Modal.Footer>
         </Modal>
     );

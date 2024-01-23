@@ -7,9 +7,9 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "../../../axiosInstance";
 import getFirstErrorMessage from "../../../processLaravelErrors";
 import Swal from "sweetalert2";
-import MarkerImportPersonalProduction from './MarkerImportPersonalProduction';
+import MarkerImportPersonalProduction from "./MarkerImportPersonalProduction";
 
-const MarkerManagerPersonal = ({ show, onHide , permission, markerInfo }) => {
+const MarkerManagerPersonal = ({ show, onHide, permission, markerInfo }) => {
     const [editedMarker, setEditedMarker] = useState(null);
     const [markers, setMarkers] = useState([]);
     const [configModalShow, setConfigModalShow] = useState(false);
@@ -20,33 +20,38 @@ const MarkerManagerPersonal = ({ show, onHide , permission, markerInfo }) => {
     useEffect(() => {
         // Function to fetch markers from the API
         const fetchMarkers = async () => {
-          try {
-            if (markerInfo?.label?.id) { // Check if markerInfo and label exist before accessing id
-              const response = await axios.get(`/api/personalmarkersactivity/getallbymarker/${markerInfo.label.id}`);
-              const data = response.data;
-              setMarkers(data);
+            try {
+                if (markerInfo?.label?.id) {
+                    // Check if markerInfo and label exist before accessing id
+                    const response = await axios.get(
+                        `/api/personalmarkersactivity/getallbymarker/${markerInfo.label.id}`,
+                    );
+                    const data = response.data;
+                    setMarkers(data);
+                }
+            } catch (error) {
+                console.error("Error fetching markers:", error);
             }
-          } catch (error) {
-            console.error("Error fetching markers:", error);
-          }
         };
 
         const fetchMarkersProduction = async () => {
-          try {
-            if (markerInfo?.name) { // Check if markerInfo and name exist before making the request
-              const response = await axios.get(`/api/personalmarkersactivity/getAllproductionsbymarker/${markerInfo.name}`);
-              const data = response.data;
-              setMarkersProduction(data);
+            try {
+                if (markerInfo?.name) {
+                    // Check if markerInfo and name exist before making the request
+                    const response = await axios.get(
+                        `/api/personalmarkersactivity/getAllproductionsbymarker/${markerInfo.name}`,
+                    );
+                    const data = response.data;
+                    setMarkersProduction(data);
+                }
+            } catch (error) {
+                console.error("Error fetching markers:", error);
             }
-          } catch (error) {
-            console.error("Error fetching markers:", error);
-          }
         };
 
         fetchMarkers();
         fetchMarkersProduction();
-      }, [markerInfo]);
-
+    }, [markerInfo]);
 
     const handleShowModal = (marker) => {
         setEditedMarker(marker);
@@ -215,53 +220,54 @@ const MarkerManagerPersonal = ({ show, onHide , permission, markerInfo }) => {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body> */}
-                <br />
-                    <Container>
-                        {permission && (
-                        <Row className="mb-3">
-                            <Col className="col-3 col-span-2">
-                                <Button
-                                    variant="primary"
-                                    onClick={() => handleShowModal(null)}
-                                >
-                                    Adicionar Marcador
-                                </Button>
-                            </Col>
-                            <Col>
-                                <Button
-                                    variant="primary"
-                                    onClick={() => handleShowModalImport()}
-                                >
-                                    Importar Produção
-                                </Button>
-                            </Col>
-                        </Row>
-                        )}
-                        <Row>
-                            <Col>
-                                <MarkerList
-                                    markers={markers}
-                                    onEdit={handleShowModal}
-                                    onDelete={handleDeleteMarker}
-                                    permission={permission}
-                                    production={markersProduction}
-                                    markerInfo={markerInfo}
-                                />
-                            </Col>
-                        </Row>
-                    </Container>
-                    <MarkerConfigModalPersonal
-                        show={configModalShow}
-                        onHide={handleCloseModal}
-                        onSave={handleSaveMarker}
-                        onUpdate={handleUpdateMarker}
-                        editedMarker={editedMarker}
-                        errors={errors}
-                    />
-                    <MarkerImportPersonalProduction
-                        show={importModalShow}
-                        onHide={handleCloseModalImport}/>
-                {/* </Modal.Body>
+            <br />
+            <Container>
+                {permission && (
+                    <Row className="mb-3">
+                        <Col className="col-3 col-span-2">
+                            <Button
+                                variant="primary"
+                                onClick={() => handleShowModal(null)}
+                            >
+                                Adicionar Marcador
+                            </Button>
+                        </Col>
+                        <Col>
+                            <Button
+                                variant="primary"
+                                onClick={() => handleShowModalImport()}
+                            >
+                                Importar Produção
+                            </Button>
+                        </Col>
+                    </Row>
+                )}
+                <Row>
+                    <Col>
+                        <MarkerList
+                            markers={markers}
+                            onEdit={handleShowModal}
+                            onDelete={handleDeleteMarker}
+                            permission={permission}
+                            production={markersProduction}
+                            markerInfo={markerInfo}
+                        />
+                    </Col>
+                </Row>
+            </Container>
+            <MarkerConfigModalPersonal
+                show={configModalShow}
+                onHide={handleCloseModal}
+                onSave={handleSaveMarker}
+                onUpdate={handleUpdateMarker}
+                editedMarker={editedMarker}
+                errors={errors}
+            />
+            <MarkerImportPersonalProduction
+                show={importModalShow}
+                onHide={handleCloseModalImport}
+            />
+            {/* </Modal.Body>
                 <ToastContainer />
             </Modal> */}
         </>

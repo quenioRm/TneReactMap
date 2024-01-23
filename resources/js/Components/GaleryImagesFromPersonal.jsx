@@ -18,7 +18,12 @@ import ImageUploadButton from "./ImageUploadButton";
 import "../Components/css/uploadImages.css";
 import Swal from "sweetalert2";
 
-const GaleryImagesFromPersonal = ({ markerInfo, towerProduction, show, onClose }) => {
+const GaleryImagesFromPersonal = ({
+    markerInfo,
+    towerProduction,
+    show,
+    onClose,
+}) => {
     const [towerImages, setTowerImages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -45,7 +50,6 @@ const GaleryImagesFromPersonal = ({ markerInfo, towerProduction, show, onClose }
         original: image,
         thumbnail: image,
     }));
-
 
     const handleImageUpload = async (files) => {
         try {
@@ -100,7 +104,7 @@ const GaleryImagesFromPersonal = ({ markerInfo, towerProduction, show, onClose }
                             // Verifique se a imagem atual não existe mais na lista
                             if (currentImageIndex >= updatedImages.length) {
                                 setCurrentImageIndex(
-                                    Math.max(updatedImages.length - 1, 0)
+                                    Math.max(updatedImages.length - 1, 0),
                                 );
                             }
                         } else {
@@ -135,7 +139,7 @@ const GaleryImagesFromPersonal = ({ markerInfo, towerProduction, show, onClose }
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                    <div>
+                <div>
                     {loading ? (
                         <p>Loading tower images...</p>
                     ) : (
@@ -145,16 +149,12 @@ const GaleryImagesFromPersonal = ({ markerInfo, towerProduction, show, onClose }
                                     <Gallery
                                         items={images}
                                         onSlide={(currentIndex) =>
-                                            setCurrentImageIndex(
-                                                currentIndex,
-                                            )
+                                            setCurrentImageIndex(currentIndex)
                                         }
                                     />
                                     <div>
                                         <button
-                                            onClick={
-                                                handleImageDelete
-                                            }
+                                            onClick={handleImageDelete}
                                             className="btn btn-danger"
                                             style={{
                                                 marginTop: "10px",
@@ -172,16 +172,14 @@ const GaleryImagesFromPersonal = ({ markerInfo, towerProduction, show, onClose }
                                 <Row>
                                     <Col className="text-right">
                                         <ImageUploadButton
-                                            onUpload={
-                                                handleImageUpload
-                                            }
+                                            onUpload={handleImageUpload}
                                         />
                                     </Col>
                                 </Row>
                             </Container>
                         </>
                     )}
-                    </div>
+                </div>
             </Modal.Body>
             <Modal.Footer>{/* ... (Footer content) */}</Modal.Footer>
         </Modal>
