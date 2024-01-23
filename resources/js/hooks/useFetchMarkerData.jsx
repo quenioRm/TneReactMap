@@ -47,6 +47,19 @@ const useFetchMarkerData = () => {
             const response = await axios.get("/api/get-coordinates");
             const latestItem = response.data[response.data.length - 1];
 
+            setMapConfig({
+                center: {
+                    lat: response.data[0].position.lat,
+                    lng: response.data[0].position.lng,
+                },
+                zoom: 15,
+                gestureHandling: "greedy",
+                mapTypeId:
+                    mapType === "hybrid"
+                        ? google.maps.MapTypeId.SATELLITE
+                        : google.maps.MapTypeId.ROADMAP,
+            });
+
             setLastestCalledCoordinate({
                 x: parseFloat(latestItem.position.utmx),
                 y: parseFloat(latestItem.position.utmy),
@@ -66,19 +79,6 @@ const useFetchMarkerData = () => {
             setLastestCalledLatLng({
                 lat: latestItem.position.lat,
                 lng: latestItem.position.lng,
-            });
-
-            setMapConfig({
-                center: {
-                    lat: response.data[0].position.lat,
-                    lng: response.data[0].position.lng,
-                },
-                zoom: 15,
-                gestureHandling: "greedy",
-                mapTypeId:
-                    mapType === "hybrid"
-                        ? google.maps.MapTypeId.SATELLITE
-                        : google.maps.MapTypeId.ROADMAP,
             });
 
             setMarkerData(response.data);

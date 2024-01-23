@@ -4,6 +4,7 @@ import { PageProps } from "@/types";
 import GoogleMap from "../Components/GoogleMapMain";
 import useFetchMarkerData from "../hooks/useFetchMarkerData";
 import DashboardHeader from "./DashboardHeader";
+import useFecthFirstMarkerData from "../hooks/useFecthFirstMarkerData";
 
 export default function Dashboard({ auth }: PageProps) {
     const {
@@ -15,6 +16,7 @@ export default function Dashboard({ auth }: PageProps) {
         mapConfig,
         error,
     } = useFetchMarkerData();
+
     return (
         <AuthenticatedLayout
             user={auth.user}

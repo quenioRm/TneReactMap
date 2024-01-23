@@ -139,9 +139,10 @@ class MapsController extends Controller
                             'towerId' => $changedTowerId,
                             'project' => $markerData['ProjectName'],
                             'oringalNumber' => $markerData['Number'],
-                            'originalName' => $markerData['Name']
+                            'originalName' => $markerData['Name'],
+                            'id' => $markerData['id']
                         ],
-                        'avc' => TowerActivity::CaclPercentageIsExecuted($markerData['Number'], $markerData['ProjectName']),
+                        'avc' => 0,
                         'draggable' => false,
                         'config_icon' => Production::getLatestTowerActivityWithIcon($changedTowerId, $markerData['ProjectName']),
                         'impediment_icon' => Production::GetIconFromLatestImpediment($impediments),
