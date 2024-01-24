@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
-// import axios from 'axios';
+import { useState, useEffect, useRef } from "react";
 import axios from "../Components/axiosInstance";
 
 /**
- * Custom hook to fetch marker data from an API.
+ * Custom hook to fetch marker data from an API and retry on failure every 3 seconds.
  */
 const useFetchMarkerData = () => {
     const [markerData, setMarkerData] = useState([]);
@@ -17,33 +16,14 @@ const useFetchMarkerData = () => {
         zoom: 15,
     });
 
-    const mapType = localStorage.getItem("mapType")
-        ? localStorage.getItem("mapType")
-        : "hybrid";
-
-    // useEffect(() => {
-    //     if (navigator.geolocation && markerData.length === 0) {
-    //         navigator.geolocation.getCurrentPosition(
-    //             (position) => {
-    //                 setMapConfig({
-    //                     ...mapConfig,
-    //                     center: {
-    //                         lat: position.coords.latitude,
-    //                         lng: position.coords.longitude,
-    //                     },
-    //                 });
-    //             },
-    //             (error) => {
-    //                 console.error("Error getting location: ", error);
-    //             }
-    //         );
-    //     } else {
-    //         console.log("Geolocation is not supported by this browser.");
-    //     }
-    // }, [markerData]);
+    const retryTimeoutRef = useRef(null);
 
     const fetchAllMarkerData = async () => {
         try {
+            if (retryTimeoutRef.current) {
+                clearTimeout(retryTimeoutRef.current);
+            }
+
             const response = await axios.get("/api/get-coordinates");
             const latestItem = response.data[response.data.length - 1];
 
@@ -74,22 +54,26 @@ const useFetchMarkerData = () => {
                     lng: response.data[0].position.lng,
                 },
                 zoom: 15,
-                gestureHandling: "greedy",
-                mapTypeId:
-                    mapType === "hybrid"
-                        ? google.maps.MapTypeId.SATELLITE
-                        : google.maps.MapTypeId.ROADMAP,
             });
 
             setMarkerData(response.data);
+            clearTimeout(retryTimeoutRef.current);
         } catch (err) {
             setError(err);
             console.error("Error fetching marker data:", err);
+
+            retryTimeoutRef.current = setTimeout(fetchAllMarkerData, 3000);
         }
     };
 
     useEffect(() => {
         fetchAllMarkerData();
+
+        return () => {
+            if (retryTimeoutRef.current) {
+                clearTimeout(retryTimeoutRef.current);
+            }
+        };
     }, []);
 
     return {

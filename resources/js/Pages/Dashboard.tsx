@@ -6,6 +6,7 @@ import useFetchMarkerData from "../hooks/useFetchMarkerData";
 import DashboardHeader from "./DashboardHeader";
 
 export default function Dashboard({ auth }: PageProps) {
+
     const {
         markerData,
         latestCalledCoordinate,
@@ -15,6 +16,7 @@ export default function Dashboard({ auth }: PageProps) {
         mapConfig,
         error,
     } = useFetchMarkerData();
+
     return (
         <AuthenticatedLayout
             user={auth.user}
