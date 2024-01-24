@@ -75,11 +75,10 @@ const GoogleMapMain = ({
         }
     }, [map, markersData, loadingMarkers]);
 
-    useEffect(() => {
-        if (mapConfig.center.lat != 0 && mapConfig.center.lng != 0) {
-            setLoadingMap(false);
-        }
-    }, [mapConfig]);
+useEffect(() => {
+    const isMapConfigInitialized = mapConfig.center.lat !== 0 && mapConfig.center.lng !== 0;
+    setLoadingMap(!isMapConfigInitialized);
+}, [mapConfig]);
 
     useEffect(() => {
         if (mouseEventData) {
