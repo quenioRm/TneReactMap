@@ -45,6 +45,22 @@ axiosInstance.interceptors.response.use(
             }, 10000);
         }
 
+        if (error.response && error.response.status === 401) {
+            
+            Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "Acesso negado. Você não tem permissão para acessar este recurso.",
+                showConfirmButton: false,
+                timer: 10000,
+            });
+
+            setTimeout(() => {
+                localStorage.clear();
+                window.location.href = "/";
+            }, 10000);
+        }
+
         if (error.response && error.response.status === 524) {
             // Lidar com erro 403 aqui
             // console.error("Acesso negado. Você não tem permissão para acessar este recurso.");
