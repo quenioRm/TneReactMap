@@ -17,6 +17,8 @@ import AddMarkerModal from "./MapsComponents/PersonalMarker/AddMarkerModal";
 import PersonalMarkerManager from "./MapsComponents/PersonalMarker/PersonalMarkerManager";
 import MarkerManagerPersonal from "../Components/MapsComponents/Activitie/Personal/MarkerManagerPersonal";
 import RouteCreatorModal from "../Components/GoogleMapHelpers/RouteCreatorModal";
+import FoundationProjectsImportModal from "../Components/TowersComponents/FoundationProjectsImportModal";
+import './css/Floatingbutton.css';
 
 const FloatingButton = ({
     map,
@@ -35,6 +37,8 @@ const FloatingButton = ({
     const [showAddPersonalActivity, setShowAddPersonalActivity] =
         useState(false);
     const [showRouterCreatorModal, setShowRouterCreatorModal] = useState(false);
+    const [hoveredItem, setHoveredItem] = useState(null);
+    const [showFoundationImportModal, setFoundationImportModal] = useState(false);
 
     const handleShowTowerModal = () => {
         setShowTowerModal(true);
@@ -102,6 +106,75 @@ const FloatingButton = ({
         setShowRouterCreatorModal(false);
     };
 
+    const handleShowFoundationImportModal = () => {
+        setFoundationImportModal(true);
+    };
+
+    const handleCloseFoundationImportModal = () => {
+        setFoundationImportModal(false);
+    };
+
+    const createHoverableItem = (itemName, options) => {
+        const [subItemVisible, setSubItemVisible] = useState(false);
+
+        const handleMouseEnter = () => {
+            setHoveredItem(itemName);
+            setSubItemVisible(true);
+        };
+
+        const handleMouseLeave = () => {
+            setHoveredItem(null);
+            setSubItemVisible(false);
+        };
+
+        return (
+            <>
+                <Dropdown.Item
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                >
+                    {itemName}
+                </Dropdown.Item>
+                {subItemVisible && (
+                    <div
+                        className={`submenu ${hoveredItem === itemName ? 'show' : ''}`}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                    >
+                        {options.map(option => (
+                            <Dropdown.Item
+                                key={option.text}
+                                onClick={() => {
+                                    option.handler();
+                                    setSubItemVisible(false);
+                                }}
+                            >
+                                {option.text}
+                            </Dropdown.Item>
+                        ))}
+                    </div>
+                )}
+            </>
+        );
+    };
+
+
+
+
+
+    const importsItems = createHoverableItem('Importações', [
+        { text: 'Importar Estruturas/Produção [LT]', handler: handleShowImportTowerModal },
+        { text: 'Importar Impedimentos Estruturas [LT]', handler: handleShowImportImpedimentTowerModal },
+        { text: 'Importar Projetos Fundação', handler: handleShowFoundationImportModal }
+    ]);
+
+    const markerItems = createHoverableItem('Marcadores', [
+        { text: 'Configurar Marcador - Atividade [LT]', handler: handleShowManager },
+        { text: 'Configurar Marcador - Impedimento [LT]', handler: handleShowManageImpediment },
+        { text: 'Configurar Marcador Personalizado', handler: handleShowAddMarkerModal }
+    ]);
+
+
     return (
         <div>
             <OverlayTrigger
@@ -121,32 +194,34 @@ const FloatingButton = ({
                     <Dropdown.Item onClick={handleShowTowerModal}>
                         Selecionar Torre / Subestação / Outro Ponto
                     </Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item onClick={handleShowManager}>
+                    {/* <Dropdown.Divider /> */}
+                    {/* <Dropdown.Item onClick={handleShowManager}>
                         Configurar Marcador - Atividade [LT]
                     </Dropdown.Item>
                     <Dropdown.Item onClick={handleShowManageImpediment}>
                         Configurar Marcador - Impedimento [LT]
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={handleShowImportTowerModal}>
+                    </Dropdown.Item> */}
+                    {/* <Dropdown.Item onClick={handleShowImportTowerModal}>
                         Importar Estruturas/Produção [LT]
                     </Dropdown.Item>
                     <Dropdown.Item
                         onClick={handleShowImportImpedimentTowerModal}
                     >
                         Importar Impedimentos Estruturas [LT]
-                    </Dropdown.Item>
-                    <Dropdown.Divider />
+                    </Dropdown.Item> */}
+                    {/* <Dropdown.Divider />
                     <Dropdown.Item onClick={handleShowAddMarkerModal}>
                         Adicionar Marcador Personalizado
-                    </Dropdown.Item>
-                    <Dropdown.Divider />
+                    </Dropdown.Item> */}
+                    {/* <Dropdown.Divider /> */}
                     <Dropdown.Item onClick={handleShowRouterCreatorModal}>
                         Criar Rota
                     </Dropdown.Item>
-                    {/* <Dropdown.Item onClick={handleShowAddPersonalActivity}>
-                        Configurar Marcador - Atividade [Personalizados]
-                    </Dropdown.Item> */}
+                    <Dropdown.Divider />
+                    {markerItems}
+                    <Dropdown.Divider />
+                    {importsItems}
+
                 </DropdownButton>
             </OverlayTrigger>
 
@@ -183,6 +258,10 @@ const FloatingButton = ({
                 handleClose={handleCloseRouterCreatorModal}
                 map={map}
                 setDirectionsResponse={setDirectionsResponse}
+            />
+            <FoundationProjectsImportModal
+                show={showFoundationImportModal}
+                onHide={handleCloseFoundationImportModal}
             />
             {/* <MarkerManagerPersonal
                 show={showAddPersonalActivity}

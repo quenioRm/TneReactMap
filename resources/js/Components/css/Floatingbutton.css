@@ -1,0 +1,25 @@
+.submenu-button {
+    background-color: inherit;
+    color: inherit;
+    border: none;
+    font-size: inherit;
+    padding: 0.375rem 1rem;
+    text-align: left;
+    width: 100%;
+  }
+
+  .submenu {
+    display: none;
+    padding-left: 10px;
+  }
+
+  .submenu.show {
+    display: block;
+  }
+
+  .submenu-button:hover {
+    background-color: inherit;
+    color: inherit;
+    border: none;
+    font-size: inherit;
+  }

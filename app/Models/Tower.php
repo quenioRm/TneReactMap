@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
+use App\Models\FoundationProjects;
 
 class Tower extends Model
 {
@@ -26,11 +27,27 @@ class Tower extends Model
         'CoordinateY',
         'CoordinateZ',
         'Zone',
+        'Type',
+        'FoundationMC',
+        'FoundationFoot',
+        'UsefulHeight',
+        'Extension',
+        'HA',
+        'HB',
+        'HC',
+        'HD',
+        'FoundationState',
+        'ElectromechanicalState',
     ];
 
     public static function GetDistance($project, $number)
     {
         return self::where('ProjectName', $project)->where('Number', $number)->value('Distance');
+    }
+
+    public function foundationProjects()
+    {
+        return $this->hasMany(FoundationProjects::class, 'FoundationMC', 'name');
     }
 
     public static function GetUniqueProjects()

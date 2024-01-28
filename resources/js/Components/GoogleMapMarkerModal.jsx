@@ -30,12 +30,14 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const [selectedAcitivity, setSelectedAcitivity] = useState({});
+    const [towerinfo, setTowerinfo] = useState({});
 
     useEffect(() => {
         if (markerInfo) {
             fetchTowerImages();
             fetchTowerProduction();
             fetchTowerAVC();
+            fetchTowerInfo();
         }
     }, [markerInfo]);
 
@@ -70,6 +72,17 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
             setTowerAVC(response.data);
         } catch (error) {
             console.error("Error fetching tower production:", error);
+        }
+    };
+
+    const fetchTowerInfo = async () => {
+        try {
+            const response = await axios.get(
+                `/api/towers/gettowerinfo/${markerInfo.label.towerId}`,
+            );
+            setTowerinfo(response.data);
+        } catch (error) {
+            console.error("Error fetching tower images:", error);
         }
     };
 
@@ -365,6 +378,98 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                 </div>
                             </Tab>
 
+                            <Tab eventKey="foundationProjects" title="Projeto">
+
+                                <br/>
+
+                                <h5>Configuração da estrutura</h5>
+
+                                <Table striped bordered hover>
+                                    <thead>
+                                        <tr>
+                                            <th>Tipo de Estrutura</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{towerinfo.Type}</td>
+                                        </tr>
+                                    </tbody>
+                                </Table>
+
+                                <h5>Configuração da estrutura - Fundação</h5>
+
+                                {towerinfo.foundationProjectMC && (
+                                    <Table striped bordered hover>
+                                    <thead>
+                                    <tr>
+                                        <th>Código/Revisão</th>
+                                        <th>Nome</th>
+                                        <th>Descrição</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>{towerinfo.foundationProjectMC.code +"-"+towerinfo.foundationProjectMC.revision}</td>
+                                        <td>{towerinfo.FoundationMC}</td>
+                                        <td>{towerinfo.foundationProjectMC.description}</td>
+                                        <td>{towerinfo.foundationProjectMC.state}</td>
+                                    </tr>
+                                    </tbody>
+                                </Table>
+                                )}
+
+                                {towerinfo.foundationProjectFoot && (
+
+                                <Table striped bordered hover>
+                                    <thead>
+                                    <tr>
+                                        <th>Código/Revisão</th>
+                                        <th>Nome</th>
+                                        <th>Descrição</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>{towerinfo.foundationProjectFoot.code +"-"+towerinfo.foundationProjectFoot.revision}</td>
+                                        <td>{towerinfo.FoundationFoot}</td>
+                                        <td>{towerinfo.foundationProjectFoot.description}</td>
+                                        <td>{towerinfo.foundationProjectFoot.state}</td>
+                                    </tr>
+                                    </tbody>
+                                </Table>
+                                )}
+
+
+                                <h5>Configuração da estrutura - Eletromecânico</h5>
+
+                                <Table striped bordered hover>
+                                    <thead>
+                                        <tr>
+                                            <th>Altura Útil (m)</th>
+                                            <th>Extensão (m)</th>
+                                            <th>Altura Perna [A] (m)</th>
+                                            <th>Altura Perna [B] (m)</th>
+                                            <th>Altura Perna [C] (m)</th>
+                                            <th>Altura Perna [D] (m)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{towerinfo.UsefulHeight}</td>
+                                            <td>{towerinfo.Extension}</td>
+                                            <td>{towerinfo.HA}</td>
+                                            <td>{towerinfo.HB}</td>
+                                            <td>{towerinfo.HC}</td>
+                                            <td>{towerinfo.HD}</td>
+                                        </tr>
+                                    </tbody>
+                                </Table>
+
+                            </Tab>
+
                             <Tab eventKey="gallery" title="Galeria">
                                 {loading ? (
                                     <p>Loading tower images...</p>
@@ -412,6 +517,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                     </>
                                 )}
                             </Tab>
+
                         </Tabs>
                     </div>
                 ) : null}

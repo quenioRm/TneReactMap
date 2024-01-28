@@ -16,6 +16,7 @@ use DateTimeImmutable;
 use App\Helpers\CoordinateHelper;
 use App\Models\PersonalMarker;
 use App\Models\MarkerConfigImpediment;
+use App\Models\FoundationProjects;
 
 class TowerController extends Controller
 {
@@ -130,6 +131,33 @@ class TowerController extends Controller
         }
 
         return response()->json(['message' => 'Towers Impediments imported successfully']);
+    }
+
+    public function ImportFoundationProjects(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls|max:10240',
+        ]);
+
+        $file = $request->file('file');
+
+        // Use FastExcel to read the Excel file
+        $worksheet3Data = (new FastExcel)->sheet(5)->import($file->getRealPath());
+
+        DB::table('foundation_projects')->truncate();
+
+        // Perform necessary processing with the data from the second worksheet
+        foreach ($worksheet3Data as $row) {
+            $project = new FoundationProjects();
+            $project->code = $row['Codificacao'];
+            $project->name = $row['Nomenclatura'];
+            $project->description = $row['Descricao'];
+            $project->revision = $row['Revisao'];
+            $project->state = $row['Estado Workflow'];
+            $project->save();
+        }
+
+        return response()->json(['message' => 'Foundation projects imported successfully']);
     }
 
     public function GetUniqueProjects()
@@ -289,7 +317,35 @@ class TowerController extends Controller
         return $return;
     }
 
+    public function GetTowerProjectInformation($towerid)
+    {
+        $changedTowerId = str_replace('_', '/', $towerid);
 
+        $tower = Tower::where('Number', $changedTowerId)->first();
 
+        if ($tower) {
 
+            $foundationMC = $tower->FoundationMC;
+            $foundationFoot = $tower->FoundationFoot;
+
+            if ($foundationMC !== '-') {
+                $foundationProjectMC = FoundationProjects::where('name', 'LIKE', '%' . $foundationMC . '%')->first();
+            } else {
+                $foundationProjectMC = null;
+            }
+
+            if ($foundationFoot !== '-') {
+                $foundationProjectFoot = FoundationProjects::where('name', 'LIKE', '%' . $foundationFoot . '%')->first();
+            } else {
+                $foundationProjectFoot = null;
+            }
+
+            $tower->foundationProjectMC = $foundationProjectMC;
+            $tower->foundationProjectFoot = $foundationProjectFoot;
+
+            return response()->json($tower);
+        }
+
+        return response()->json([]);
+    }
 }

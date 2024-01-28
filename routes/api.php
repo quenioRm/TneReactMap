@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/login', [AuthenticatedSessionController::class, 'apiLogin']);
 
-Route::get('/test/{id}', [MapsController::class, 'Test']);
+Route::get('/test/{towerid}', [TowerController::class, 'GetTowerProjectInformation']);
 
 Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
 
@@ -71,6 +71,7 @@ Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
     Route::post('production/getperiodproductionchartcompare',
         [ProductionController::class, 'getperiodProductionChartCompare']);
 
+    Route::get('towers/gettowerinfo/{towerid}', [TowerController::class, 'GetTowerProjectInformation']);
 
     ///// Markers Creation //////////////////////
 
@@ -87,6 +88,8 @@ Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
     Route::post('towers/import', [TowerController::class, 'ImportTowersFromExcelFile']);
 
     Route::post('towers/importimpediments', [TowerController::class, 'ImportTowersImpedimentsFromExcelFile']);
+
+    Route::post('towers/importfoundationprojects', [TowerController::class, 'ImportFoundationProjects']);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 });
