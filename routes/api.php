@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/login', [AuthenticatedSessionController::class, 'apiLogin']);
 
-Route::get('/test/{towerid}', [TowerController::class, 'GetTowerProjectInformation']);
+Route::get('/test', [TowerController::class, 'GetTotalTowerFreeReport']);
 
 Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
 

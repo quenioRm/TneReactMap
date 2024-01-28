@@ -348,4 +348,73 @@ class TowerController extends Controller
 
         return response()->json([]);
     }
+
+    public function getTotalTowerFreeReport()
+    {
+        // Get all towers with their related impediments eagerly loaded
+        $towers = Tower::with('impediments')->get();
+
+        // Group the towers by ProjectName and calculate the counts
+        $groupedTowers = $towers->groupBy('ProjectName')->map(function ($towersInProject, $projectName) {
+            $reportItem = [
+                'ProjectName' => $projectName,
+                'TotalStructures' => $towersInProject->count(),
+                'FoundationReleased' => 0,
+                'FoundationPending' => 0,
+                'ElectromechanicalReleased' => 0,
+                'ElectromechanicalNotReleased' => 0,
+                'ImpedimentsReleased' => 0,
+                'ImpedimentsNotReleased' => 0,
+            ];
+
+            foreach ($towersInProject as $tower) {
+                // Update the state counts
+                $reportItem['FoundationReleased'] += $tower->FoundationState === 'Liberado' ? 1 : 0;
+                $reportItem['FoundationPending'] += $tower->FoundationState !== 'Liberado' ? 1 : 0;
+                $reportItem['ElectromechanicalReleased'] += $tower->ElectromechanicalState === 'Liberado' ? 1 : 0;
+                $reportItem['ElectromechanicalNotReleased'] += $tower->ElectromechanicalState !== 'Liberado' ? 1 : 0;
+
+                // Filter impediments for the same project and that are not of type 'Projeto'
+                $projectImpediments = $tower->impediments->filter(function($impediment) use ($tower) {
+                    return $impediment->ProjectName === $tower->ProjectName && $impediment->ImpedimentType !== 'Projeto';
+                });
+
+                // Check if all relevant impediments for this tower are 'Liberado'
+                $allReleased = true;
+                foreach ($projectImpediments as $impediment) {
+                    if ($impediment->Status !== 'Liberado') {
+                        $allReleased = false;
+                        break;
+                    }
+                }
+
+                // Update impediment counts based on the check
+                if ($allReleased) {
+                    $reportItem['ImpedimentsReleased']++;
+                } else {
+                    $reportItem['ImpedimentsNotReleased']++;
+                }
+            }
+
+            return $reportItem;
+        });
+
+        // Calculate the totals for all projects
+        $totals = [
+            'ProjectName' => 'All',
+            'TotalStructures' => $groupedTowers->sum('TotalStructures'),
+            'FoundationReleased' => $groupedTowers->sum('FoundationReleased'),
+            'FoundationPending' => $groupedTowers->sum('FoundationPending'),
+            'ElectromechanicalReleased' => $groupedTowers->sum('ElectromechanicalReleased'),
+            'ElectromechanicalNotReleased' => $groupedTowers->sum('ElectromechanicalNotReleased'),
+            'ImpedimentsReleased' => $groupedTowers->sum('ImpedimentsReleased'),
+            'ImpedimentsNotReleased' => $groupedTowers->sum('ImpedimentsNotReleased'),
+        ];
+
+        // Add the totals to the grouped towers
+        $groupedTowers->put('Totals', $totals);
+
+        return response()->json($groupedTowers);
+    }
+
 }

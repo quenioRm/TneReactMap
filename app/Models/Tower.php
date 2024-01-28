@@ -50,6 +50,11 @@ class Tower extends Model
         return $this->hasMany(FoundationProjects::class, 'FoundationMC', 'name');
     }
 
+    public function impediments()
+    {
+        return $this->hasMany(TowerImpediment::class, 'Number', 'Number');
+    }
+
     public static function GetUniqueProjects()
     {
         $towers = self::get();

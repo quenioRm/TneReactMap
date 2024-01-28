@@ -35,4 +35,9 @@ class TowerImpediment extends Model
         return $this->hasMany(MarkerConfigImpediment::class, 'ImpedimentType', 'ImpedimentType');
     }
 
+    public function tower()
+    {
+        return $this->belongsTo(Tower::class, 'Number', 'Number');
+    }
+
 }
