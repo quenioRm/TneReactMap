@@ -16,21 +16,28 @@ const FoundationProjectsImportModal = ({ show, onHide }) => {
     const handleImportTowers = async (formData) => {
         setImporting(true); // Set the importing state to true when starting the import
         try {
-            const response = await axios.post("/api/towers/importfoundationprojects", formData, {
-                headers: {
-                    // Add necessary headers, such as authorization headers
+            const response = await axios.post(
+                "/api/towers/importfoundationprojects",
+                formData,
+                {
+                    headers: {
+                        // Add necessary headers, such as authorization headers
+                    },
                 },
-            });
+            );
 
             if (response.status === 200) {
                 toast.success("Projetos de fundação com sucesso!");
             } else {
                 toast.error(
-                    "Erro ao importar projetos de fundação: " + response.statusText,
+                    "Erro ao importar projetos de fundação: " +
+                        response.statusText,
                 );
             }
         } catch (error) {
-            toast.error("Erro ao importar projetos de fundação: " + error.message);
+            toast.error(
+                "Erro ao importar projetos de fundação: " + error.message,
+            );
         } finally {
             setImporting(false); // Set the importing state to false regardless of success or failure
         }

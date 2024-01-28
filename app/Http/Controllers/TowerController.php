@@ -365,9 +365,16 @@ class TowerController extends Controller
                 'ElectromechanicalNotReleased' => 0,
                 'ImpedimentsReleased' => 0,
                 'ImpedimentsNotReleased' => 0,
+                'BothReleased' => 0,
+                'BothNotReleased' => 0,
+                'FullyReleased' => 0,
+                'NotFullyReleased' => 0,
             ];
 
             foreach ($towersInProject as $tower) {
+                $foundationReleased = $tower->FoundationState === 'Liberado';
+                $electromechanicalReleased = $tower->ElectromechanicalState === 'Liberado';
+
                 // Update the state counts
                 $reportItem['FoundationReleased'] += $tower->FoundationState === 'Liberado' ? 1 : 0;
                 $reportItem['FoundationPending'] += $tower->FoundationState !== 'Liberado' ? 1 : 0;
@@ -388,11 +395,25 @@ class TowerController extends Controller
                     }
                 }
 
+                // Check both Foundation and Electromechanical
+                if ($foundationReleased && $electromechanicalReleased) {
+                    $reportItem['BothReleased']++;
+                } else {
+                    $reportItem['BothNotReleased']++;
+                }
+
                 // Update impediment counts based on the check
                 if ($allReleased) {
                     $reportItem['ImpedimentsReleased']++;
                 } else {
                     $reportItem['ImpedimentsNotReleased']++;
+                }
+
+                // Check if everything is released
+                if ($foundationReleased && $electromechanicalReleased && $allReleased) {
+                    $reportItem['FullyReleased']++;
+                } else {
+                    $reportItem['NotFullyReleased']++;
                 }
             }
 
@@ -401,7 +422,7 @@ class TowerController extends Controller
 
         // Calculate the totals for all projects
         $totals = [
-            'ProjectName' => 'All',
+            'ProjectName' => 'Todos os projetos',
             'TotalStructures' => $groupedTowers->sum('TotalStructures'),
             'FoundationReleased' => $groupedTowers->sum('FoundationReleased'),
             'FoundationPending' => $groupedTowers->sum('FoundationPending'),
@@ -409,6 +430,10 @@ class TowerController extends Controller
             'ElectromechanicalNotReleased' => $groupedTowers->sum('ElectromechanicalNotReleased'),
             'ImpedimentsReleased' => $groupedTowers->sum('ImpedimentsReleased'),
             'ImpedimentsNotReleased' => $groupedTowers->sum('ImpedimentsNotReleased'),
+            'BothReleased' => $groupedTowers->sum('BothReleased'),
+            'BothNotReleased' => $groupedTowers->sum('BothNotReleased'),
+            'FullyReleased' => $groupedTowers->sum('FullyReleased'),
+            'NotFullyReleased' => $groupedTowers->sum('NotFullyReleased'),
         ];
 
         // Add the totals to the grouped towers

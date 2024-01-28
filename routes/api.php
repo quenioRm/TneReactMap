@@ -73,6 +73,8 @@ Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
 
     Route::get('towers/gettowerinfo/{towerid}', [TowerController::class, 'GetTowerProjectInformation']);
 
+    Route::get('/towers/gettotaltowerfreereport', [TowerController::class, 'GetTotalTowerFreeReport']);
+
     ///// Markers Creation //////////////////////
 
     Route::resource('personalmarkers', PersonalMarkerController::class);

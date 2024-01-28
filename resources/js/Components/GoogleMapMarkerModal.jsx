@@ -379,8 +379,7 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                             </Tab>
 
                             <Tab eventKey="foundationProjects" title="Projeto">
-
-                                <br/>
+                                <br />
 
                                 <h5>Configuração da estrutura</h5>
 
@@ -401,49 +400,93 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
 
                                 {towerinfo.foundationProjectMC && (
                                     <Table striped bordered hover>
-                                    <thead>
-                                    <tr>
-                                        <th>Código/Revisão</th>
-                                        <th>Nome</th>
-                                        <th>Descrição</th>
-                                        <th>Status</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>{towerinfo.foundationProjectMC.code +"-"+towerinfo.foundationProjectMC.revision}</td>
-                                        <td>{towerinfo.FoundationMC}</td>
-                                        <td>{towerinfo.foundationProjectMC.description}</td>
-                                        <td>{towerinfo.foundationProjectMC.state}</td>
-                                    </tr>
-                                    </tbody>
-                                </Table>
+                                        <thead>
+                                            <tr>
+                                                <th>Código/Revisão</th>
+                                                <th>Nome</th>
+                                                <th>Descrição</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    {towerinfo
+                                                        .foundationProjectMC
+                                                        .code +
+                                                        "-" +
+                                                        towerinfo
+                                                            .foundationProjectMC
+                                                            .revision}
+                                                </td>
+                                                <td>
+                                                    {towerinfo.FoundationMC}
+                                                </td>
+                                                <td>
+                                                    {
+                                                        towerinfo
+                                                            .foundationProjectMC
+                                                            .description
+                                                    }
+                                                </td>
+                                                <td>
+                                                    {
+                                                        towerinfo
+                                                            .foundationProjectMC
+                                                            .state
+                                                    }
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </Table>
                                 )}
 
                                 {towerinfo.foundationProjectFoot && (
-
-                                <Table striped bordered hover>
-                                    <thead>
-                                    <tr>
-                                        <th>Código/Revisão</th>
-                                        <th>Nome</th>
-                                        <th>Descrição</th>
-                                        <th>Status</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>{towerinfo.foundationProjectFoot.code +"-"+towerinfo.foundationProjectFoot.revision}</td>
-                                        <td>{towerinfo.FoundationFoot}</td>
-                                        <td>{towerinfo.foundationProjectFoot.description}</td>
-                                        <td>{towerinfo.foundationProjectFoot.state}</td>
-                                    </tr>
-                                    </tbody>
-                                </Table>
+                                    <Table striped bordered hover>
+                                        <thead>
+                                            <tr>
+                                                <th>Código/Revisão</th>
+                                                <th>Nome</th>
+                                                <th>Descrição</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    {towerinfo
+                                                        .foundationProjectFoot
+                                                        .code +
+                                                        "-" +
+                                                        towerinfo
+                                                            .foundationProjectFoot
+                                                            .revision}
+                                                </td>
+                                                <td>
+                                                    {towerinfo.FoundationFoot}
+                                                </td>
+                                                <td>
+                                                    {
+                                                        towerinfo
+                                                            .foundationProjectFoot
+                                                            .description
+                                                    }
+                                                </td>
+                                                <td>
+                                                    {
+                                                        towerinfo
+                                                            .foundationProjectFoot
+                                                            .state
+                                                    }
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </Table>
                                 )}
 
-
-                                <h5>Configuração da estrutura - Eletromecânico</h5>
+                                <h5>
+                                    Configuração da estrutura - Eletromecânico
+                                </h5>
 
                                 <Table striped bordered hover>
                                     <thead>
@@ -467,7 +510,6 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                         </tr>
                                     </tbody>
                                 </Table>
-
                             </Tab>
 
                             <Tab eventKey="gallery" title="Galeria">
@@ -517,7 +559,6 @@ const GoogleMapMarkerModal = ({ markerInfo, onClose }) => {
                                     </>
                                 )}
                             </Tab>
-
                         </Tabs>
                     </div>
                 ) : null}

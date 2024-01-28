@@ -27,7 +27,6 @@ const useFecthFirstMarkerData = () => {
         radius,
         getAllPoints,
     ) => {
-
         const payload = {
             inputX: coordinateX,
             inputY: coordinateY,

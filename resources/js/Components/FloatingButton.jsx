@@ -18,7 +18,7 @@ import PersonalMarkerManager from "./MapsComponents/PersonalMarker/PersonalMarke
 import MarkerManagerPersonal from "../Components/MapsComponents/Activitie/Personal/MarkerManagerPersonal";
 import RouteCreatorModal from "../Components/GoogleMapHelpers/RouteCreatorModal";
 import FoundationProjectsImportModal from "../Components/TowersComponents/FoundationProjectsImportModal";
-import './css/Floatingbutton.css';
+import "./css/Floatingbutton.css";
 
 const FloatingButton = ({
     map,
@@ -38,7 +38,8 @@ const FloatingButton = ({
         useState(false);
     const [showRouterCreatorModal, setShowRouterCreatorModal] = useState(false);
     const [hoveredItem, setHoveredItem] = useState(null);
-    const [showFoundationImportModal, setFoundationImportModal] = useState(false);
+    const [showFoundationImportModal, setFoundationImportModal] =
+        useState(false);
 
     const handleShowTowerModal = () => {
         setShowTowerModal(true);
@@ -137,11 +138,13 @@ const FloatingButton = ({
                 </Dropdown.Item>
                 {subItemVisible && (
                     <div
-                        className={`submenu ${hoveredItem === itemName ? 'show' : ''}`}
+                        className={`submenu ${
+                            hoveredItem === itemName ? "show" : ""
+                        }`}
                         onMouseEnter={handleMouseEnter}
                         onMouseLeave={handleMouseLeave}
                     >
-                        {options.map(option => (
+                        {options.map((option) => (
                             <Dropdown.Item
                                 key={option.text}
                                 onClick={() => {
@@ -158,22 +161,35 @@ const FloatingButton = ({
         );
     };
 
-
-
-
-
-    const importsItems = createHoverableItem('Importações', [
-        { text: 'Importar Estruturas/Produção [LT]', handler: handleShowImportTowerModal },
-        { text: 'Importar Impedimentos Estruturas [LT]', handler: handleShowImportImpedimentTowerModal },
-        { text: 'Importar Projetos Fundação', handler: handleShowFoundationImportModal }
+    const importsItems = createHoverableItem("Importações", [
+        {
+            text: "Importar Estruturas/Produção [LT]",
+            handler: handleShowImportTowerModal,
+        },
+        {
+            text: "Importar Impedimentos Estruturas [LT]",
+            handler: handleShowImportImpedimentTowerModal,
+        },
+        {
+            text: "Importar Projetos Fundação",
+            handler: handleShowFoundationImportModal,
+        },
     ]);
 
-    const markerItems = createHoverableItem('Marcadores', [
-        { text: 'Configurar Marcador - Atividade [LT]', handler: handleShowManager },
-        { text: 'Configurar Marcador - Impedimento [LT]', handler: handleShowManageImpediment },
-        { text: 'Configurar Marcador Personalizado', handler: handleShowAddMarkerModal }
+    const markerItems = createHoverableItem("Marcadores", [
+        {
+            text: "Configurar Marcador - Atividade [LT]",
+            handler: handleShowManager,
+        },
+        {
+            text: "Configurar Marcador - Impedimento [LT]",
+            handler: handleShowManageImpediment,
+        },
+        {
+            text: "Configurar Marcador Personalizado",
+            handler: handleShowAddMarkerModal,
+        },
     ]);
-
 
     return (
         <div>
@@ -221,7 +237,6 @@ const FloatingButton = ({
                     {markerItems}
                     <Dropdown.Divider />
                     {importsItems}
-
                 </DropdownButton>
             </OverlayTrigger>
 

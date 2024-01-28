@@ -3,7 +3,8 @@ import axios from "../Components/axiosInstance";
 
 const useFetchMarkerData = () => {
     const [markerData, setMarkerData] = useState([]);
-    const [isDataFetchedSuccessfully, setIsDataFetchedSuccessfully] = useState(false);
+    const [isDataFetchedSuccessfully, setIsDataFetchedSuccessfully] =
+        useState(false);
     const [error, setError] = useState(null);
     const [latestCalledCoordinate, setLastestCalledCoordinate] = useState({});
     const [currentCalledLatLng, setCurrentCalledLatLng] = useState({});
@@ -16,7 +17,7 @@ const useFetchMarkerData = () => {
 
     const retryTimeoutRef = useRef(null);
 
-    const mapType = localStorage.getItem("mapType") || 'hybrid';
+    const mapType = localStorage.getItem("mapType") || "hybrid";
 
     const fetchAllMarkerData = async () => {
         if (isDataFetchedSuccessfully) {
@@ -63,8 +64,8 @@ const useFetchMarkerData = () => {
             });
 
             setMarkerData(response.data);
-            setIsDataFetchedSuccessfully(true);  // Indica sucesso na requisição
-            setError(null);  // Limpa qualquer erro anterior
+            setIsDataFetchedSuccessfully(true); // Indica sucesso na requisição
+            setError(null); // Limpa qualquer erro anterior
         } catch (err) {
             setError(err);
             console.error("Error fetching marker data:", err);

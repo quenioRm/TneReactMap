@@ -17,6 +17,7 @@ import ProductionTable from "../Components/ProductionComponents/ProductionTable"
 import ProductionTableDailyTable from "../Components/ProductionComponents/ProductionTableDailyTable";
 import TowerStatusChart from "../Components/ProductionComponents/TowerStatusChart";
 import ImpedimentsGraph from "../Components/ProductionComponents/ImpedimentsGraph";
+import TowerFreeReport from "../Components/ProductionComponents/TowerFreeReport";
 
 export default function Production({ auth }: PageProps) {
     const [activeTab, setActiveTab] = useState("info");
@@ -54,6 +55,12 @@ export default function Production({ auth }: PageProps) {
                 </Tab>
                 <Tab eventKey="towerimpediments" title="Impedimentos">
                     <ImpedimentsGraph />
+                </Tab>
+                <Tab
+                    eventKey="towerfreereport"
+                    title="Estruturas 100% Liberadas"
+                >
+                    <TowerFreeReport />
                 </Tab>
             </Tabs>
         </AuthenticatedLayout>

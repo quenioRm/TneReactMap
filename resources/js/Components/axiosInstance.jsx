@@ -46,7 +46,6 @@ axiosInstance.interceptors.response.use(
         }
 
         if (error.response && error.response.status === 401) {
-            
             Swal.fire({
                 position: "center",
                 icon: "error",

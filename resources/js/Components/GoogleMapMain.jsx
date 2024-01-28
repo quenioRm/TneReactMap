@@ -75,10 +75,11 @@ const GoogleMapMain = ({
         }
     }, [map, markersData, loadingMarkers]);
 
-useEffect(() => {
-    const isMapConfigInitialized = mapConfig.center.lat !== 0 && mapConfig.center.lng !== 0;
-    setLoadingMap(!isMapConfigInitialized);
-}, [mapConfig]);
+    useEffect(() => {
+        const isMapConfigInitialized =
+            mapConfig.center.lat !== 0 && mapConfig.center.lng !== 0;
+        setLoadingMap(!isMapConfigInitialized);
+    }, [mapConfig]);
 
     useEffect(() => {
         if (mouseEventData) {
@@ -96,7 +97,6 @@ useEffect(() => {
             }
         }
     }, [directionsResponse, directionsRenderer]);
-
 
     return (
         <div className="google-map-container">

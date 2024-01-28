@@ -7,7 +7,6 @@ import DashboardHeader from "./DashboardHeader";
 import useFecthFirstMarkerData from "../hooks/useFecthFirstMarkerData";
 
 export default function Dashboard({ auth }: PageProps) {
-
     const {
         markerData,
         latestCalledCoordinate,
