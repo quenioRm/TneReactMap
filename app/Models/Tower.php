@@ -55,6 +55,17 @@ class Tower extends Model
         return $this->hasMany(TowerImpediment::class, 'Number', 'Number');
     }
 
+    public function towerActivities()
+    {
+        return $this->hasMany(TowerActivity::class, 'Number', 'Number');
+    }
+
+    public function filteredTowerActivities($projectName)
+    {
+        return $this->hasMany(TowerActivity::class, 'Number', 'Number')
+                    ->where('ProjectName', $projectName)->get();
+    }
+
     public static function GetUniqueProjects()
     {
         $towers = self::get();

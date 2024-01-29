@@ -10,6 +10,7 @@ use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\PersonalMarkerController;
 use App\Http\Controllers\PersonalMarkerActivityController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\DiagramProductionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +29,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/login', [AuthenticatedSessionController::class, 'apiLogin']);
 
-Route::get('/test', [TowerController::class, 'GetTotalTowerFreeReport']);
+Route::post('/test', [DiagramProductionController::class, 'GetDiagram']);
 
 Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
 

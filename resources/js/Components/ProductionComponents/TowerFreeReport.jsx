@@ -387,7 +387,7 @@ const TowerFreeReport = () => {
                                 </div>
                             </div>
                             <div className="row">
-                            <hr className="my-4" />
+                                <hr className="my-4" />
                                 <div className="col">
                                     <TowerFreeReportGraph
                                         data={[
@@ -405,19 +405,27 @@ const TowerFreeReport = () => {
                                     />
                                 </div>
                                 <div className="col">
-                                <TowerFreeReportGraphCompare
-                                        categories={['Impedimentos Fundiários ou Arqueologicos [Liberado]',
-                                         'Engenharia [Liberado]',
-                                         'Impedimentos Fundiários ou Arqueologicos [Não Liberado]',
-                                         'Engenharia [Não Liberado]']}
-                                        quantities={[selectedProjectData.ImpedimentsReleased,
-                                                        selectedProjectData.BothReleased,
-                                                        selectedProjectData.ImpedimentsNotReleased,
-                                                        selectedProjectData.BothNotReleased]}
-                                        colors={['#008000', '#008000', '#FF5733', '#FF5733']}
+                                    <TowerFreeReportGraphCompare
+                                        categories={[
+                                            "Impedimentos Fundiários ou Arqueologicos [Liberado]",
+                                            "Engenharia [Liberado]",
+                                            "Impedimentos Fundiários ou Arqueologicos [Não Liberado]",
+                                            "Engenharia [Não Liberado]",
+                                        ]}
+                                        quantities={[
+                                            selectedProjectData.ImpedimentsReleased,
+                                            selectedProjectData.BothReleased,
+                                            selectedProjectData.ImpedimentsNotReleased,
+                                            selectedProjectData.BothNotReleased,
+                                        ]}
+                                        colors={[
+                                            "#008000",
+                                            "#008000",
+                                            "#FF5733",
+                                            "#FF5733",
+                                        ]}
                                         name="Engenharia vs Fundiário"
-                                />
-
+                                    />
                                 </div>
                             </div>
                         </>

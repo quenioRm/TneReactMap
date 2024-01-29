@@ -48,7 +48,9 @@ class Production{
 
     public static function getLatestTowerActivityWithIcon($tower, $project)
     {
-        $tower = str_replace('_', '/', $tower);
+        if (strpos($tower, '/') !== true) {
+            $tower = str_replace('_', '/', $tower);
+        }
 
         $returnItem = [];
 
