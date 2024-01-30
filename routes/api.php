@@ -29,7 +29,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/login', [AuthenticatedSessionController::class, 'apiLogin']);
 
-Route::post('/test', [DiagramProductionController::class, 'GetDiagram']);
+Route::post('/test', [DiagramProductionController::class, 'getLatestProductionByDate']);
 
 Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
 
@@ -94,6 +94,12 @@ Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
 
     Route::post('towers/importfoundationprojects', [TowerController::class, 'ImportFoundationProjects']);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ///Diagram
+    Route::post('/diagram', [DiagramProductionController::class, 'GetDiagram']);
+    Route::get('diagram/getImpedimentsbytype/{project?}', [DiagramProductionController::class, 'countIsBlockedByType']);
+    Route::post('diagram/getLatestProductionbydate', [DiagramProductionController::class, 'getLatestProductionByDate']);
+    ///
 
 });
 

@@ -260,10 +260,15 @@ class TowerController extends Controller
             'Não Liberado' => 0,
         ];
 
-        $projectNames = TowerImpediment::select('ProjectName')
+        $projectNamesQuery = TowerImpediment::select('ProjectName')
             ->distinct()
-            ->orderBy('ProjectName') // Ordenar por nome de projeto
-            ->pluck('ProjectName');
+            ->orderBy('ProjectName'); // Ordenar por nome de projeto
+
+        if ($projectName !== null) {
+            $projectNamesQuery->where('ProjectName', $projectName);
+        }
+
+        $projectNames = $projectNamesQuery->pluck('ProjectName');
 
         foreach ($projectNames as $name) {
             $return[$name] = [];
@@ -316,6 +321,7 @@ class TowerController extends Controller
 
         return $return;
     }
+
 
     public function GetTowerProjectInformation($towerid)
     {
