@@ -53,7 +53,7 @@ const TowerStatusChart = () => {
 
     useEffect(() => {
         // Make the API request to get chart data when selectedProject changes or when the component mounts
-        if (selectedProject) {
+        // if (selectedProject) {
             axios
                 .get(
                     `/api/towers/gettowerssolicitations/${
@@ -72,7 +72,7 @@ const TowerStatusChart = () => {
                         error,
                     );
                 });
-        }
+        // }
     }, [selectedProject]);
 
     const handleProjectChange = (event) => {
