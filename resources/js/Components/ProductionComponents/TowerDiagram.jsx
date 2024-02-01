@@ -362,42 +362,30 @@ const TowerDiagram = () => {
                                                     impediment,
                                                     impedimentIndex,
                                                 ) => (
-                                                    <OverlayTrigger
-                                                        key={impedimentIndex}
-                                                        placement="top"
-                                                        overlay={
-                                                            <Tooltip>
-                                                                {
-                                                                    impediment.ImpedimentType
-                                                                }
-                                                            </Tooltip>
-                                                        }
-                                                    >
+                                                    <div className="tooltip-container">
                                                         <div
                                                             className={`impediment-square text-white mr-1 ${
-                                                                impediment.Status ===
-                                                                "Liberado"
+                                                                impediment.Status === "Liberado"
                                                                     ? "bg-success cursor-pointer"
                                                                     : "bg-danger cursor-pointer"
                                                             }`}
                                                             style={{
                                                                 width: "27px",
-                                                                marginRight:
-                                                                    "4.5px",
-                                                                fontSize:
-                                                                    "0.8em",
+                                                                marginRight: "4.5px",
+                                                                fontSize: "0.8em",
                                                                 padding: "2px",
-                                                                marginBottom:
-                                                                    "2px",
+                                                                marginBottom: "2px",
                                                             }}
                                                         >
                                                             <div className="square-content d-flex align-items-center justify-content-center">
-                                                                {impediment.ImpedimentType.charAt(
-                                                                    0,
-                                                                )}
+                                                                {impediment.ImpedimentType.charAt(0)}
                                                             </div>
                                                         </div>
-                                                    </OverlayTrigger>
+                                                        <div className="tooltip-content">
+                                                            {/* Add your tooltip content here */}
+                                                            {impediment.ImpedimentType}
+                                                        </div>
+                                                    </div>
                                                 ),
                                             )}
                                     </div>
@@ -418,33 +406,21 @@ const TowerDiagram = () => {
                                                         : "cursor-pointer"
                                                 }`}
                                             >
-                                                <OverlayTrigger
-                                                    placement="top"
-                                                    overlay={
-                                                        <Tooltip>
+                                                <div>
+                                                <div className="tooltip-container">
+                                                    <img
+                                                        src={tower.latestactivity.icon}
+                                                        alt="Latest Activity"
+                                                        className="img-fluid"
+                                                        onClick={() => handleShowDetails(tower)}
+                                                    />
+                                                    <div className="tooltip-content">
+                                                        {/* Add your tooltip content here */}
                                                         {tower.latestactivity.activitie} - Executado em: {tower.latestactivity.date}
-                                                        {tower.tower.ReceiveDate && <><br />Data de Recebimento Estrutura: {formatDate(tower.tower.ReceiveDate)}</>}
-
-                                                        </Tooltip>
-                                                    }
-                                                >
-                                                    <div>
-                                                        <img
-                                                            src={
-                                                                tower
-                                                                    .latestactivity
-                                                                    .icon
-                                                            }
-                                                            alt="Latest Activity"
-                                                            className="img-fluid"
-                                                            onClick={() =>
-                                                                handleShowDetails(
-                                                                    tower,
-                                                                )
-                                                            }
-                                                        />
+                                                        {tower.tower.ReceiveDate && <><br />----------Data de Recebimento Estrutura: {formatDate(tower.tower.ReceiveDate)}</>}
+                                                        </div>
                                                     </div>
-                                                </OverlayTrigger>
+                                                </div>
                                                 {/* <DiagramTowerDetails show={showDiagramDetails} onClose={handleCloseDetails} /> */}
                                             </div>
                                         )}
