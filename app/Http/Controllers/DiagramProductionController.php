@@ -56,10 +56,14 @@ class DiagramProductionController extends Controller
         return response()->json($results);
     }
 
-    public function countIsBlockedByType($projectName = null)
+    public function countIsBlockedByType($projectName = '')
     {
-        $impediments = TowerImpediment::where('ProjectName', $projectName)
+        if($projectName == ''){
+            $impediments = TowerImpediment::get();
+        }else{
+            $impediments = TowerImpediment::where('ProjectName', $projectName)
             ->get();
+        }
 
         $counts = [];
 

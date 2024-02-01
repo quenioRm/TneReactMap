@@ -26,6 +26,10 @@ const TowerDiagram = () => {
     const [showDiagramDetails, setShowDiagramDetails] = useState(false);
     const [selectedTower, setSelectedTower] = useState(null);
     const [showDiagramDate, setShowDiagramDate] = useState(false);
+    const [checkboxes, setCheckboxes] = useState({
+        emphasizeProduction: false,
+        showReceivedTowers: false,
+    });
 
     useEffect(() => {
         axios
@@ -98,7 +102,11 @@ const TowerDiagram = () => {
     };
 
     const handleCheckboxChange = (e) => {
-        setIsCheckboxChecked(e.target.checked);
+        const { name, checked } = e.target;
+        setCheckboxes((prevCheckboxes) => ({
+            ...prevCheckboxes,
+            [name]: checked,
+        }));
     };
 
     const handleShowDetails = (e) => {
@@ -117,6 +125,14 @@ const TowerDiagram = () => {
     const handleCloseDateModal = () => {
         setShowDiagramDate(false);
     };
+
+    function formatDate(dateString) {
+        const dateObj = new Date(dateString);
+        const day = dateObj.getDate().toString().padStart(2, "0");
+        const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+        const year = dateObj.getFullYear().toString();
+        return `${day}/${month}/${year}`;
+    }
 
     if (loading) {
         return (
@@ -179,14 +195,24 @@ const TowerDiagram = () => {
                                 </Form.Group>
                             </Col>
                             <Col md={4} className="d-flex align-items-center">
-                                <Form.Group controlId="checkboxControl">
-                                    <Form.Check
-                                        type="checkbox"
-                                        label="Dar ênfase no que foi produzido após a data de verificação."
-                                        checked={isCheckboxChecked}
-                                        onChange={handleCheckboxChange}
-                                    />
-                                </Form.Group>
+                            <Form.Group controlId="checkboxControl">
+                                <Form.Check
+                                    type="checkbox"
+                                    name="emphasizeProduction"
+                                    label="Dar ênfase no que foi produzido após a data de verificação."
+                                    checked={checkboxes.emphasizeProduction}
+                                    onChange={handleCheckboxChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="checkboxControl">
+                                <Form.Check
+                                    type="checkbox"
+                                    name="showReceivedTowers"
+                                    label="Mostrar torres recebidas."
+                                    checked={checkboxes.showReceivedTowers}
+                                    onChange={handleCheckboxChange}
+                                />
+                            </Form.Group>
                             </Col>
                         </Row>
                         {startDate !== "" && (
@@ -385,10 +411,10 @@ const TowerDiagram = () => {
                                             null && (
                                             <div
                                                 className={`tower-square p-3 border bg-light cursor-pointer ${
-                                                    tower.latestactivity
-                                                        .inPeriod &&
-                                                    isCheckboxChecked
+                                                    tower.latestactivity.inPeriod && checkboxes.emphasizeProduction
                                                         ? "highlight"
+                                                        : tower.tower.ReceiveDate !== "" && checkboxes.showReceivedTowers
+                                                        ? "highlight-received-tower"
                                                         : "cursor-pointer"
                                                 }`}
                                             >
@@ -396,13 +422,8 @@ const TowerDiagram = () => {
                                                     placement="top"
                                                     overlay={
                                                         <Tooltip>
-                                                            {tower
-                                                                .latestactivity
-                                                                .activitie +
-                                                                " - Executado em : " +
-                                                                tower
-                                                                    .latestactivity
-                                                                    .date}
+                                                            {tower.latestactivity.activitie} - Executado em: {tower.latestactivity.date}
+                                                            {tower.tower.ReceiveDate && `Data de Recebimento Estrutura: ${formatDate(tower.tower.ReceiveDate)}`}
                                                         </Tooltip>
                                                     }
                                                 >

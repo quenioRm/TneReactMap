@@ -1,149 +1,161 @@
-import React, { useEffect, useState } from "react";
-import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+import React, { useState, useEffect } from "react";
 import axios from "../../Components/axiosInstance";
-import { Row, Col, Card } from "react-bootstrap";
+import Select from "react-select";
+import TowerFreeReportGraph from "./TowerFreeReportComponents/TowerFreeReportGraph";
+import TowerFreeReportGraphCompare from "./TowerFreeReportComponents/TowerFreeReportGraphCompare";
+import { Card, Form, Row, Col, Button } from "react-bootstrap";
 
 const COLORS = ["#006400", "#FF0000"]; // Verde escuro para "Liberado" e Vermelho para "Não Liberado"
 
 const ImpedimentsGraph = () => {
-    const [data, setData] = useState([]);
+    const [reportData, setReportData] = useState([]);
+    const [selectedProject, setSelectedProject] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [projects, setProjects] = useState([]);
 
     useEffect(() => {
-        async function fetchData() {
-            try {
-                const response = await axios.get(
-                    "/api/towers/getImpedimentsbytype",
-                );
-                const formattedData = transformJsonToChartData(response.data);
-                setData(formattedData);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        }
-
-        fetchData();
+        axios
+            .get("/api/towers/getuniqueprojects")
+            .then((response) => {
+                const projectOptions = response.data.map((project) => ({
+                    value: project.id,
+                    label: project.name,
+                }));
+                setProjects(projectOptions);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching projects from the API:", error);
+            });
     }, []);
 
-    // Função para transformar o JSON em dados formatados para o Recharts
-    function transformJsonToChartData(data) {
-        const chartData = [];
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                let endpoint = ''
+                if(selectedProject.value === ''){
+                    endpoint = `/api/towers/getImpedimentsbytype`
+                }else{
+                    endpoint = `/api/towers/getImpedimentsbytype/${selectedProject.label}`
+                }
 
-        for (const lt in data) {
-            const categories = data[lt];
-            chartData.push({
-                name: lt,
-                categories: categories,
-            });
-        }
+                const response = await axios.get(
+                    endpoint,
+                );
 
-        return chartData;
-    }
+                const data = Object.values(response.data); // Assuming the API returns an object
+                setReportData(data);
 
-    // Calcula a porcentagem
-    function calculatePercentage(liberado, nãoLiberado) {
-        const total = liberado + nãoLiberado;
-        return ((liberado / total) * 100).toFixed(2);
-    }
+            } catch (err) {
+                setError(err);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    // Componente para renderizar um gráfico de pizza para uma categoria específica
-    const CategoryPieChart = ({ categoryName, data }) => {
-        return (
-            <Col sm={12} md={4}>
-                <div className="d-inline-block">
-                    <h5>{categoryName}</h5>
-                    <PieChart width={300} height={300}>
-                        <Pie
-                            data={[
-                                {
-                                    name: `Liberado (${calculatePercentage(
-                                        data.Liberado,
-                                        data["Não Liberado"],
-                                    )}%)`,
-                                    value: data.Liberado,
-                                },
-                                {
-                                    name: `Não Liberado (${calculatePercentage(
-                                        data["Não Liberado"],
-                                        data.Liberado,
-                                    )}%)`,
-                                    value: data["Não Liberado"],
-                                },
-                            ]}
-                            nameKey="name"
-                            dataKey="value"
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={80}
-                            fill={COLORS[0]}
-                            label
-                        >
-                            {[
-                                {
-                                    name: `Liberado (${calculatePercentage(
-                                        data.Liberado,
-                                        data["Não Liberado"],
-                                    )}%)`,
-                                    value: data.Liberado,
-                                },
-                                {
-                                    name: `Não Liberado (${calculatePercentage(
-                                        data["Não Liberado"],
-                                        data.Liberado,
-                                    )}%)`,
-                                    value: data["Não Liberado"],
-                                },
-                            ].map((item, index) => (
-                                <Cell
-                                    key={`cell-${index}`}
-                                    fill={COLORS[index]}
-                                />
-                            ))}
-                        </Pie>
-                        <Tooltip />
-                        <Legend verticalAlign="bottom" height={36} />
-                    </PieChart>
-                </div>
-            </Col>
-        );
+        fetchData();
+    }, [selectedProject]);
+
+    const handleSelectChange = (selectedOption) => {
+        setSelectedProject(selectedOption);
     };
 
-    // Verifique se os dados estão disponíveis antes de renderizar o componente
-    if (data.length === 0) {
-        return <p>Carregando...</p>;
+    if (loading) {
+        return <div className="text-center">Carregando...</div>;
     }
 
+    // if (error) {
+    //     return <div className="text-center">Erro: {error.message}</div>;
+    // }
+
     return (
-        <div className="impediments-graph">
-            <Card>
+        <div>
+            {/* Second Card: Selected Project */}
+            <Card className="mt-3">
                 <Card.Header className="text-center">
-                    <h3>Impedimentos por Categoria</h3>
+                    Resumo de Liberação de Torres - Por Trecho
                 </Card.Header>
                 <Card.Body>
-                    {data.map((entry, index) => (
-                        <Card key={`lt-card-${index}`} className="mb-4">
-                            <Card.Header className="text-center">
-                                <h4>{entry.name}</h4>
-                            </Card.Header>
-                            <Card.Body>
-                                <Row className="text-center">
-                                    {Object.keys(entry.categories).map(
-                                        (category, idx) => (
-                                            <CategoryPieChart
-                                                key={`category-pie-${idx}`}
-                                                categoryName={category}
-                                                data={
-                                                    entry.categories[category]
-                                                }
-                                            />
-                                        ),
-                                    )}
-                                </Row>
-                            </Card.Body>
-                        </Card>
-                    ))}
+                    <div className="row mb-3"> {/* Adicionando margem inferior à div */}
+                        <div className="col-8">
+                            <Form.Label>Projeto/Trecho:</Form.Label>
+                            <Select
+                                className="custom-select-front"
+                                value={selectedProject}
+                                onChange={handleSelectChange}
+                                options={[{ label: "Todos os projetos", value: "" }, ...projects]}
+                                placeholder="Selecione um projeto"
+                            />
+                        </div>
+                    </div>
+
+                    {selectedProject && reportData && reportData.length > 0 && (
+                        <>
+                        <div className="row">
+                            {reportData.map((item, index) => (
+                                <div key={index} className="col mb-3"> {/* Adicionando margem inferior à coluna */}
+                                    <TowerFreeReportGraph
+                                        data={[
+                                            {
+                                                name: "Liberado",
+                                                y: item.released,
+                                            },
+                                            {
+                                                name: "Não Liberado",
+                                                y: item.notreleased,
+                                            },
+                                        ]}
+                                        name={item.type}
+                                        containerId={item.type + '-chart'} // ID exclusivo para o segundo gráfico
+                                    />
+                                </div>
+
+                            ))}
+                        </div>
+
+                            <div className="row">
+                            <Col
+
+                                className="d-flex align-items-start"
+                            >
+                                <TowerFreeReportGraphCompare
+                                    categories={[
+                                        reportData[0].type + " [Liberado]",
+                                        reportData[0].type +
+                                            " [Não Liberado]",
+                                        reportData[1].type + " [Liberado]",
+                                        reportData[1].type +
+                                            " [Não Liberado]",
+                                        reportData[2].type + " [Liberado]",
+                                        reportData[2].type +
+                                            " [Não Liberado]",
+                                    ]}
+                                    quantities={[
+                                        reportData[0].released,
+                                        reportData[0].notreleased,
+                                        reportData[1].released,
+                                        reportData[1].notreleased,
+                                        reportData[2].released,
+                                        reportData[2].notreleased,
+                                    ]}
+                                    colors={[
+                                        "#008000",
+                                        "#FF5733",
+                                        "#008000",
+                                        "#FF5733",
+                                        "#008000",
+                                        "#FF5733",
+                                    ]}
+                                    name="Status Geral"
+                                />
+                            </Col>
+                            </div>
+                        </>
+                    )}
                 </Card.Body>
             </Card>
+            <br />
         </div>
     );
 };

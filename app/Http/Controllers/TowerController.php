@@ -249,77 +249,43 @@ class TowerController extends Controller
 
     public function countIsBlockedByType($projectName = null)
     {
-        $impedimentTypes = MarkerConfigImpediment::orderBy('ImpedimentType')
-            ->orderBy('Status')
-            ->distinct('Status')
+        if($projectName == ''){
+            $impediments = TowerImpediment::get();
+        }else{
+            $impediments = TowerImpediment::where('ProjectName', $projectName)
             ->get();
-
-        $return = [];
-        $totalSummary = [
-            'Liberado' => 0,
-            'Não Liberado' => 0,
-        ];
-
-        $projectNamesQuery = TowerImpediment::select('ProjectName')
-            ->distinct()
-            ->orderBy('ProjectName'); // Ordenar por nome de projeto
-
-        if ($projectName !== null) {
-            $projectNamesQuery->where('ProjectName', $projectName);
         }
 
-        $projectNames = $projectNamesQuery->pluck('ProjectName');
+        $counts = [];
 
-        foreach ($projectNames as $name) {
-            $return[$name] = [];
+        foreach ($impediments as $impediment) {
+            $type = $impediment->ImpedimentType;
+            $status = $impediment->Status;
 
-            foreach ($impedimentTypes as $impedimentType) {
-
-                $count = TowerImpediment::where('ImpedimentType', $impedimentType->ImpedimentType)
-                    ->where('Status', $impedimentType->Status)
-                    ->where('ProjectName', $name)
-                    ->count();
-
-                $type = $impedimentType->ImpedimentType;
-
-                if (!isset($return[$name][$type])) {
-                    $return[$name][$type] = [
-                        'Liberado' => 0,
-                        'Não Liberado' => 0,
-                    ];
+            // Check if the type is already in the list, if not, add it.
+            $found = false;
+            foreach ($counts as &$count) {
+                if ($count['type'] === $type) {
+                    $found = true;
+                    if ($status === 'Liberado') {
+                        $count['released']++;
+                    } else {
+                        $count['notreleased']++;
+                    }
+                    break;
                 }
+            }
 
-                if ($impedimentType->IsBlocked == 'Não') {
-                    $return[$name][$type]['Liberado'] += $count;
-                } else {
-                    $return[$name][$type]['Não Liberado'] += $count;
-                }
-
-                // Atualizar o resumo total por tipo de impedimento
-                $totalSummary['Liberado'] += $return[$name][$type]['Liberado'];
-                $totalSummary['Não Liberado'] += $return[$name][$type]['Não Liberado'];
+            if (!$found) {
+                $counts[] = [
+                    'type' => $type,
+                    'released' => ($status === 'Liberado') ? 1 : 0,
+                    'notreleased' => ($status !== 'Liberado') ? 1 : 0,
+                ];
             }
         }
 
-        // Adicionar resumo total para todos os projetos
-        $allProjectsSummary = [];
-        foreach ($impedimentTypes as $impedimentType) {
-            $type = $impedimentType->ImpedimentType;
-            $allProjectsSummary[$type] = [
-                'Liberado' => 0,
-                'Não Liberado' => 0,
-            ];
-
-            foreach ($projectNames as $name) {
-                $allProjectsSummary[$type]['Liberado'] += $return[$name][$type]['Liberado'];
-                $allProjectsSummary[$type]['Não Liberado'] += $return[$name][$type]['Não Liberado'];
-            }
-        }
-
-        $return['Resumo - Geral'] = $allProjectsSummary;
-        // $return['Total'] = ['Resumo' => $totalSummary];
-
-        return $return;
+        return $counts;
     }
 
 

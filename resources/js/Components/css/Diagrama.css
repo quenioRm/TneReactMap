@@ -31,6 +31,11 @@
     /* You can also use other properties like border, background-color, etc., to highlight */
 }
 
+.highlight-received-tower {
+    box-shadow: 0 0 10px 3px rgba(0, 255, 17, 0.5); /* Example: blue glow */
+    /* You can also use other properties like border, background-color, etc., to highlight */
+}
+
 .custom-select-front {
     position: relative;
     z-index: 1000; /* Adjust the value as needed */
