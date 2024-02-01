@@ -422,8 +422,9 @@ const TowerDiagram = () => {
                                                     placement="top"
                                                     overlay={
                                                         <Tooltip>
-                                                            {tower.latestactivity.activitie} - Executado em: {tower.latestactivity.date}
-                                                            {tower.tower.ReceiveDate && `Data de Recebimento Estrutura: ${formatDate(tower.tower.ReceiveDate)}`}
+                                                        {tower.latestactivity.activitie} - Executado em: {tower.latestactivity.date}
+                                                        {tower.tower.ReceiveDate && <><br />Data de Recebimento Estrutura: {formatDate(tower.tower.ReceiveDate)}</>}
+
                                                         </Tooltip>
                                                     }
                                                 >
