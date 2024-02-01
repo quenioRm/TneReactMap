@@ -199,7 +199,7 @@ const TowerDiagram = () => {
                                 <Form.Check
                                     type="checkbox"
                                     name="emphasizeProduction"
-                                    label="Dar ênfase no que foi produzido após a data de verificação."
+                                    label="Dar ênfase no que foi produzido após a data de verificação. (Verifique a cor azul)"
                                     checked={checkboxes.emphasizeProduction}
                                     onChange={handleCheckboxChange}
                                 />
@@ -208,7 +208,7 @@ const TowerDiagram = () => {
                                 <Form.Check
                                     type="checkbox"
                                     name="showReceivedTowers"
-                                    label="Mostrar torres recebidas."
+                                    label="Mostrar torres recebidas. (Verifique a cor verde)"
                                     checked={checkboxes.showReceivedTowers}
                                     onChange={handleCheckboxChange}
                                 />
