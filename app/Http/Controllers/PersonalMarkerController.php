@@ -84,7 +84,7 @@ class PersonalMarkerController extends Controller
                     'required',
                     'string',
                     'max:255',
-                    Rule::unique('personal_markers')->ignore($id),
+                    // Rule::unique('personal_markers')->ignore($id),
                 ],
                 'coordinateX' => 'required|string|max:255',
                 'coordinateY' => 'required|string|max:255',
