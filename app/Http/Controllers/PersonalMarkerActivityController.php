@@ -106,7 +106,7 @@ class PersonalMarkerActivityController extends Controller
                     'required',
                     'string',
                     'max:255',
-                    Rule::unique('personal_marker_activity')->ignore($id),
+                    // Rule::unique('personal_marker_activity')->ignore($id),
                 ],
                 'unity' => 'required|string|max:255',
                 'previouscount' => 'required|numeric',
