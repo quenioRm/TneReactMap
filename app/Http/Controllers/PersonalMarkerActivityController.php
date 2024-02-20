@@ -208,13 +208,15 @@ class PersonalMarkerActivityController extends Controller
 
     public function getAllProductionsByMarker($name)
     {
-        $cacheKey = 'getAllProductionsByMarker_' . $name;
+        // $cacheKey = 'getAllProductionsByMarker_' . $name;
 
-        // Try to get the data from the cache
-        $activities = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($name) {
-            // If data is not found in the cache, retrieve it from the database
-            return PersonalMarkerProduction::where('name', $name)->get();
-        });
+        // // Try to get the data from the cache
+        // $activities = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($name) {
+        //     // If data is not found in the cache, retrieve it from the database
+        //     return PersonalMarkerProduction::where('name', $name)->get();
+        // });
+
+        $activities = PersonalMarkerProduction::where('name', $name)->get();
 
         return response()->json($activities);
     }
