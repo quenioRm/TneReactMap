@@ -153,7 +153,17 @@ const MarkerConfigImpedimentModal = ({
                                 <Dropdown.Item
                                     onClick={() => setStatus("Não Liberado")}
                                 >
-                                    Não Liberrado
+                                    Não Liberado
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                    onClick={() => setStatus("Bloqueado")}
+                                >
+                                    Bloqueado
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                    onClick={() => setStatus("Em Pagamento")}
+                                >
+                                    Em Pagamento
                                 </Dropdown.Item>
                             </Dropdown.Menu>
                             {errors &&

@@ -17,7 +17,8 @@ class TowerImpediment extends Model
         'Number',
         'ImpedimentType',
         'Status',
-        'StatusDate'
+        'StatusDate',
+        'Observations'
     ];
 
     public static function GetImpediments($projectName, $number)

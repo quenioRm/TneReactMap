@@ -83,7 +83,7 @@ const DiagramTowerDetails = ({ infos, handleClose }) => {
                                 </Nav.Item>
                                 <Nav.Item>
                                     <Nav.Link eventKey="environmental">
-                                        Status Ambiental
+                                        Status Ambiental / Projeto
                                     </Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item>
@@ -216,7 +216,7 @@ const DiagramTowerDetails = ({ infos, handleClose }) => {
                                 <Tab.Pane eventKey="environmental">
                                     {/* ... Code for the "Status Ambiental" tab */}
 
-                                    <h5>Status Ambiental</h5>
+                                    <h5>Status Ambiental / Projeto</h5>
                                     <hr />
                                     <div className="table-container">
                                         <table className="table">

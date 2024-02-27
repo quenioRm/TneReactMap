@@ -377,7 +377,8 @@ const TowerDiagram = () => {
                                                                 marginBottom: "2px",
                                                             }}
                                                         >
-                                                            <div className="square-content d-flex align-items-center justify-content-center">
+                                                            <div className="square-content d-flex align-items-center justify-content-center"
+                                                            onClick={() => handleShowDetails(tower)}>
                                                                 {impediment.ImpedimentType.charAt(0)}
                                                             </div>
                                                         </div>
@@ -389,7 +390,7 @@ const TowerDiagram = () => {
                                                 ),
                                             )}
                                     </div>
-                                    <div className="number-square bg-secondary text-white mb-2">
+                                    <div className="number-square bg-secondary text-white mb-2" onClick={() => handleShowDetails(tower)}>
                                         {tower.tower.Number +
                                             "-" +
                                             tower.tower.Name}
