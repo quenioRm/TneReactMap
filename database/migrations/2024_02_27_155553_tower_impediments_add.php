@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tower_impediments', function (Blueprint $table) {
-            $table->string('Observations', 4000)->after('StatusDate');
+            $table->string('Observations', 4000)->nullable()->after('StatusDate');
         });
     }
 
