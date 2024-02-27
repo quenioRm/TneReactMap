@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('tower_impediments', function (Blueprint $table) {
-            $table->string('Observations');
+            $table->dropColumn('Observations');
         });
     }
 };

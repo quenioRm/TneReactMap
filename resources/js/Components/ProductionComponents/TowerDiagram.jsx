@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "../../Components/axiosInstance";
 import Select from "react-select";
 import { Card, Form, Row, Col, Button } from "react-bootstrap";
@@ -6,11 +6,12 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import "../css/Diagrama.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faPrint } from "@fortawesome/free-solid-svg-icons";
 import TowerFreeReportGraphCompare from "./TowerFreeReportComponents/TowerFreeReportGraphCompare";
 import DiagramTowerDetails from "../ProductionComponents/Diagram/DiagramTowerDetails";
 import DiagramLatestProductionsByDate from "./Diagram/DiagramLatestProductionsByDate";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useReactToPrint } from "react-to-print";
 
 const TowerDiagram = () => {
     const [towerData, setTowerData] = useState(null);
@@ -29,6 +30,14 @@ const TowerDiagram = () => {
     const [checkboxes, setCheckboxes] = useState({
         emphasizeProduction: false,
         showReceivedTowers: false,
+    });
+
+    const componentRef = useRef(); // Reference to the component to be printed
+
+
+    // Use the useReactToPrint hook to handle printing
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current, // Specify the content to be printed
     });
 
     useEffect(() => {
@@ -240,16 +249,26 @@ const TowerDiagram = () => {
                     />
                 </Card.Body>
             </Card>
-
-            <Card className="my-4">
+            
+            <div ref={componentRef}>
+            {/* Print Here ref={componentRef} */}
+            <Card className="my-4"> 
                 <Card.Body>
                     <div className="d-flex justify-content-between">
                         <Card.Title>Legenda</Card.Title>
-                        <button onClick={() => setShowLegend(!showLegend)}>
-                            <FontAwesomeIcon
-                                icon={showLegend ? faEye : faEyeSlash}
-                            />
-                        </button>
+                        <div className="d-flex">
+                            <button
+                                onClick={() => setShowLegend(!showLegend)}
+                                className="mr-2" // Add margin-right for spacing
+                            >
+                                <FontAwesomeIcon
+                                    icon={showLegend ? faEye : faEyeSlash}
+                                />
+                            </button>
+                            <Button variant="primary" onClick={handlePrint} className="mb-4">
+                                <FontAwesomeIcon icon={faPrint} /> 
+                            </Button>
+                        </div>
                     </div>
                     <hr />
                     {showLegend && (
@@ -431,6 +450,8 @@ const TowerDiagram = () => {
                     </Card.Body>
                 </Card>
             )}
+            </div>
+            
             <DiagramTowerDetails
                 infos={selectedTower}
                 handleClose={handleCloseDetails}
