@@ -123,7 +123,7 @@ class TowerController extends Controller
         // Use FastExcel to read the Excel file
         $worksheet3Data = (new FastExcel)->sheet(3)->import($file->getRealPath());
 
-        dd($file);
+        // dd($file);
 
         DB::table('tower_impediments')->truncate();
 
