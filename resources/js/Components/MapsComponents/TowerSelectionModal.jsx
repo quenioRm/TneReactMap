@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { Typeahead } from "react-bootstrap-typeahead";
 import axios from "../../Components/axiosInstance";
@@ -6,6 +6,7 @@ import axios from "../../Components/axiosInstance";
 const TowerSelectionModal = ({ rMap, show, onClose }) => {
     const [towers, setTowers] = useState([]);
     const [selectedTower, setSelectedTower] = useState([]);
+    const typeaheadRef = useRef();
 
     useEffect(() => {
         const fetchTowers = async () => {
@@ -20,6 +21,11 @@ const TowerSelectionModal = ({ rMap, show, onClose }) => {
 
         fetchTowers();
     }, []);
+
+    const handleInputChange = () => {
+        // Limpar a seleção ao entrar novamente no input
+        setSelectedTower([]);
+    };
 
     const handleTowerSelect = () => {
         if (selectedTower.length > 0) {
@@ -46,27 +52,26 @@ const TowerSelectionModal = ({ rMap, show, onClose }) => {
     return (
         <Modal show={show} onHide={onClose}>
             <Modal.Header closeButton>
-                <Modal.Title>Selecione uma Torre</Modal.Title>
+                <Modal.Title>Selecione uma Torre / Subestação / Outro Ponto</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
                     <Form.Group controlId="formTower">
-                        <Form.Label>Selecione uma Torre</Form.Label>
+                        <Form.Label>Selecione uma Torre / Subestação / Outro Ponto</Form.Label>
                         <Typeahead
+                            ref={typeaheadRef}
                             id="towerTypeahead"
                             labelKey={(option) => `${option.name}`}
                             options={towers}
                             selected={selectedTower}
                             onChange={(selected) => setSelectedTower(selected)}
+                            onFocus={handleInputChange}
                             placeholder="Digite para buscar..."
                         />
                     </Form.Group>
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                {/* <Button variant="secondary" onClick={onClose}>
-          Fechar
-        </Button> */}
                 <Button variant="primary" onClick={handleTowerSelect}>
                     Ir
                 </Button>

@@ -73,7 +73,7 @@ const ImportImpedimentsModal = ({ show, onHide }) => {
             } finally {
                 setImporting(false); // Set the importing state to false after the import is completed
                 setTimeout(() => {
-                    window.location.reload();
+                    // window.location.reload();
                 }, 8000);
             }
         }

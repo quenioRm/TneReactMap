@@ -390,7 +390,7 @@ const TowerDiagram = () => {
                                                 ),
                                             )}
                                     </div>
-                                    <div className="number-square bg-secondary text-white mb-2" onClick={() => handleShowDetails(tower)}>
+                                    <div className="number-square bg-secondary text-white mb-2 cursor-pointer" onClick={() => handleShowDetails(tower)}>
                                         {tower.tower.Number +
                                             "-" +
                                             tower.tower.Name}

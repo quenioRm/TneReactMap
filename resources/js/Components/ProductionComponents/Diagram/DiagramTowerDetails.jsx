@@ -224,6 +224,7 @@ const DiagramTowerDetails = ({ infos, handleClose }) => {
                                                 <tr>
                                                     <th>Tipo</th>
                                                     <th>Status</th>
+                                                    <th>Observações</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -237,6 +238,9 @@ const DiagramTowerDetails = ({ infos, handleClose }) => {
                                                             </td>
                                                             <td>
                                                                 {item.Status}
+                                                            </td>
+                                                            <td>
+                                                                {item.Observations}
                                                             </td>
                                                         </tr>
                                                     ),
