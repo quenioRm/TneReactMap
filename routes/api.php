@@ -11,7 +11,7 @@ use App\Http\Controllers\PersonalMarkerController;
 use App\Http\Controllers\PersonalMarkerActivityController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DiagramProductionController;
-
+use App\Http\Controllers\EffectiveController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -99,6 +99,10 @@ Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
     Route::post('/diagram', [DiagramProductionController::class, 'GetDiagram']);
     Route::get('diagram/getImpedimentsbytype/{project?}', [DiagramProductionController::class, 'countIsBlockedByType']);
     Route::post('diagram/getLatestProductionbydate', [DiagramProductionController::class, 'getLatestProductionByDate']);
+    ///
+
+    ///Effective
+    Route::get('/effective', [EffectiveController::class, 'getEffective']);
     ///
 
 });

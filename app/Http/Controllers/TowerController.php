@@ -17,6 +17,7 @@ use App\Helpers\CoordinateHelper;
 use App\Models\PersonalMarker;
 use App\Models\MarkerConfigImpediment;
 use App\Models\FoundationProjects;
+use App\Models\Effective;
 
 class TowerController extends Controller
 {
@@ -62,8 +63,11 @@ class TowerController extends Controller
 
         $worksheet2Data = (new FastExcel)->sheet(2)->import($file->getRealPath());
 
+        $worksheet3Data = (new FastExcel)->sheet(6)->import($file->getRealPath());
+
         DB::table('cache')->truncate();
         DB::table('towers')->truncate();
+        DB::table('effective')->truncate();
 
         // Perform necessary processing with the data from the second worksheet
         foreach ($worksheet1Data as $row) {
@@ -106,6 +110,20 @@ class TowerController extends Controller
                 }
                 $itemId++;
             }
+        }
+
+        foreach ($worksheet3Data as $row) {
+
+            if ($row['Empresa'] !== ""){
+                $effective = new Effective();
+                $effective->activity =  $row['Projeto/Atividade'];
+                $effective->business =  $row['Empresa'];
+                $effective->direct =  ($row['Indireto'] === '') ? 0 : $row['Indireto'];
+                $effective->indirect = ($row['Direto'] === '') ? 0 : $row['Direto'];
+                $effective->machinescount = ($row['Veículos/Equipamentos'] === '') ? 0 : $row['Veículos/Equipamentos'];
+                $effective->save();
+            }
+
         }
 
         return response()->json(['message' => 'Towers imported successfully']);

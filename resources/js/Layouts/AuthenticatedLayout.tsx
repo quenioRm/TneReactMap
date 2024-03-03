@@ -48,6 +48,14 @@ export default function Authenticated({
                                     Produção
                                 </NavLink>
                             </div>
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink
+                                    href={route("effective")}
+                                    active={route().current("effective")}
+                                >
+                                    Mão de obra
+                                </NavLink>
+                            </div>
                         </div>
 
                         <div className="hidden sm:flex sm:items-center sm:ms-6">
@@ -160,6 +168,15 @@ export default function Authenticated({
                             active={route().current("production")}
                         >
                             Produção
+                        </ResponsiveNavLink>
+                    </div>
+
+                    <div className="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink
+                            href={route("effective")}
+                            active={route().current("effective")}
+                        >
+                            Mão de obra
                         </ResponsiveNavLink>
                     </div>
 
