@@ -86,8 +86,8 @@ const TableComponent = ({ columns, data, totalDirect, totalIndirect, totalMachin
             })}
             <tr>
               <td colSpan={2} style={{ textAlign: 'center', verticalAlign: 'middle' }}>Total MO: {totalDirect + totalIndirect}</td>
-              <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>{totalDirect}</td>
               <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>{totalIndirect}</td>
+              <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>{totalDirect}</td>
               <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>{totalMachines}</td>
             </tr>
           </tbody>

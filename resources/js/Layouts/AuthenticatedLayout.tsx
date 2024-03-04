@@ -53,7 +53,7 @@ export default function Authenticated({
                                     href={route("effective")}
                                     active={route().current("effective")}
                                 >
-                                    Mão de obra
+                                    Mão de Obra
                                 </NavLink>
                             </div>
                         </div>
@@ -176,7 +176,7 @@ export default function Authenticated({
                             href={route("effective")}
                             active={route().current("effective")}
                         >
-                            Mão de obra
+                            Mão de Obra
                         </ResponsiveNavLink>
                     </div>
 
