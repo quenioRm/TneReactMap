@@ -33,55 +33,69 @@ const SearchIcon = ({ onClick }) => {
 };
 
 const TableComponent = ({ columns, data, totalDirect, totalIndirect, totalMachines }) => {
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable(
-    {
-      columns,
-      data,
-    },
-    useFilters
-  );
+    const {
+      getTableProps,
+      getTableBodyProps,
+      headerGroups,
+      rows,
+      prepareRow,
+    } = useTable(
+      {
+        columns,
+        data,
+      },
+      useFilters
+    );
 
-  return (
-    <div className="table-container">
-      <Table {...getTableProps()} id="table-to-xls" striped bordered hover>
-        <thead>
-          {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
-                <th {...column.getHeaderProps()}>
-                  {column.render('Header')}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row, i) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map(cell => {
-                  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
-                })}
+    return (
+      <div className="table-container">
+        <Table {...getTableProps()} id="table-to-xls" striped bordered hover>
+          <thead>
+            {headerGroups.map(headerGroup => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column, index) => (
+                  <th style={{ textAlign: 'center', verticalAlign: 'middle' }} {...column.getHeaderProps()}>
+                    {index < 2 ? ( // Mesclar apenas as duas primeiras colunas
+                      <span >{column.render('Header')}</span>
+                    ) : (
+                      column.render('Header')
+                    )}
+                  </th>
+                ))}
               </tr>
-            );
-          })}
-          <tr>
-            <td>Total Direto: {totalDirect}</td>
-            <td>Total Indireto: {totalIndirect}</td>
-            <td>Total de Veículos/Equipamentos: {totalMachines}</td>
-          </tr>
-        </tbody>
-      </Table>
-    </div>
-  );
-};
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.map((row, i) => {
+              prepareRow(row);
+              return (
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell, index) => {
+                    return (
+                      <td {...cell.getCellProps()} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                        {index < 2 ? ( // Mesclar apenas as duas primeiras colunas
+                          <span>{cell.render('Cell')}</span>
+                        ) : (
+                          cell.render('Cell')
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+            <tr>
+              <td colSpan={2} style={{ textAlign: 'center', verticalAlign: 'middle' }}>Total MO: {totalDirect + totalIndirect}</td>
+              <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>{totalDirect}</td>
+              <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>{totalIndirect}</td>
+              <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>{totalMachines}</td>
+            </tr>
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
 
 const ExportToExcelButton = ({ children, ...rest }) => {
   return <Button {...rest}>{children}</Button>;
@@ -152,7 +166,8 @@ const EffectiveMo = () => {
 
   return (
     <div className="effective-table-container">
-      <h1>Efetivo de Obra</h1>
+      <br/>
+      <h3>Efetivo de Obra</h3>
       <br/>
       <input
         type="text"
