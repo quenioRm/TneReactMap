@@ -59,13 +59,13 @@ const EffectiveGraph = ({ data }) => {
                 },
                 series: [
                     {
-                        name: "Direto",
+                        name: "Indireto",
                         data: directData,
                     },
                     {
-                        name: "Indireto",
+                        name: "Direto",
                         data: indirectData,
-                    },
+                    }
                 ],
             };
 
