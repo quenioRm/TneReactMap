@@ -138,15 +138,19 @@ class TowerController extends Controller
         ]);
 
         $file = $request->file('file');
+        $fileName = time() . '_' . $file->getClientOriginalName();
 
-        // Use FastExcel to read the Excel file
-        $worksheet3Data = (new FastExcel)->sheet(3)->import($file->getRealPath());
-        $worksheet6Data = (new FastExcel)->sheet(6)->import($file->getRealPath());
+        // Salva o arquivo no disco local (storage/app/public) e retorna o caminho
+        $path = $file->storeAs('uploads', $fileName, 'public');
+
+        // Use FastExcel para ler o arquivo Excel
+        $worksheet3Data = (new FastExcel)->sheet(3)->import(storage_path('app/public/' . $path));
+        $worksheet6Data = (new FastExcel)->sheet(6)->import(storage_path('app/public/' . $path));
 
         DB::table('tower_impediments')->truncate();
         DB::table('tower_impediments_v2')->truncate();
 
-        // Perform necessary processing with the data from the second worksheet
+        // Processamento necessário com os dados do segundo worksheet
         foreach ($worksheet3Data as $row) {
             TowerImpediment::create($row);
         }

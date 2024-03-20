@@ -85,7 +85,7 @@ const TowerDiagram = () => {
             axios
             .get(`/api/diagram/impedimentstatusv2/${hoverImpedimentStates.towerid}/${hoverImpedimentStates.project}/${hoverImpedimentStates.type}`)
             .then((response) => {
-                console.log(response.data)
+                // console.log(response.data)
                 setTowerImpedimentV2(response.data);
             })
             .catch((error) => {
