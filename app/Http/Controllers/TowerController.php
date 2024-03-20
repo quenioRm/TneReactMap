@@ -11,6 +11,7 @@ use Rap2hpoutre\FastExcel\FastExcel;
 use App\Helpers\Functions;
 use App\Models\TowerActivity;
 use App\Models\TowerImpediment;
+use App\Models\TowerImpedimentV2;
 use Carbon\Carbon;
 use DateTimeImmutable;
 use App\Helpers\CoordinateHelper;
@@ -140,12 +141,18 @@ class TowerController extends Controller
 
         // Use FastExcel to read the Excel file
         $worksheet3Data = (new FastExcel)->sheet(3)->import($file->getRealPath());
+        $worksheet6Data = (new FastExcel)->sheet(6)->import($file->getRealPath());
 
         DB::table('tower_impediments')->truncate();
+        DB::table('tower_impediments_v2')->truncate();
 
         // Perform necessary processing with the data from the second worksheet
         foreach ($worksheet3Data as $row) {
             TowerImpediment::create($row);
+        }
+
+        foreach ($worksheet6Data as $row) {
+            TowerImpedimentV2::create($row);
         }
 
         return response()->json(['message' => 'Towers Impediments imported successfully']);
@@ -431,5 +438,7 @@ class TowerController extends Controller
 
         return response()->json($groupedTowers);
     }
+
+
 
 }

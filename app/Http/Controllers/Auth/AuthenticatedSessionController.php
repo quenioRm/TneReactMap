@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\RoleUser;
+use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -38,6 +40,7 @@ class AuthenticatedSessionController extends Controller
 
         $user->api_token = $token;
         $user->save();
+        Log::info('Salvando token para o usuário: ' . $token);
 
         $request->session()->regenerate();
 
@@ -52,7 +55,6 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
         $user->api_token = null;
         $user->save();
-
 
         Auth::guard('web')->logout();
 

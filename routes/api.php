@@ -99,6 +99,7 @@ Route::middleware(['auth:sanctum', 'role:confirmedUser'])->group(function () {
     Route::post('/diagram', [DiagramProductionController::class, 'GetDiagram']);
     Route::get('diagram/getImpedimentsbytype/{project?}', [DiagramProductionController::class, 'countIsBlockedByType']);
     Route::post('diagram/getLatestProductionbydate', [DiagramProductionController::class, 'getLatestProductionByDate']);
+    Route::get('/diagram/impedimentstatusv2/{towerid}/{project}/{impedimenttype}', [DiagramProductionController::class, 'getTowerImpedimentV2']);
     ///
 
     ///Effective

@@ -32,6 +32,10 @@ const TowerDiagram = () => {
         showReceivedTowers: false,
     });
 
+    const [hoverImpedimentStates, setImpedimentHoverStates] = useState({});
+
+    const [towerImpedimentV2, setTowerImpedimentV2] = useState([]);
+
     const componentRef = useRef(); // Reference to the component to be printed
 
 
@@ -75,6 +79,20 @@ const TowerDiagram = () => {
             setTowerData(null);
         }
     }, [selectedProject, startDate]);
+
+    useEffect(() => {
+        if(hoverImpedimentStates.type){
+            axios
+            .get(`/api/diagram/impedimentstatusv2/${hoverImpedimentStates.towerid}/${hoverImpedimentStates.project}/${hoverImpedimentStates.type}`)
+            .then((response) => {
+                console.log(response.data)
+                setTowerImpedimentV2(response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching impediment v2:", error);
+            });
+        }
+    }, [hoverImpedimentStates]);
 
     useEffect(() => {
         if (selectedProject) {
@@ -155,6 +173,7 @@ const TowerDiagram = () => {
             </div>
         );
     }
+
 
     return (
         <>
@@ -249,10 +268,10 @@ const TowerDiagram = () => {
                     />
                 </Card.Body>
             </Card>
-            
+
             <div ref={componentRef}>
             {/* Print Here ref={componentRef} */}
-            <Card className="my-4"> 
+            <Card className="my-4">
                 <Card.Body>
                     <div className="d-flex justify-content-between">
                         <Card.Title>Legenda</Card.Title>
@@ -266,7 +285,7 @@ const TowerDiagram = () => {
                                 />
                             </button>
                             <Button variant="primary" onClick={handlePrint} className="mb-4">
-                                <FontAwesomeIcon icon={faPrint} /> 
+                                <FontAwesomeIcon icon={faPrint} />
                             </Button>
                         </div>
                     </div>
@@ -352,7 +371,7 @@ const TowerDiagram = () => {
                                             "#008000",
                                             "#FF5733",
                                         ]}
-                                        name="Status Ambiental"
+                                        name="Status "
                                     />
                                 </Col>
                             )}
@@ -374,6 +393,7 @@ const TowerDiagram = () => {
                                         index % 15 === 14 ? "fill-space" : ""
                                     }`}
                                 >
+                                    {/* Impediments */}
                                     <div className="impediment-row d-flex">
                                         {tower.impediments &&
                                             tower.impediments.map(
@@ -381,7 +401,7 @@ const TowerDiagram = () => {
                                                     impediment,
                                                     impedimentIndex,
                                                 ) => (
-                                                    <div className="tooltip-container">
+                                                    <div className="tooltip-container" key={impedimentIndex}>
                                                         <div
                                                             className={`impediment-square text-white mr-1 ${
                                                                 impediment.Status === "Liberado"
@@ -397,9 +417,25 @@ const TowerDiagram = () => {
                                                             }}
                                                         >
                                                             <div className="square-content d-flex align-items-center justify-content-center"
+                                                            onMouseEnter={() => setImpedimentHoverStates({ ...hoverImpedimentStates,
+                                                                [impediment.id]: true, type : impediment.ImpedimentType, towerid: impediment.Number.replace(/\//g, '_'), project: impediment.ProjectName})}
+                                                            onMouseLeave={() => setImpedimentHoverStates({})}
                                                             onClick={() => handleShowDetails(tower)}>
                                                                 {impediment.ImpedimentType.charAt(0)}
                                                             </div>
+
+                                                            {/* Impediment Add Info */}
+                                                            {hoverImpedimentStates[impediment.id] && (
+                                                                <div className="floating-boxes">
+                                                                    {towerImpedimentV2.map((impedimentV2, index) => (
+                                                                        <div key={index} className="floating-box">
+                                                                             <p><strong>{impedimentV2.ImpedimentType}[{impedimentV2.From}] : {impedimentV2.Status}</strong></p>
+                                                                             <p><strong>Observações: {impedimentV2.Observations}</strong></p>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+
                                                         </div>
                                                         <div className="tooltip-content">
                                                             {/* Add your tooltip content here */}
@@ -409,6 +445,8 @@ const TowerDiagram = () => {
                                                 ),
                                             )}
                                     </div>
+                                    {/* End Impediments */}
+
                                     <div className="number-square bg-secondary text-white mb-2 cursor-pointer" onClick={() => handleShowDetails(tower)}>
                                         {tower.tower.Number +
                                             "-" +
@@ -451,7 +489,7 @@ const TowerDiagram = () => {
                 </Card>
             )}
             </div>
-            
+
             <DiagramTowerDetails
                 infos={selectedTower}
                 handleClose={handleCloseDetails}

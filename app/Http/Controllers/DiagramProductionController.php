@@ -12,6 +12,7 @@ use App\Models\MarkerConfigImpediment;
 use App\Models\Marker;
 use App\Http\Controllers\ProductionController;
 use DateInterval;
+use App\Models\TowerImpedimentV2;
 
 class DiagramProductionController extends Controller
 {
@@ -297,5 +298,12 @@ class DiagramProductionController extends Controller
         }
 
         return $date; // Retorna um objeto Carbon
+    }
+
+    public function getTowerImpedimentV2($towerid, $project, $impedimentType)
+    {
+        $result = TowerImpedimentV2::where('ProjectName', $project)->where('Number', str_replace("_", "/", $towerid))->where('ImpedimentType', $impedimentType)->get();
+
+        return response()->json($result);
     }
 }
